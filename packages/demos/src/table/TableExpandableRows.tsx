@@ -106,7 +106,7 @@ export function TableExpandableRows() {
           <TableRow>
             <TableCell colSpan={2} className="text-center">
               <Button variant="link" size="sm" onClick={toggleAllRows}>
-                {allExpanded ? 'Collapse' : 'Expand'}
+                {allExpanded ? 'Collapse all rows' : 'Expand all rows'}
               </Button>
             </TableCell>
           </TableRow>
