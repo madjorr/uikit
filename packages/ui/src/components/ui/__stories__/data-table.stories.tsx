@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ColumnDef } from '@tanstack/react-table'
+import { userEvent, waitFor, within } from '@storybook/test'
 import { Checkbox } from '../checkbox'
+import { Button } from '../button'
 import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '../data-table'
 import {
   useReactTable,
@@ -127,4 +129,76 @@ function DataTableWithToolbarAndPagination() {
 export const WithToolbarAndPagination: Story = {
   args: {} as React.ComponentProps<typeof DataTable>,
   render: () => <DataTableWithToolbarAndPagination />,
+}
+
+const expandableColumns: ColumnDef<Payment>[] = [
+  {
+    id: 'expand',
+    header: () => null,
+    cell: ({ row }) => (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 w-7 p-0 text-muted-foreground"
+        onClick={row.getToggleExpandedHandler()}
+        aria-label={row.getIsExpanded() ? 'Collapse row' : 'Expand row'}
+      >
+        {row.getIsExpanded() ? '−' : '+'}
+      </Button>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'id',
+    header: 'ID',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+  },
+]
+
+export const ExpandableRows: Story = {
+  args: {} as React.ComponentProps<typeof DataTable>,
+  render: () => (
+    <DataTable
+      columns={expandableColumns}
+      data={payments}
+      getRowCanExpand={() => true}
+      renderExpandedRow={(row) => (
+        <div className="text-sm text-muted-foreground">
+          Detailed payment information for <span className="font-medium text-foreground">{row.original.id}</span>
+          : amount ${row.original.amount.toFixed(2)} via {row.original.email}
+        </div>
+      )}
+    />
+  ),
+}
+
+export const ExpandableRowsToggled: Story = {
+  args: ExpandableRows.args,
+  tags: ['visual-expandable-toggle'],
+  parameters: {
+    snapshot: { animationDelay: 100 },
+  },
+  render: ExpandableRows.render,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const [firstExpandButton] = await canvas.findAllByRole('button', { name: 'Expand row' })
+    await userEvent.click(firstExpandButton)
+    await waitFor(() => {
+      canvas.getByText((_, element) => {
+        if (element?.tagName !== 'DIV') {
+          return false
+        }
+        const text = element?.textContent?.replace(/\s+/g, ' ').trim()
+        return text === 'Detailed payment information for p1: amount $316.00 via ken99@example.com'
+      })
+    }, { timeout: 1500 })
+  },
 }

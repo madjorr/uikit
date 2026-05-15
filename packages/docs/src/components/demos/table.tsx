@@ -11,4 +11,5 @@ export {
   TableEmpty,
   TableScrollable,
   TableSortable,
+  TableExpandableRows,
 } from '@acronis-platform/shadcn-uikit-demos/table';
