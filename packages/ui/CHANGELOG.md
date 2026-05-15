@@ -1,3 +1,17 @@
+## [0.36.0](https://github.com/acronis/shadcn-uikit/compare/v0.35.0...v0.36.0) (2026-05-15)
+
+
+### Features
+
+* add datatable snapshots ([40e399d](https://github.com/acronis/shadcn-uikit/commit/40e399d778e22820cf1a98acd82af0cbb3e4a07e))
+* add datatable snapshots 2 ([37953b8](https://github.com/acronis/shadcn-uikit/commit/37953b859901f380db0942d5093cec1e0b8e9f34))
+* **table:** add expandable row support to data table ([278e462](https://github.com/acronis/shadcn-uikit/commit/278e4622c91c8d4390e2fc0642f76f476180dac6))
+
+
+### Bug Fixes
+
+* fix datatable tests ([cb6814c](https://github.com/acronis/shadcn-uikit/commit/cb6814ccbdd747004506a5bcc3c38094aa7fe059))
+
 ## [0.35.0](https://github.com/acronis/shadcn-uikit/compare/v0.34.0...v0.35.0) (2026-04-07)
 
 
@@ -65,19 +79,4 @@
 ### Bug Fixes
 
 * update lucide-react to version 1.7.0 for improved compatibility ([26791fd](https://github.com/acronis/shadcn-uikit/commit/26791fdc0a839a336975b3cafaff7855daff51d0))
-
-## [0.32.3](https://github.com/acronis/shadcn-uikit/compare/v0.32.2...v0.32.3) (2026-04-01)
-
-
-### Bug Fixes
-
-* add Tailwind CSS theme import to multiple SCSS files for consistency ([94654d1](https://github.com/acronis/shadcn-uikit/commit/94654d151018eca6ba2cd798537f6cf3f105c725))
-* update Calendar and Form components for Tailwind v4 compatibility and adjust label display ([d53caf0](https://github.com/acronis/shadcn-uikit/commit/d53caf0dba1450e344b95358c5e75897ef37985b))
-* update CSS build process to include intermediate file for Tailwind processing ([b73b968](https://github.com/acronis/shadcn-uikit/commit/b73b968f498dee79269b809412b4f8717206ee1d))
-* update shadow utility classes to use 'shadow-xs' for consistency ([1072875](https://github.com/acronis/shadcn-uikit/commit/1072875baf17b190529903a0ec94a5ef5c813b37))
-* update sidebar component to use CSS variable syntax for width ([f344c2d](https://github.com/acronis/shadcn-uikit/commit/f344c2d1a3a49287b3a61e34a64d54f2f18841ba))
-* update Tailwind CSS and animation dependencies for compatibility ([e44b611](https://github.com/acronis/shadcn-uikit/commit/e44b611ae9d473d70f51980491280a6b01e05ce3))
-* update Tailwind CSS imports and configuration for improved styling ([30883b7](https://github.com/acronis/shadcn-uikit/commit/30883b7dce94150630eb4679ea81973bf802a10c))
-* update tw-animate-css import path for compatibility with Vite and adjust CSS variable syntax ([5ff6bf7](https://github.com/acronis/shadcn-uikit/commit/5ff6bf7318d54adbffcac68894db620fdd5d523b))
-* update tw-animate-css import paths for compatibility with Tailwind CLI ([11a6931](https://github.com/acronis/shadcn-uikit/commit/11a693195dde9faa8cea249afa741e6f6e7bc0b3))
 
