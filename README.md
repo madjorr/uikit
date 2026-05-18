@@ -16,7 +16,7 @@ The core UI component library. Ships pre-built CSS — consumers do **not** need
 - `react-dom` ^18.2.0 || ^19.0.0
 - `tw-animate-css` ^1.4.0
 
-### [@acronis-platform/shadcn-uikit-demo](./packages/demo)
+### [@acronis-platform/shadcn-uikit-demo](./apps/demo)
 
 Interactive demo application showcasing all components with multiple themes.
 
@@ -51,7 +51,7 @@ pnpm run build
 
 ```bash
 # Start the demo application
-cd packages/demo
+cd apps/demo
 pnpm run dev
 ```
 
@@ -335,12 +335,20 @@ Create custom themes by copying the template file and customizing colors:
 # See packages/ui/src/styles/themes/_template.scss for the template
 ```
 
-See [Theme Documentation](./packages/docs/THEMES.md) for details.
+See [Theme Documentation](./apps/docs/THEMES.md) for details.
 
 ## 🏗️ Project Structure
 
 ```
 shadcn-uikit/
+├── apps/
+│   ├── demo/                  # Demo application
+│   │   ├── src/
+│   │   │   ├── components/    # Demo-specific components
+│   │   │   ├── demos/         # Per-component demo pages
+│   │   │   └── layouts/       # App layouts
+│   │   └── package.json
+│   └── docs/                  # Documentation site
 ├── packages/
 │   ├── ui/                    # Core UI components library (@acronis-platform/shadcn-uikit)
 │   │   ├── src/
@@ -355,13 +363,7 @@ shadcn-uikit/
 │   │   │   ├── index.ts       # Main entry (all exports)
 │   │   │   └── react.ts       # React-only entry
 │   │   └── package.json
-│   ├── demo/                  # Demo application
-│   │   ├── src/
-│   │   │   ├── components/    # Demo-specific components
-│   │   │   ├── demos/         # Per-component demo pages
-│   │   │   └── layouts/       # App layouts
-│   │   └── package.json
-│   └── docs/                  # Package-level documentation
+│   └── (publishable packages only)
 ├── docs/                      # Project-level documentation
 │   ├── explorations/          # Research & exploration documents
 │   ├── features/              # Feature specifications
@@ -422,12 +424,12 @@ export function App() {
 
 ## 📚 Documentation
 
-- [Tree-Shaking & Performance](./packages/docs/TREE_SHAKING.md) — bundle optimization guide
-- [Theme System Guide](./packages/docs/THEMES.md) — complete theme usage guide
-- [Theme Build Configuration](./packages/docs/THEME_BUILD.md) — build setup details
-- [Theme Architecture](./packages/demo/docs/THEME_ARCHITECTURE.md) — token system architecture
+- [Tree-Shaking & Performance](./apps/docs/TREE_SHAKING.md) — bundle optimization guide
+- [Theme System Guide](./apps/docs/THEMES.md) — complete theme usage guide
+- [Theme Build Configuration](./apps/docs/THEME_BUILD.md) — build setup details
+- [Theme Architecture](./apps/demo/docs/THEME_ARCHITECTURE.md) — token system architecture
 - [UI Package Documentation](./packages/ui/README.md)
-- [Demo Package Documentation](./packages/demo/README.md)
+- [Demo Package Documentation](./apps/demo/README.md)
 
 ## 📝 License
 

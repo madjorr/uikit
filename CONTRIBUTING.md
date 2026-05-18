@@ -73,7 +73,7 @@ The following is a list of commit types:
 
 #### Unit tests
 
-[Vitest](https://vitest.dev/) and [Vue-test-utils](https://test-utils.vuejs.org/) are used for the unit testing. 
+[Vitest](https://vitest.dev/) and [Vue-test-utils](https://test-utils.vuejs.org/) are used for the unit testing.
 The spec files must be located at the `src` folder.
 
 #### Visual regression tests
@@ -86,19 +86,19 @@ You can find more information about performance tests in the [Performance tests 
 
 ### Component documentation
 
-The documentation for each component located at [`documentation`](https://github.com/acronis/shadcn-uikit/tree/main/packages/documentation) folder using a Markdown format.
-The examples of implementation located at [`demos`](https://github.com/acronis/shadcn-uikit/tree/main/packages/demos) in Vue.js SFC files format.
+The documentation for each component is located at [`apps/docs`](https://github.com/acronis/shadcn-uikit/tree/main/apps/docs) using Markdown/MDX format.
+The implementation examples are located at [`apps/demos`](https://github.com/acronis/shadcn-uikit/tree/main/apps/demos).
 For internal documentation we use Vitepress, you can find more information about Vitepress in the [Vitepress documentation](https://vitepress.dev/).
 
 Each document consists of highlights of the API(props, slots, events) with examples and complete details of these components.
-If the change in PR including the new API or API updates, you will need to update the API table at the end of the document. 
+If the change in PR including the new API or API updates, you will need to update the API table at the end of the document.
 Meanwhile, it will be convenient for QA to check if an example of the function is provided.
 
 ### Component types for TypeScript support
 
 As Acronis UI Component Library is being used in many TypeScript projects, when there is new API or API updates in the pull request,
 we will also need to update the declaration file for the UI Component Library.
-The files located at `types` folder. You can find more information about Typescript declaration file at [Link](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html).
+The files located at `types` folder. You can find more information about TypeScript declaration file at [Link](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html).
 
 ### Bump Version & Update Changelog
 
