@@ -53,7 +53,6 @@ export function DatePickerRange() {
             setDateRange(range || { from: undefined, to: undefined })
           }
           numberOfMonths={2}
-          initialFocus
         />
       </PopoverContent>
     </Popover>
