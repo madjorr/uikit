@@ -11,7 +11,7 @@
 # Required secrets:
 #   ACV_TOKEN              GitHub PAT used to commit the version PR
 #                          AND trigger downstream workflows on its merge.
-#   (no npm token needed — OIDC trusted publishing configured on npmjs.com)
+#   NPMJS_PUBLISH_TOKEN    Token for registry.npmjs.org publish.
 name: Release
 
 on:
@@ -64,5 +64,5 @@ jobs:
           createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.ACV_TOKEN }}
-          # NODE_AUTH_TOKEN no longer needed — OIDC trusted publishing handles auth
-          # NODE_AUTH_TOKEN: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
