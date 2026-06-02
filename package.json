@@ -14,7 +14,7 @@
     "lint:fix": "pnpm -r lint:fix",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "release": "changeset publish --provenance",
+    "release": "changeset publish",
     "test": "pnpm -r test",
     "test:watch": "pnpm -r test:watch",
     "typecheck": "pnpm -r typecheck",
@@ -68,5 +68,8 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@10.27.0"
+  "packageManager": "pnpm@10.27.0",
+  "publishConfig": {
+    "provenance": true
+  }
 }
