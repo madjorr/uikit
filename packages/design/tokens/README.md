@@ -169,7 +169,7 @@ tokens/
 ├── context/               Authoring docs, incl. the vendored DTCG-2025-10 spec snapshot.
 ├── README.md              This file — consumer-facing surface.
 ├── CONTRIBUTING.md        How to author a token, add a mode, validate.
-├── LICENSE                Apache-2.0.
+├── LICENSE                MIT.
 ├── package.json           Package metadata, files, and the validate script.
 └── .tmp/scripts/          Figma-sync helper scripts the LLM triggers (repo-only, not shipped).
 ```
@@ -317,4 +317,4 @@ This is illustrative — your translator owns the mapping from token to output. 
 
 ## License
 
-Apache-2.0 for the package as a whole. See [`LICENSE`](./LICENSE).
+MIT for the package as a whole. See [`LICENSE`](./LICENSE).

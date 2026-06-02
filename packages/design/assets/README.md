@@ -114,12 +114,11 @@ assets/
 ├── packs/                 One manifest per pack (packs/*.json) + bundled binaries (packs/<pack>/*).
 ├── rules/                 Declarative transform definitions (rules/*.json), referenced by $rules.
 ├── schemas/               JSON Schema (draft 2020-12) for manifests and rules.
-├── context/               Authoring docs, incl. requirements.md and resolution.md.
+├── context/               Authoring docs (spec.md, glossary.md, manifest.md, packs.md, rules.md).
 ├── README.md              This file — consumer-facing surface.
 ├── CONTRIBUTING.md        How to add an asset, pack, or rule.
-├── LICENSE                Apache-2.0 + third-party attribution (Lucide / ISC).
-├── package.json           Package metadata, files, and the validate script.
-└── .tmp/scripts/          Repo-only maintainer build helpers (not shipped).
+├── LICENSE                MIT (package as a whole) + Lucide ISC third-party attribution.
+└── package.json           Package metadata, files, and the validate script.
 ```
 
 ## Contributing
@@ -132,8 +131,6 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for day-to-day tasks: adding an asset
 | --------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `pnpm install`  | Installs devDependencies (ajv toolchain).                                                                              |
 | `pnpm validate` | ajv-compiles both schemas, then validates every `packs/*.json` and `rules/*.json` against them. Run before committing. |
-
-The scripts under `.tmp/scripts/` (`build-illustrations-manifest.mjs`, `rename-illustrations.mjs`) are **repo-only maintainer helpers** — run directly with `node .tmp/scripts/<file>.mjs`. They are not npm scripts and are not part of the published package.
 
 ## Translation tools
 
@@ -217,4 +214,4 @@ This is illustrative — your translator owns the mapping from manifest to outpu
 
 ## License
 
-Apache-2.0 for the package as a whole; some icons are derived from [Lucide](https://lucide.dev) (ISC). See [`LICENSE`](./LICENSE) for the full text and third-party attribution.
+MIT for the package as a whole; some icons are derived from [Lucide](https://lucide.dev) (ISC), whose attribution is retained. See [`LICENSE`](./LICENSE) for the full text and third-party attribution.

@@ -149,7 +149,7 @@ The only unit today is `px`. The enum is intentionally narrow; widening it is a 
 pnpm validate
 ```
 
-Run this from `assets/` before committing. It catches:
+Run this from `packages/design/assets/` (or `pnpm --filter @acronis-platform/assets validate` from the repo root) before committing. It catches:
 
 - Manifests that don't conform to `pack.schema.json` (missing required keys, wrong shapes, invalid asset ids, invalid `$file` paths).
 - Rules that don't conform to `rule.schema.json`.
@@ -170,13 +170,12 @@ Per-asset provenance is not tracked in the manifests today — the LICENSE entry
 
 These docs live in this package under `context/`. They are the authoritative reference; this contributing guide is a quick-start.
 
-| Topic                                                                                                           | File                                                 |
-| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Vocabulary — Schema, Rule, Pack, Asset, Variant, Canonical/Default, Value (source/computed)                     | [`./context/glossary.md`](./context/glossary.md)     |
-| The normative contract — DTCG divergence, `$`-prefix discipline, R1–R16 cases, invariants, resolution algorithm | [`./context/spec.md`](./context/spec.md)             |
-| Manifest shape — pack root + asset, the `values` map, derivation, metadata, platform scope                      | [`./context/manifest.md`](./context/manifest.md)     |
-| Pack catalog, on-disk binary layout, id/filename/`$type` naming                                                 | [`./context/packs.md`](./context/packs.md)           |
-| Rule declaration format                                                                                         | [`./context/rules.md`](./context/rules.md)           |
-| Figma → repo direction of truth (no generator today)                                                            | [`./context/figma-sync.md`](./context/figma-sync.md) |
+| Topic                                                                                                           | File                                             |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Vocabulary — Schema, Rule, Pack, Asset, Variant, Canonical/Default, Value (source/computed)                     | [`./context/glossary.md`](./context/glossary.md) |
+| The normative contract — DTCG divergence, `$`-prefix discipline, R1–R16 cases, invariants, resolution algorithm | [`./context/spec.md`](./context/spec.md)         |
+| Manifest shape — pack root + asset, the `values` map, derivation, metadata, platform scope                      | [`./context/manifest.md`](./context/manifest.md) |
+| Pack catalog, on-disk binary layout, id/filename/`$type` naming                                                 | [`./context/packs.md`](./context/packs.md)       |
+| Rule declaration format                                                                                         | [`./context/rules.md`](./context/rules.md)       |
 
-The same context files are indexed in `./CLAUDE.md` for AI agents.
+The same context files are indexed in `./AGENTS.md` for AI agents.

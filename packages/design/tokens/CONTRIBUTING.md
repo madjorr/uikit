@@ -94,7 +94,7 @@ A new `com.acronis.*` key also needs a context-file owner (a `.md` file under `c
 pnpm validate
 ```
 
-Run `pnpm validate` from `tokens/` before committing. It catches:
+Run `pnpm validate` from `packages/design/tokens/` (or `pnpm --filter @acronis-platform/tokens validate` from the repo root) before committing. It catches:
 
 - Token files that don't conform to `tokens.schema.json` (missing `platforms` on a token, unknown `$type`, unknown `$extensions` key prefix, malformed `com.figma.variableId`, etc.).
 
