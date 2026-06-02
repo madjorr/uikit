@@ -1,4 +1,4 @@
-# Contributing to `@acronis/assets`
+# Contributing to `@acronis-platform/assets`
 
 This guide covers the day-to-day authoring tasks: adding an asset, adding a pack, adding a rule, validating your work, and attributing third-party sources. For deeper conceptual context (variants, derivation, naming, glossary) see the `context/` directory in this package — the references at the bottom of this file point you at the right doc per topic.
 

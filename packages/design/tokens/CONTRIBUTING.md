@@ -1,4 +1,4 @@
-# Contributing to `@acronis/tokens`
+# Contributing to `@acronis-platform/tokens`
 
 This guide covers the day-to-day authoring tasks: keeping the tokens and Figma in step (the two [sync pipelines](#sync-pipelines)), adding a new mode, adding a new `$type` or `$extensions` key, and validating your work. For deeper conceptual context (modes, themes, alias chains, the DTCG divergence, the Figma sync) see this package's `context/` directory — the references at the bottom of this file point you at the right doc per topic.
 
