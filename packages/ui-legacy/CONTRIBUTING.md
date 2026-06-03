@@ -3,7 +3,7 @@
 This is the **published** UI library. Bar for changes here is highest in
 the monorepo: tests, stories, and a changeset are required.
 
-See [the root CONTRIBUTING.md](../../../CONTRIBUTING.md) for the
+See [the root CONTRIBUTING.md](../../CONTRIBUTING.md) for the
 umbrella process (fork, branch, commits, PR etiquette). This file is
 the workspace-specific layer.
 

@@ -74,4 +74,4 @@ overwritten on the next regen. Edit the generator scripts instead.
 3. Add a Changeset: `pnpm changeset` (from repo root).
 4. Verify it renders in `apps/demo` and, if it has a doc page, `apps/docs`.
 
-See `../../../context/releasing.md` for the Changesets / publish flow.
+See `../../context/releasing.md` for the Changesets / publish flow.
