@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { toComponentName } from './naming.ts';
 import { PACKS, type PackConfig } from './packs.ts';
 
 const require = createRequire(import.meta.url);
@@ -23,14 +24,6 @@ interface Manifest {
   name: string;
   values: Record<string, { default?: boolean; $rules?: string[] }>;
   assets: Record<string, { values: Record<string, { $file?: string }> }>;
-}
-
-function pascalCase(name: string): string {
-  return name
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
 }
 
 function round(n: number): number {
@@ -165,7 +158,7 @@ async function generatePack(
       svg.match(/stroke-width="([\d.]+)"/)?.[1] ?? masterStroke
     );
 
-    const component = `${pascalCase(assetName)}Icon`;
+    const component = toComponentName(assetName);
     const inner = toInnerJsx(svg, pack, assetName);
     const body =
       `import { PackIcon, type IconProps } from '../icon';\n\n` +
