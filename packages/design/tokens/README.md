@@ -74,7 +74,7 @@ Every key that can appear in a token file. (`Level` names where it lives; `Requi
 | ↳ `com.figma.*`       | `$extensions` | `variableId`, `styleId`, `scopes`, `hiddenFromPublishing`, `gradientTransform`                                                                                                    | no                                               | Figma round-trip metadata. `variableId` and `styleId` are mutually exclusive.                                                                                                                            |
 | `$deprecated`         | group / token | boolean \| string                                                                                                                                                                 | no                                               | Marks the token deprecated; a string carries a reason.                                                                                                                                                   |
 
-Note: a token **should use exactly one** of `$value` (typography composites), per-mode `values` (mode-aware tokens), or `$extensions.com.acronis.units` (single-value primitives). See [`./context/spec.md`](./context/spec.md) for the normative rule; keep the schema in sync so `pnpm validate` enforces it.
+Note: a token **should use exactly one** of `$value` (typography composites), per-mode `values` (mode-aware tokens), or `$extensions.com.acronis.units` (single-value primitives). The schema enforces the mutual-exclusion half — no token may carry **more than one**, and `pnpm validate` rejects any that does. The complementary expectation that every leaf carries **at least one** is normative in [`./context/spec.md`](./context/spec.md) and checked in review (it can't be expressed structurally, since a leaf is defined by carrying one).
 
 ## Token files
 
@@ -176,7 +176,7 @@ tokens/
 
 ## Setup
 
-The JSON files under `tokens/tokens/` are the **source of truth**. You only need this setup if you want to **update tokens from Figma** (change a value, add a token). If you just _consume_ the published JSON, skip it — `pnpm install` is all you need.
+The JSON files under `tokens/` are the **source of truth**. You only need this setup if you want to **update tokens from Figma** (change a value, add a token). If you just _consume_ the published JSON, skip it — `pnpm install` is all you need.
 
 Updates flow from Figma through an AI assistant (Claude) that talks to Figma via the **[Figma Console MCP](https://github.com/southleft/figma-console-mcp)**. Two one-time steps:
 

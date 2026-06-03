@@ -22,7 +22,10 @@
         "^(?!values$|platforms$)[^$]": { "$ref": "#/$defs/Node" }
       },
       "additionalProperties": false,
-      "allOf": [{ "$ref": "#/$defs/LeafRequiresPlatforms" }]
+      "allOf": [
+        { "$ref": "#/$defs/LeafRequiresPlatforms" },
+        { "$ref": "#/$defs/SingleValueCarrier" }
+      ]
     },
     "Node": {
       "type": "object",
@@ -39,7 +42,10 @@
         "^(?!values$|platforms$)[^$]": { "$ref": "#/$defs/Node" }
       },
       "additionalProperties": false,
-      "allOf": [{ "$ref": "#/$defs/LeafRequiresPlatforms" }]
+      "allOf": [
+        { "$ref": "#/$defs/LeafRequiresPlatforms" },
+        { "$ref": "#/$defs/SingleValueCarrier" }
+      ]
     },
     "LeafRequiresPlatforms": {
       "description": "A node is a leaf if it carries `values`, `$value`, or `$extensions.com.acronis.units`. Every leaf MUST declare `platforms`.",
@@ -64,6 +70,38 @@
           }
         ]
       }
+    },
+    "SingleValueCarrier": {
+      "description": "A token carries its value through exactly one carrier: `$value` (DTCG composites), per-mode `values`, or `$extensions.com.acronis.units` (single-value primitives). This enforces the mutual-exclusion half (no token may carry two); the at-least-one expectation for leaves is normative in ../context/spec.md and checked in review.",
+      "allOf": [
+        { "not": { "required": ["$value", "values"] } },
+        {
+          "not": {
+            "allOf": [
+              { "required": ["$value"] },
+              {
+                "required": ["$extensions"],
+                "properties": {
+                  "$extensions": { "required": ["com.acronis.units"] }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "not": {
+            "allOf": [
+              { "required": ["values"] },
+              {
+                "required": ["$extensions"],
+                "properties": {
+                  "$extensions": { "required": ["com.acronis.units"] }
+                }
+              }
+            ]
+          }
+        }
+      ]
     },
     "TokenType": {
       "description": "Known DTCG types currently used in this package. Extend as new $types are introduced.",

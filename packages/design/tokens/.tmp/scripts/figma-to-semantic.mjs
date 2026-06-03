@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Convert the Figma DTCG export into tokens/tokens/semantic.json — semantic colors
+// Convert the Figma DTCG export into tokens/semantic.json — semantic colors
 // that alias palette primitives, plus a semantic typography subtree derived
 // from figma/styles-text.json that aliases typography primitives.
 //
-// Usage: node scripts/figma-to-semantic.mjs [export-file]
+// Usage: node .tmp/scripts/figma-to-semantic.mjs [export-file]
 //   export-file defaults to ./figma/variables.tokens.json
 //   (the path produced by figma-console MCP's figma_export_tokens).
 //
@@ -14,7 +14,7 @@
 // `$extensions.com.figma.styleId` instead, as do all typography leaves.
 // Downstream tooling can discriminate by which key is present.
 //
-// Depends on tokens/tokens/primitives.json being current — palette VariableID lookup
+// Depends on tokens/primitives.json being current — palette VariableID lookup
 // validates that every Figma alias target maps to a real token in our tree,
 // and typography primitives (font-family, font-size, font-weight, line-height,
 // letter-spacing) feed the value→alias map for the typography subtree.
@@ -30,7 +30,7 @@
 //   { name: "body/body-heading", fontName: {family,style}, fontSize, lineHeight,
 //     letterSpacing, textCase, textDecoration, id: "S:1e65…" }
 //
-// Output (tokens/tokens/semantic.json):
+// Output (tokens/semantic.json):
 //   colors.background.surface.primary
 //     → { values: { acronis: "{palette.base}" },
 //         platforms: ["PD"],
@@ -104,7 +104,7 @@ function translateAlias(figmaAlias) {
   const orphan = figmaAlias.match(/^\{__library:(VariableID:[^}]+)\}$/);
   if (orphan) {
     const ourPath = VARID_TO_PATH.get(orphan[1]);
-    if (!ourPath) throw new Error(`orphan VariableID ${orphan[1]} not found in tokens/tokens/primitives.json — refresh primitives first.`);
+    if (!ourPath) throw new Error(`orphan VariableID ${orphan[1]} not found in tokens/primitives.json — refresh primitives first.`);
     return `{${ourPath}}`;
   }
   const m = figmaAlias.match(/^\{([^}]+)\}$/);
@@ -113,7 +113,7 @@ function translateAlias(figmaAlias) {
   return `{palette.${ourParts.join('.')}}`;
 }
 
-// Validate the our-path actually exists in tokens/tokens/primitives.json.
+// Validate the our-path actually exists in tokens/primitives.json.
 function paletteHas(ourPath) {
   let cur = primitives.palette;
   for (const k of ourPath.split('.')) {

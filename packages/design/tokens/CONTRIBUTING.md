@@ -51,7 +51,7 @@ node .tmp/scripts/figma-to-semantic.mjs
 node .tmp/scripts/figma-to-components.mjs
 ```
 
-They write `tokens/primitives.json`, `tokens/semantic.json`, and `tokens/components.json`, and are the canonical formatter for each — don't reformat the output. Finish with `pnpm validate` and review `git diff tokens/tokens/`: only the tokens you touched should have changed.
+They write `tokens/primitives.json`, `tokens/semantic.json`, and `tokens/components.json`, and are the canonical formatter for each — don't reformat the output. Finish with `pnpm validate` and review `git diff tokens/`: only the tokens you touched should have changed.
 
 ### JSON → Figma (change decided in code)
 
@@ -79,7 +79,7 @@ See [`context/manifest.md`](./context/manifest.md) for the list of current and p
 
 These are schema changes — coordinated edits in three places, all in the same commit:
 
-1. **`tokens/schemas/tokens.schema.json`** — extend the `TokenType` enum (new `$type`) or the `Extensions` `properties` map (new `$extensions` key).
+1. **`schemas/tokens.schema.json`** — extend the `TokenType` enum (new `$type`) or the `Extensions` `properties` map (new `$extensions` key).
 2. **`context/spec.md`** (and [`context/spec.md`](./context/spec.md) for any cross-package implications) — document the new key's semantics and reserved-namespace rules.
 3. **Generator(s)** — update whichever of `.tmp/scripts/figma-to-*.mjs` emits the new shape so the next sync produces it.
 
