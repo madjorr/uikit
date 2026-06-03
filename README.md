@@ -45,8 +45,8 @@ Interactive demo application showcasing all components with multiple themes.
 
 ```bash
 # Clone the repository
-git clone https://github.com/acronis/shadcn-uikit.git
-cd shadcn-uikit
+git clone https://github.com/acronis/uikit.git
+cd uikit
 
 # Install dependencies
 pnpm install

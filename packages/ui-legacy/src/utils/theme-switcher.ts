@@ -128,7 +128,7 @@ export function loadPersistedTheme(): ThemeName | null {
  *
  * @example
  * ```typescript
- * import { applyColorMode } from '@acronis/shadcn-uikit/utils/theme-switcher'
+ * import { applyColorMode } from '@acronis-platform/shadcn-uikit'
  *
  * applyColorMode('dark')
  * applyColorMode('system') // Follows system preference
@@ -240,7 +240,7 @@ export function watchSystemColorScheme(): () => void {
  *
  * @example
  * ```typescript
- * import { initializeThemeSystem } from '@acronis/shadcn-uikit/utils/theme-switcher'
+ * import { initializeThemeSystem } from '@acronis-platform/shadcn-uikit'
  *
  * // In your app initialization
  * const cleanup = initializeThemeSystem()
