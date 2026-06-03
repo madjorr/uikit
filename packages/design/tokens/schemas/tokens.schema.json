@@ -21,8 +21,8 @@
       "patternProperties": {
         "^(?!values$|platforms$)[^$]": { "$ref": "#/$defs/Node" }
       },
+      "additionalProperties": false,
       "allOf": [{ "$ref": "#/$defs/LeafRequiresPlatforms" }]
-    },
     "Node": {
       "type": "object",
       "properties": {
@@ -37,6 +37,7 @@
       "patternProperties": {
         "^(?!values$|platforms$)[^$]": { "$ref": "#/$defs/Node" }
       },
+      "additionalProperties": false,
       "allOf": [{ "$ref": "#/$defs/LeafRequiresPlatforms" }]
     },
     "LeafRequiresPlatforms": {

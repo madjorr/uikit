@@ -3,8 +3,7 @@
 This guide covers the day-to-day authoring tasks: keeping the tokens and Figma in step (the two [sync pipelines](#sync-pipelines)), adding a new mode, adding a new `$type` or `$extensions` key, and validating your work. For deeper conceptual context (modes, themes, alias chains, the DTCG divergence, the Figma sync) see this package's `context/` directory — the references at the bottom of this file point you at the right doc per topic.
 
 > [!IMPORTANT]
-> The token JSON under `tokens/tokens/` is the **source of truth** — it's what's committed and what consumers read. **Figma is never the source of truth**; it's a peer surface designers work in. The two are kept in step by an LLM (Claude) via the [Figma Console MCP](https://github.com/southleft/figma-console-mcp), and changes can flow **either direction** — see [Sync pipelines](#sync-pipelines). Either way it ends with `pnpm validate` → commit.
-
+> The token JSON under `tokens/` is the **source of truth** — it's what's committed and what consumers read. **Figma is never the source of truth**; it's a peer surface designers work in. The two are kept in step by an LLM (Claude) via the [Figma Console MCP](https://github.com/southleft/figma-console-mcp), and changes can flow **either direction** — see [Sync pipelines](#sync-pipelines). Either way it ends with `pnpm validate` → commit.
 ## Before you start
 
 - **Set up Figma access** (one-time) — a `FIGMA_ACCESS_TOKEN_ACRONIS` env var + the Figma Console MCP. Step-by-step in the README [Setup](./README.md#setup).
@@ -13,8 +12,7 @@ This guide covers the day-to-day authoring tasks: keeping the tokens and Figma i
 
 ## Sync pipelines
 
-The JSON under `tokens/tokens/` is the **source of truth**; Figma is a peer surface. An LLM (Claude) keeps them in step through the [Figma Console MCP](https://github.com/southleft/figma-console-mcp). Changes flow in **either direction** — pick the one that matches where the change originated. Both end with `pnpm validate` → commit ([Validating](#validating)).
-
+The JSON under `tokens/` is the **source of truth**; Figma is a peer surface. An LLM (Claude) keeps them in step through the [Figma Console MCP](https://github.com/southleft/figma-console-mcp). Changes flow in **either direction** — pick the one that matches where the change originated. Both end with `pnpm validate` → commit ([Validating](#validating)).
 | Pipeline                                            | Use when                       | Tools                                   |
 | --------------------------------------------------- | ------------------------------ | --------------------------------------- |
 | [Figma → JSON](#figma--json-designer-changed-figma) | a designer changed Figma       | LLM + Figma Console + JS helper scripts |

@@ -44,8 +44,7 @@ if (!source.theme) throw new Error(`source ${srcPath} has no "theme" key — exp
 if (!source.units) throw new Error(`source ${srcPath} has no "units" key — expected the Units collection at root.`);
 if (!source.font) throw new Error(`source ${srcPath} has no "font" key — expected the Font collection at root.`);
 
-const OUT = fileURLToPath(new URL('../../tokens/tokens/primitives.json', import.meta.url));
-
+const OUT = fileURLToPath(new URL('../../tokens/primitives.json', import.meta.url));
 // Sidecar metadata: variableId → { scopes, hidden, name }. Provides scopes +
 // hiddenFromPublishing for every variable, which the DTCG export drops.
 const metaFor = makeMetaFor(loadMeta());
@@ -60,7 +59,7 @@ function mapPalettePath(parts) {
 }
 
 const out = {
-  $schema: 'https://www.designtokens.org/schemas/2025.10/format.json',
+  $schema: '../schemas/tokens.schema.json',
   palette: { $type: 'color' },
   font: {
     'font-family': { $type: 'fontFamily' },

@@ -22,9 +22,8 @@ const FONT_STYLE_TO_WEIGHT = {
   'Bold': 700,
 };
 
-export function styleToWeight(style) {
   if (!(style in FONT_STYLE_TO_WEIGHT)) {
-    throw new Error(`unknown fontName.style: ${style} — extend FONT_STYLE_TO_WEIGHT in scripts/lib/typography-map.mjs`);
+    throw new Error(`unknown fontName.style: ${style} — extend FONT_STYLE_TO_WEIGHT in .tmp/scripts/lib/typography-map.mjs`);
   }
   return FONT_STYLE_TO_WEIGHT[style];
 }

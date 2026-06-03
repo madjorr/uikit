@@ -12,8 +12,7 @@
 
 export function makeMetaFor(meta) {
   return (id) => {
-    const m = meta[id];
-    if (!m) throw new Error(`no metadata for ${id} — refresh figma/variables-meta.json`);
+    if (!m) throw new Error(`no metadata for ${id} — refresh .tmp/figma-tokens/variables-meta.json`);
     return { scopes: m.scopes ?? [], hidden: !!m.hidden };
   };
 }

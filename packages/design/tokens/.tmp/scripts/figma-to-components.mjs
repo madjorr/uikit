@@ -59,9 +59,9 @@ const { path: srcPath, source } = loadDtcg(process.argv);
 const figmaComponents = source.brand?.component;
 if (!figmaComponents) throw new Error(`source ${srcPath} has no brand.component subtree.`);
 
-const OUT = fileURLToPath(new URL('../../tokens/tokens/components.json', import.meta.url));
-const PRIMITIVES = fileURLToPath(new URL('../../tokens/tokens/primitives.json', import.meta.url));
-const SEMANTIC = fileURLToPath(new URL('../../tokens/tokens/semantic.json', import.meta.url));
+const OUT = fileURLToPath(new URL('../../tokens/components.json', import.meta.url));
+const PRIMITIVES = fileURLToPath(new URL('../../tokens/primitives.json', import.meta.url));
+const SEMANTIC = fileURLToPath(new URL('../../tokens/semantic.json', import.meta.url));
 const primitives = JSON.parse(fs.readFileSync(PRIMITIVES, 'utf8'));
 const semantic = JSON.parse(fs.readFileSync(SEMANTIC, 'utf8'));
 
@@ -107,7 +107,7 @@ function resolveModeValue($type, modeData, leafPath) {
 }
 
 const out = {
-  $schema: 'https://www.designtokens.org/schemas/2025.10/format.json',
+  $schema: '../schemas/tokens.schema.json',
 };
 
 let count = 0;

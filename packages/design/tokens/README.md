@@ -74,7 +74,7 @@ Every key that can appear in a token file. (`Level` names where it lives; `Requi
 | ↳ `com.figma.*`       | `$extensions` | `variableId`, `styleId`, `scopes`, `hiddenFromPublishing`, `gradientTransform`                                                                                                    | no                                               | Figma round-trip metadata. `variableId` and `styleId` are mutually exclusive.                                                                                                                            |
 | `$deprecated`         | group / token | boolean \| string                                                                                                                                                                 | no                                               | Marks the token deprecated; a string carries a reason.                                                                                                                                                   |
 
-Note: a token uses **exactly one** of `$value` (typography composites), per-mode `values` (mode-aware tokens), or `$extensions.com.acronis.units` (single-value primitives). Distilled from [`schemas/tokens.schema.json`](./schemas/tokens.schema.json); depth in [`./context/spec.md`](./context/spec.md).
+Note: a token **should use exactly one** of `$value` (typography composites), per-mode `values` (mode-aware tokens), or `$extensions.com.acronis.units` (single-value primitives). See [`./context/spec.md`](./context/spec.md) for the normative rule; keep the schema in sync so `pnpm validate` enforces it.
 
 ## Token files
 

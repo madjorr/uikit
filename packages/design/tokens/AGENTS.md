@@ -2,8 +2,7 @@
 
 `@acronis-platform/tokens` — a **published** data-only workspace:
 DTCG-2025.10-conformant design-token JSON. The files under
-`tokens/tokens/` are the source of truth; they're synced from Figma by
-an LLM via the `figma-console` MCP server (see
+`tokens/` are the source of truth; they're synced from Figma by
 [`context/figma-sync.md`](context/figma-sync.md)). Consumes the vendored
 DTCG-2025-10 spec snapshot under `context/DTCG-2025-10/`.
 

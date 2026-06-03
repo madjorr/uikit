@@ -64,10 +64,9 @@ const { path: srcPath, source } = loadDtcg(process.argv);
 const figmaBrandColor = source.brand?.semantic?.colors;
 if (!figmaBrandColor) throw new Error(`source ${srcPath} has no brand.semantic.colors subtree.`);
 
-const OUT = fileURLToPath(new URL('../../tokens/tokens/semantic.json', import.meta.url));
-const PRIMITIVES = fileURLToPath(new URL('../../tokens/tokens/primitives.json', import.meta.url));
+const OUT = fileURLToPath(new URL('../../tokens/semantic.json', import.meta.url));
+const PRIMITIVES = fileURLToPath(new URL('../../tokens/primitives.json', import.meta.url));
 const primitives = JSON.parse(fs.readFileSync(PRIMITIVES, 'utf8'));
-
 const metaFor = makeMetaFor(loadMeta());
 
 // ---------- palette lookup ----------
@@ -132,7 +131,7 @@ const normalizeMode = m => m.toLowerCase().replace(/\s+/g, '-');
 
 // ---------- build output ----------
 const out = {
-  $schema: 'https://www.designtokens.org/schemas/2025.10/format.json',
+  $schema: '../schemas/tokens.schema.json',
   colors: { $type: 'color' },
 };
 
