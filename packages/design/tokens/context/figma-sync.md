@@ -64,8 +64,8 @@ How code Tiers and Groups map to Figma's organization. Use this when translating
 Notes:
 
 - The **Brand** Figma Collection carries both `semantics.colors` and every `components.*` group. They share its mode axis (`acronis` and `brand-b` today; `brand-b` mirrors `acronis` until designers author it — see [`manifest.md`](./manifest.md)).
-- **Semantics/Typography** is not a Variable Collection — it's modeled as Figma Text Styles. Not yet emitted to `tokens/`. See [`manifest.md`](./manifest.md).
-- **Components** are planned, not yet emitted. See [`manifest.md`](./manifest.md).
+- **Semantics/Typography** is not a Variable Collection — it's modeled as Figma Text Styles and emitted to `tokens/semantic.json`. See [`manifest.md`](./manifest.md).
+- **Components** are variables under the Brand collection (`Component/*`) and are emitted to `tokens/components.json`. See [`manifest.md`](./manifest.md).
 
 ### Name canonicalization
 
