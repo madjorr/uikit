@@ -1,0 +1,85 @@
+{
+  "name": "@acronis-platform/icons-react",
+  "version": "0.1.0",
+  "description": "Acronis React icon components, generated from @acronis-platform/design-assets.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./stroke-mono": {
+      "import": "./dist/stroke-mono/index.js",
+      "types": "./dist/stroke-mono/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate-icons.ts",
+    "build": "pnpm run generate && vite build -c vite.lib.config.ts",
+    "dev": "pnpm run generate && vite build -c vite.lib.config.ts --watch",
+    "clean": "rm -rf dist storybook-static node_modules/.vite src/packs *.tsbuildinfo",
+    "typecheck": "pnpm run generate && tsc --noEmit",
+    "test": "pnpm run generate && vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint scripts src/lib src/__tests__ src/__stories__ src/index.ts",
+    "lint:fix": "eslint scripts src/lib src/__tests__ src/__stories__ src/index.ts --fix",
+    "storybook": "pnpm run generate && storybook dev -p 6008",
+    "storybook:build": "pnpm run generate && storybook build"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@acronis-platform/design-assets": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "@storybook/addon-a11y": "10.4.1",
+    "@storybook/addon-docs": "10.4.1",
+    "@storybook/react": "10.4.1",
+    "@storybook/react-vite": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "5.1.1",
+    "eslint": "catalog:",
+    "happy-dom": "20.9.0",
+    "storybook": "10.4.1",
+    "tsx": "4.22.3",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "5.0.1",
+    "vitest": "catalog:"
+  },
+  "keywords": [
+    "react",
+    "icons",
+    "svg",
+    "acronis"
+  ],
+  "author": "Acronis International GmbH",
+  "license": "MIT",
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  }
+}

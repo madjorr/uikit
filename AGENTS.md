@@ -25,6 +25,7 @@ design-data packages are published; the apps are private.
 | ------------------------- | -------------------------------------- | ---------- | ---------------------------------------------------------------------- | --------------------------------------------- |
 | `packages/ui-legacy/`     | `@acronis-platform/shadcn-uikit`       | **yes**    | Vite library, Storybook 10, Vitest + RTL                               | [AGENTS.md](packages/ui-legacy/AGENTS.md)     |
 | `packages/ui-react/`      | `@acronis-platform/ui-react`           | **yes**    | Base UI library, Vite, Storybook 10, Vitest + RTL, Tailwind v4         | [AGENTS.md](packages/ui-react/AGENTS.md)      |
+| `packages/icons-react/`   | `@acronis-platform/icons-react`        | **yes**    | React icons generated from `design-assets`, Vite, Storybook, Vitest    | [AGENTS.md](packages/icons-react/AGENTS.md)   |
 | `apps/demo/`              | `@acronis-platform/shadcn-uikit-demo`  | no         | Vite SPA, React Router v7, Zustand                                     | [AGENTS.md](apps/demo/AGENTS.md)              |
 | `apps/docs/`              | `@acronis-platform/shadcn-uikit-docs`  | no         | Next.js 15 + Fumadocs                                                  | [AGENTS.md](apps/docs/AGENTS.md)              |
 | `apps/demos/`             | `@acronis-platform/shadcn-uikit-demos` | no         | source-only (no build, no dev server)                                  | [AGENTS.md](apps/demos/AGENTS.md)             |
@@ -38,6 +39,9 @@ design-data packages are published; the apps are private.
 - `packages/ui-react/` houses the published next-generation **Base UI**
   library (`@base-ui/react` as a direct dep), themed by
   `@acronis-platform/design-theme`. New component work goes here.
+- `packages/icons-react/` — published React icon components, **generated**
+  from `@acronis-platform/design-assets` (24px masters + scale/stroke rules
+  baked into a `size` prop). Per-pack subpath exports, tree-shakeable.
 - `packages/design-tokens/` and `packages/design-assets/` — the published
   **design-data** packages. These ship JSON (and, for assets, bundled
   binaries) only: no build step, no runtime API. Their one real script

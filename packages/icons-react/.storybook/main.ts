@@ -1,0 +1,21 @@
+import { resolve } from 'path';
+import type { StorybookConfig } from '@storybook/react-vite';
+
+const config: StorybookConfig = {
+  stories: ['../src/**/__stories__/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
+  framework: {
+    name: '@storybook/react-vite',
+    options: {},
+  },
+  async viteFinal(viteConfig) {
+    viteConfig.resolve = viteConfig.resolve || {};
+    viteConfig.resolve.alias = {
+      ...viteConfig.resolve.alias,
+      '@': resolve(process.cwd(), 'src'),
+    };
+    return viteConfig;
+  },
+};
+
+export default config;
