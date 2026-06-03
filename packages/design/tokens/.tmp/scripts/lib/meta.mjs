@@ -17,4 +17,3 @@ export function makeMetaFor(meta) {
     return { scopes: m.scopes ?? [], hidden: !!m.hidden };
   };
 }
-}

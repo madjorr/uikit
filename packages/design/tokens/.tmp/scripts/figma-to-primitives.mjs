@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Convert the Figma DTCG export into tokens/tokens/primitives.json.
+// Convert the Figma DTCG export into tokens/primitives.json.
 //
-// Usage: node scripts/figma-to-primitives.mjs [export-file]
+// Usage: node .tmp/scripts/figma-to-primitives.mjs [export-file]
 //   export-file defaults to ./figma/variables.tokens.json
 //   (the path produced by figma-console MCP's figma_export_tokens).
 //
@@ -10,7 +10,7 @@
 // (the `font` collection). Brand collection is handled separately by
 // figma-to-semantic.mjs.
 //
-// This script is also the canonical formatter for tokens/tokens/primitives.json: a mixed
+// This script is also the canonical formatter for tokens/primitives.json: a mixed
 // layout that no standard JSON formatter reproduces. `.vscode/settings.json`
 // disables format-on-save for JSON in this workspace.
 //
@@ -21,7 +21,7 @@
 //   units.stroke["width-1-6"]      → { $type: "dimension", $value: 1.6 }
 //   font["font-family"].default    → { $type: "fontFamily", $value: "Inter" }
 //
-// Output (tokens/tokens/primitives.json):
+// Output (tokens/primitives.json):
 //   palette.blue["3"]              → { values: {light, dark}, platforms: ["PD"], $extensions: { com.figma.{scopes,variableId} } }
 //   units.gap["0"]                 → { platforms: ["PD"], $extensions: { com.acronis.units: {unit:"px", value:0}, com.figma.{scopes,variableId} } }
 //   units.stroke["1-6"]            → { platforms: ["PD"], $extensions: { com.acronis.units: {unit:"px", value:1.6}, ... } }

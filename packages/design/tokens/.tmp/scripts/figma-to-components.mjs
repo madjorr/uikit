@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Convert the Figma DTCG export into tokens/tokens/components.json — per-component
+// Convert the Figma DTCG export into tokens/components.json — per-component
 // tokens that alias semantic colors (and primitive units), inheriting the
 // Brand mode dimension from semantics (today: acronis; more brands later).
 //
-// Usage: node scripts/figma-to-components.mjs [export-file]
+// Usage: node .tmp/scripts/figma-to-components.mjs [export-file]
 //   export-file defaults to ./figma/variables.tokens.json
 //   (the path produced by figma-console MCP's figma_export_tokens).
 //
@@ -12,7 +12,7 @@
 // components mix `color` and `dimension`. Every leaf carries
 // `$extensions.com.figma.variableId` (no styleId paths in components).
 //
-// Depends on tokens/tokens/primitives.json AND tokens/tokens/semantic.json being current —
+// Depends on tokens/primitives.json AND tokens/semantic.json being current —
 // the alias-map validator checks every translated alias target against those
 // trees and fails the build on unknown targets.
 //
@@ -34,7 +34,7 @@
 //     → { $type: "color", $value: "#244467",
 //          $extensions["figma-console-mcp"].lastSyncedValue.Acronis.literal }
 //
-// Output (tokens/tokens/components.json):
+// Output (tokens/components.json):
 //   breadcrumb.chevron
 //     → { $type: "color",
 //         values: { acronis: "{colors.glyph.on-surface.neutral}" },
