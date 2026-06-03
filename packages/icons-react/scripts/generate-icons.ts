@@ -3,7 +3,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { toComponentName } from './naming.ts';
+import { toComponentName } from '../src/lib/naming.ts';
 import { PACKS, type PackConfig } from './packs.ts';
 
 const require = createRequire(import.meta.url);

@@ -40,6 +40,9 @@ The hand-written code is small:
 
 - Per-pack subpath exports: `@acronis-platform/icons-react/{stroke,solid}-{mono,multi}`.
 - Per-icon **named exports** (`BanIcon`, `ChevronDownIcon`) — tree-shakeable.
+  Naming is `PascalCase(asset) + "Icon"`; numeric-leading asset names take an
+  `Icon` prefix instead (`365-sync` → `Icon365Sync`) so the identifier stays
+  valid. See `src/lib/naming.ts` (a build-time helper, unit-tested, not shipped).
 - A pack `icons` registry + `IconName` type for dynamic lookup (importing
   `icons` pulls the whole pack; prefer named imports for bundle size).
 - Root `.` export ships the `SvgIcon` base + `IconProps` for advanced use.

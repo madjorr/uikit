@@ -1,3 +1,6 @@
+// Build-time helper (used by scripts/generate-icons.ts). Lives in src/ so it
+// shares the main TS project with its test; excluded from the published types.
+
 /** kebab/underscore asset name → PascalCase, e.g. `chevron-down` → `ChevronDown`. */
 export function pascalCase(name: string): string {
   return name

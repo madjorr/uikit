@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { pascalCase, toComponentName } from '../../scripts/naming';
+import { pascalCase, toComponentName } from '../lib/naming';
 
 describe('toComponentName', () => {
   it('suffixes normal names with Icon', () => {

@@ -21,7 +21,13 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['src/**/*'],
-      exclude: ['src/**/*.stories.tsx', 'src/**/*.test.tsx'],
+      exclude: [
+        'src/**/*.stories.tsx',
+        'src/**/*.test.ts',
+        'src/**/*.test.tsx',
+        // build-time generator helper, not part of the runtime API
+        'src/lib/naming.ts',
+      ],
     }),
   ],
   build: {
