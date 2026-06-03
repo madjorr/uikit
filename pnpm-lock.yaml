@@ -570,7 +570,7 @@ importers:
         version: link:../design/assets
       '@acronis-platform/theme':
         specifier: workspace:*
-        version: link:../design/theme
+        version: link:../design-theme
       '@base-ui/react':
         specifier: 'catalog:'
         version: 1.4.1(@date-fns/tz@1.5.0)(@types/react@19.2.15)(date-fns@4.3.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
