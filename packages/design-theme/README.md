@@ -35,14 +35,35 @@ Dictionary to emit:
 
 ```ts
 // JS
-import { light, dark, tokens } from '@acronis-platform/design-theme/js';
+import {
+  brands,
+  defaultBrand,
+  tokens,
+} from '@acronis-platform/design-theme/js';
 ```
 
 CSS custom properties use the `--av-` prefix to stay consistent with the
 legacy library's theming contract.
 
-## Scope (first iteration)
+## Brands
 
-- **Color tokens only**, default `acronis` brand, `light` + `dark` schemes.
-- Deferred: typography/composite tokens, the `brand-b` brand, and a
-  per-scheme SCSS split.
+The default brand (`acronis`) lives on `:root` / `.dark`. Every other brand
+is a class-scoped override carrying only the tokens that differ:
+
+```html
+<html class="brand-b">
+  <!-- brand-b, light -->
+  <html class="brand-b dark">
+    <!-- brand-b, dark -->
+  </html>
+</html>
+```
+
+`brands`, `defaultBrand`, and per-brand `tokens` are exported from `./js`.
+
+## Scope
+
+- **Color tokens only**, `light` + `dark` schemes, all authored brands.
+- Deferred: typography/composite tokens (incl. AI gradient tokens) and a
+  per-scheme SCSS split. (Note: `brand-b` currently produces no overrides —
+  it differs from `acronis` only in the deferred gradient tokens.)

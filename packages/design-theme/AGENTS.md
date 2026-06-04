@@ -35,10 +35,18 @@ Outputs are gitignored — they're build artifacts. `dist/` is what ships.
 
 - CSS custom properties use the **`--av-`** prefix to match the legacy
   library's theming contract.
-- **First-iteration scope: color tokens only**, default `acronis` brand.
-  Typography/composite tokens, the `brand-b` brand, and a per-scheme SCSS
-  split are deferred. The matrix in `build.ts` is structured so adding a
-  brand is one more array entry.
+- **Scope: color tokens only.** Typography/composite tokens (incl. the AI
+  gradient tokens) and a per-scheme SCSS split are deferred.
+- **Brands.** All brands authored in the tokens are emitted (derived via
+  `listBrands()` — currently `acronis`, `brand-b`). The default brand
+  (`acronis`) lives at `:root` / `.dark`; every other brand is a
+  **class-scoped override** (`.brand-b`, `.brand-b.dark`) carrying only the
+  tokens that differ from the default — so identical brands add nothing but
+  a comment. Consumers switch brand by adding the brand class to an
+  ancestor. The JS export ships `brands`, `defaultBrand`, and per-brand
+  `tokens`. (Today `brand-b` resolves identically to `acronis` for emitted
+  color tokens — their only authored difference is in the skipped AI
+  gradient tokens — so it produces no overrides yet.)
 - Don't edit `dist/`. Don't fork token values here — change them upstream
   in `@acronis-platform/design-tokens` and rebuild.
 

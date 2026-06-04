@@ -18,6 +18,9 @@ import semanticJson from '@acronis-platform/design-tokens/tokens/semantic.json' 
 export type Scheme = 'light' | 'dark';
 export type Brand = 'acronis' | 'brand-b';
 
+/** The brand emitted at `:root` (other brands are class-scoped overrides). */
+export const DEFAULT_BRAND = 'acronis';
+
 export interface SdToken {
   value: string;
   type: string;
@@ -94,7 +97,7 @@ const ALIAS_RE = /^\{(.+)\}$/;
  * Resolve the full color token set for one (brand, scheme) into a
  * Style-Dictionary tree with concrete values (no references).
  */
-export function resolveTree(scheme: Scheme, brand: Brand): SdTree {
+export function resolveTree(scheme: Scheme, brand: string): SdTree {
   const primitiveLookup = buildPrimitiveLookup(scheme);
   const tree: SdTree = {};
 
@@ -133,7 +136,7 @@ export function resolveTree(scheme: Scheme, brand: Brand): SdTree {
 /** Flat `kebab-var-name` → value map for the given (brand, scheme). */
 export function resolveFlat(
   scheme: Scheme,
-  brand: Brand
+  brand: string
 ): Record<string, string> {
   const flat: Record<string, string> = {};
   const walk = (node: SdTree, path: string[]): void => {
@@ -147,4 +150,27 @@ export function resolveFlat(
   };
   walk(resolveTree(scheme, brand), []);
   return flat;
+}
+
+/**
+ * Brands authored in the semantic tokens (the keys of each token's `values`),
+ * with the default brand first. Primitives are brand-independent; only
+ * semantic tokens carry a per-brand alias.
+ */
+export function listBrands(): string[] {
+  const brands = new Set<string>();
+  const walk = (node: Record<string, unknown>): void => {
+    if (isLeaf(node)) {
+      const values = node.values as Record<string, unknown> | undefined;
+      if (values) for (const key of Object.keys(values)) brands.add(key);
+      return;
+    }
+    for (const [key, child] of Object.entries(node)) {
+      if (isMeta(key) || typeof child !== 'object' || child === null) continue;
+      walk(child as Record<string, unknown>);
+    }
+  };
+  walk(semantic.colors as Record<string, unknown>);
+  const rest = [...brands].filter((b) => b !== DEFAULT_BRAND).sort();
+  return [DEFAULT_BRAND, ...rest];
 }
