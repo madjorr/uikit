@@ -10,8 +10,8 @@
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "echo \"no tests yet (MVP); run build and inspect dist/\" && exit 0",
-    "test:watch": "echo \"no watch mode (run test)\" && exit 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -25,8 +25,15 @@
     "@acronis-platform/design-assets": "workspace:*",
     "@acronis-platform/design-tokens": "workspace:*",
     "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "ajv": "catalog:",
+    "ajv-formats": "catalog:",
+    "react": "catalog:",
     "style-dictionary": "^5.4.3",
+    "svgo": "^4.0.1",
+    "svgson": "^5.3.1",
     "tsx": "^4.20.0",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }
