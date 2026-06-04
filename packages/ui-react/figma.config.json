@@ -1,0 +1,13 @@
+{
+  "codeConnect": {
+    "parser": "react",
+    "include": ["src/components/**/*.figma.tsx"],
+    "exclude": [
+      "src/components/**/__tests__/**",
+      "src/components/**/__stories__/**"
+    ],
+    "importPaths": {
+      "src/components/ui/*": "@acronis-platform/ui-react"
+    }
+  }
+}

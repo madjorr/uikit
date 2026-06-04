@@ -675,6 +675,64 @@
           }
         }
       },
+      "inverted-surface": {
+        "idle": {
+          "values": {
+            "acronis": {
+              "colorSpace": "hsl",
+              "components": [211.67, 45, 31.37]
+            },
+            "brand-b": {
+              "colorSpace": "hsl",
+              "components": [211.67, 45, 31.37]
+            }
+          },
+          "platforms": ["PD"],
+          "$extensions": { "com.figma.scopes": ["FRAME_FILL"] }
+        },
+        "hover": {
+          "values": {
+            "acronis": {
+              "colorSpace": "hsl",
+              "components": [211.76, 20.48, 48.82]
+            },
+            "brand-b": {
+              "colorSpace": "hsl",
+              "components": [211.76, 20.48, 48.82]
+            }
+          },
+          "platforms": ["PD"],
+          "$extensions": { "com.figma.scopes": ["FRAME_FILL"] }
+        },
+        "active": {
+          "values": {
+            "acronis": {
+              "colorSpace": "hsl",
+              "components": [211.34, 48.2, 27.25]
+            },
+            "brand-b": {
+              "colorSpace": "hsl",
+              "components": [211.34, 48.2, 27.25]
+            }
+          },
+          "platforms": ["PD"],
+          "$extensions": { "com.figma.scopes": ["FRAME_FILL"] }
+        },
+        "disabled": {
+          "values": {
+            "acronis": {
+              "colorSpace": "hsl",
+              "components": [215.84, 100, 15.1]
+            },
+            "brand-b": {
+              "colorSpace": "hsl",
+              "components": [215.84, 100, 15.1]
+            }
+          },
+          "platforms": ["PD"],
+          "$extensions": { "com.figma.scopes": ["FRAME_FILL"] }
+        }
+      },
       "ai": {
         "$type": "gradient",
         "idle": {

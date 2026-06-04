@@ -13,6 +13,7 @@ export default defineConfig({
         'src/**/*.stories.tsx',
         'src/**/*.test.tsx',
         'src/**/*.spec.tsx',
+        'src/**/*.figma.tsx',
       ],
     }),
   ],

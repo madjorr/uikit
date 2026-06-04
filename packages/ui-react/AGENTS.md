@@ -54,10 +54,18 @@ will fail to resolve the missing ones.
 ```
 src/components/ui/<component>/
 ├── <component>.tsx
+├── <component>.figma.tsx        (optional — Figma Code Connect)
 ├── index.ts
 ├── __tests__/<component>.test.tsx
 └── __stories__/<component>.stories.tsx
 ```
+
+## Figma Code Connect
+
+Components can be linked to their Figma counterparts via co-located
+`<component>.figma.tsx` files (excluded from the published build). See
+`context/figma-code-connect.md` for the setup, status markers, and the
+`figma:connect` / `figma:connect:publish` commands.
 
 ## Stack
 
@@ -70,5 +78,7 @@ src/components/ui/<component>/
 2. Add a Storybook story under the component's `__stories__/` covering
    all variants, checked under light **and** dark mode.
 3. Add a Changeset: `pnpm changeset` (from repo root).
+4. (Optional) Add/refresh a `<component>.figma.tsx` Code Connect mapping —
+   see `context/figma-code-connect.md`.
 
 See `../../context/releasing.md` for the Changesets / publish flow.

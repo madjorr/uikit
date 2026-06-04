@@ -14,7 +14,11 @@ describe('Button', () => {
   it('applies the default variant and size classes', () => {
     render(<Button>Save</Button>);
     const button = screen.getByRole('button', { name: 'Save' });
-    expect(button).toHaveClass('bg-primary', 'text-primary-foreground', 'h-8');
+    expect(button).toHaveClass(
+      'bg-btn-primary',
+      'text-btn-primary-foreground',
+      'h-8'
+    );
   });
 
   it('applies variant and size modifiers', () => {
@@ -24,14 +28,14 @@ describe('Button', () => {
       </Button>
     );
     const button = screen.getByRole('button', { name: 'Delete' });
-    expect(button).toHaveClass('bg-destructive', 'h-10');
+    expect(button).toHaveClass('bg-btn-destructive', 'h-10');
   });
 
   it('merges a custom className with the variant classes', () => {
     render(<Button className="custom-class">Save</Button>);
     expect(screen.getByRole('button', { name: 'Save' })).toHaveClass(
       'custom-class',
-      'bg-primary'
+      'bg-btn-primary'
     );
   });
 

@@ -11,10 +11,12 @@ const meta = {
       control: 'select',
       options: [
         'default',
-        'destructive',
-        'outline',
         'secondary',
         'ghost',
+        'destructive',
+        'ai',
+        'inverted',
+        'outline',
         'link',
         'translucent',
       ],
@@ -40,13 +42,12 @@ export const Default: Story = {};
 export const Variants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button variant="default">Default</Button>
-      <Button variant="destructive">Destructive</Button>
-      <Button variant="outline">Outline</Button>
+      <Button variant="default">Primary</Button>
       <Button variant="secondary">Secondary</Button>
       <Button variant="ghost">Ghost</Button>
-      <Button variant="link">Link</Button>
-      <Button variant="translucent">Translucent</Button>
+      <Button variant="destructive">Destructive</Button>
+      <Button variant="ai">Ai</Button>
+      <Button variant="inverted">Inverted</Button>
     </div>
   ),
 };
