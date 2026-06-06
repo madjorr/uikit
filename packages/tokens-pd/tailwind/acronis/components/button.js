@@ -29,7 +29,11 @@ export default {
         "button-ai-idle": "light-dark(rgb(255 0 255 / 0), rgb(255 0 255 / 0))",
         "button-ai-hover": "light-dark(rgb(255 0 255 / 0), rgb(255 0 255 / 0))",
         "button-ai-active": "light-dark(rgb(255 0 255 / 0), rgb(255 0 255 / 0))",
-        "button-ai-disabled": "light-dark(rgb(219 223 229), rgb(219 223 229))"
+        "button-ai-disabled": "light-dark(rgb(219 223 229), rgb(219 223 229))",
+        "button-icon-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-hover": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-active": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))"
       },
       "textColor": {
         "button-primary-idle": "light-dark(rgb(255 255 255), rgb(0 0 0))",
@@ -55,7 +59,11 @@ export default {
         "button-ai-idle": "light-dark(rgb(255 255 255), rgb(255 255 255))",
         "button-ai-hover": "light-dark(rgb(255 255 255), rgb(255 255 255))",
         "button-ai-active": "light-dark(rgb(255 255 255), rgb(255 255 255))",
-        "button-ai-disabled": "light-dark(rgb(154 163 176), rgb(154 163 176))"
+        "button-ai-disabled": "light-dark(rgb(154 163 176), rgb(154 163 176))",
+        "button-icon-idle": "light-dark(rgb(23 99 207), rgb(48 125 232))",
+        "button-icon-hover": "light-dark(rgb(19 84 174), rgb(48 125 232))",
+        "button-icon-active": "light-dark(rgb(6 54 121), rgb(214 228 245))",
+        "button-icon-disabled": "light-dark(rgb(117 174 240), rgb(13 77 165))"
       },
       "borderColor": {
         "button-primary-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
@@ -81,7 +89,11 @@ export default {
         "button-ai-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
         "button-ai-hover": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
         "button-ai-active": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-ai-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))"
+        "button-ai-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-hover": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-active": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
+        "button-icon-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))"
       },
       "fill": {
         "button-primary-idle": "light-dark(rgb(255 255 255), rgb(0 0 0))",
@@ -108,22 +120,10 @@ export default {
         "button-ai-hover": "light-dark(rgb(255 255 255), rgb(255 255 255))",
         "button-ai-active": "light-dark(rgb(255 255 255), rgb(255 255 255))",
         "button-ai-disabled": "light-dark(rgb(154 163 176), rgb(154 163 176))",
-        "button-background-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-background-hover": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-background-active": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-background-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-border-idle": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-border-hover": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-border-active": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
-        "button-border-disabled": "light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0))",
         "button-icon-idle": "light-dark(rgb(23 99 207), rgb(48 125 232))",
         "button-icon-hover": "light-dark(rgb(23 99 207), rgb(48 125 232))",
         "button-icon-active": "light-dark(rgb(23 99 207), rgb(48 125 232))",
-        "button-icon-disabled": "light-dark(rgb(214 228 245), rgb(6 54 121))",
-        "button-label-idle": "light-dark(rgb(23 99 207), rgb(48 125 232))",
-        "button-label-hover": "light-dark(rgb(19 84 174), rgb(48 125 232))",
-        "button-label-active": "light-dark(rgb(6 54 121), rgb(214 228 245))",
-        "button-label-disabled": "light-dark(rgb(117 174 240), rgb(13 77 165))"
+        "button-icon-disabled": "light-dark(rgb(214 228 245), rgb(6 54 121))"
       },
       "spacing": {
         "button-global-border": "1px",

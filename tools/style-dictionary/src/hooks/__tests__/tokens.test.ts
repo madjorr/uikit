@@ -248,6 +248,20 @@ describe('routeColor', () => {
     });
   });
 
+  it('uses the role segment closest to the leaf when multiple role-like words exist', () => {
+    expect(routeColor(['button', 'icon', 'background', 'idle'])).toEqual({
+      namespace: 'backgroundColor',
+      key: 'button-icon-idle',
+    });
+  });
+
+  it('normalizes leading underscores in key segments', () => {
+    expect(routeColor(['tree', '_global', 'background', 'selected'])).toEqual({
+      namespace: 'backgroundColor',
+      key: 'tree-global-selected',
+    });
+  });
+
   it('keeps a descriptive role word in the key (switch.circle.on → backgroundColor)', () => {
     expect(routeColor(['switch', 'circle', 'on'])).toEqual({
       namespace: 'backgroundColor',

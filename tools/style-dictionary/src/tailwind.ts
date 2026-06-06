@@ -100,15 +100,27 @@ const DESC_ROLE: Record<string, ColorNamespace> = {
   title: 'textColor',
 };
 
+const normalizeSegment = (segment: string): string => segment.replace(/^_+/, '');
+const normalizePath = (segments: string[]): string[] => segments.map(normalizeSegment);
+
 /** Map a color token's path to its Tailwind namespace + key (no `ui-`, no role word). */
 export function routeColor(path: string[]): { namespace: ColorNamespace; key: string } {
   if (path[0] === 'colors' && SEMANTIC_ROLE[path[1]]) {
-    return { namespace: SEMANTIC_ROLE[path[1]], key: path.slice(2).join('-') };
+    return {
+      namespace: SEMANTIC_ROLE[path[1]],
+      key: normalizePath(path.slice(2)).join('-'),
+    };
   }
-  for (let i = 1; i < path.length; i++) {
-    if (PURE_ROLE[path[i]])
-      return { namespace: PURE_ROLE[path[i]], key: path.filter((_, j) => j !== i).join('-') };
-    if (DESC_ROLE[path[i]]) return { namespace: DESC_ROLE[path[i]], key: path.join('-') };
+  for (let i = path.length - 1; i >= 1; i--) {
+    if (PURE_ROLE[path[i]]) {
+      return {
+        namespace: PURE_ROLE[path[i]],
+        key: normalizePath(path.filter((_, j) => j !== i)).join('-'),
+      };
+    }
+    if (DESC_ROLE[path[i]]) {
+      return { namespace: DESC_ROLE[path[i]], key: normalizePath(path).join('-') };
+    }
   }
   throw new Error(`Cannot route color token to a Tailwind namespace: ${path.join('.')}`);
 }

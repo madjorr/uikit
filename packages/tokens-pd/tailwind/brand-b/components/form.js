@@ -16,9 +16,9 @@ export default {
         "form-description": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "form-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "form-error": "light-dark(rgb(226 54 54), rgb(226 54 54))",
-        "form-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "form-text": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "form-placeholder": "light-dark(rgb(109 114 120), rgb(109 114 120))",
-        "form-value": "light-dark(rgb(24 25 27), rgb(244 245 245))"
+        "form-text-value": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "form-active": "light-dark(rgb(23 99 207), rgb(48 125 232))",

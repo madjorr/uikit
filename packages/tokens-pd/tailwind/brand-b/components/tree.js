@@ -11,10 +11,10 @@ export default {
       },
       "textColor": {
         "tree-item": "light-dark(rgb(24 25 27), rgb(244 245 245))",
-        "tree-title-color": "light-dark(rgb(255 255 255), rgb(255 255 255))"
+        "tree-title": "light-dark(rgb(255 255 255), rgb(255 255 255))"
       },
       "borderColor": {
-        "tree-_global": "light-dark(rgb(209 240 237), rgb(4 73 67))"
+        "tree-global": "light-dark(rgb(209 240 237), rgb(4 73 67))"
       },
       "fill": {
         "tree-item": "light-dark(rgb(51 153 145), rgb(51 153 145))"
