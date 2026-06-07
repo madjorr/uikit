@@ -1,6 +1,12 @@
 spec_version: '1.0'
 component: ButtonIcon
 
+schematic: |
+  +----------+
+  |   icon   |   root: <button> 32x32
+  +----------+
+  icon: single glyph, 16px, centered
+
 root:
   element: button
   role: button

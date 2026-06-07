@@ -1,6 +1,14 @@
 spec_version: '1.0'
 component: Button
 
+schematic: |
+  +---------------------------------+
+  |  [icon]  label                  |   root: <button>
+  +---------------------------------+
+     ^         ^
+     icon      label (children / text)
+  variant -> colors    size -> height & padding
+
 root:
   element: button
   role: button

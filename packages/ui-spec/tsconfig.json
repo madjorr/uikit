@@ -10,5 +10,5 @@
     "noEmit": true,
     "moduleDetection": "force"
   },
-  "include": ["*.ts", "lib/**/*.ts", "__tests__/**/*.ts"]
+  "include": ["*.ts", "lib/**/*.ts", "scripts/**/*.ts", "__tests__/**/*.ts"]
 }

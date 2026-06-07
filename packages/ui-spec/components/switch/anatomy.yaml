@@ -1,6 +1,13 @@
 spec_version: '1.0'
 component: Switch
 
+schematic: |
+  unchecked                 checked
+  +---------------+         +---------------+
+  | (thumb)       |         |       (thumb) |   root: track
+  +---------------+         +---------------+
+  thumb slides left <-> right with the checked state
+
 root:
   element: button
   role: switch

@@ -32,6 +32,7 @@ export interface AnatomyState {
 export interface AnatomySpec {
   spec_version: string;
   component: string;
+  schematic?: string;
   root: { element: string; role?: string; description?: string };
   parts: AnatomyPart[];
   layout?: {

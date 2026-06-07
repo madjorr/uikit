@@ -39,6 +39,22 @@ describe('every component spec validates against its schema', () => {
   }
 });
 
+describe('anatomy schematic depicts every declared part', () => {
+  for (const name of componentNames) {
+    it(`${name}/anatomy.yaml schematic`, () => {
+      const { anatomy } = loadSpec(name);
+      expect(anatomy.schematic, `${name} has no schematic`).toBeTruthy();
+      const schematic = anatomy.schematic ?? '';
+      for (const part of anatomy.parts) {
+        expect(
+          schematic.includes(part.id),
+          `part "${part.id}" is not labelled in the schematic`
+        ).toBe(true);
+      }
+    });
+  }
+});
+
 /** Pull the string-union members out of an `api.yaml` property `type`. */
 function enumMembers(api: ApiSpec, propName: string): string[] {
   const prop = api.contract.properties.find((p) => p.name === propName);

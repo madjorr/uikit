@@ -8,6 +8,10 @@
   "properties": {
     "spec_version": { "type": "string" },
     "component": { "type": "string" },
+    "schematic": {
+      "type": "string",
+      "description": "ASCII schematic of the layout, labelling the parts."
+    },
     "root": {
       "type": "object",
       "additionalProperties": false,
