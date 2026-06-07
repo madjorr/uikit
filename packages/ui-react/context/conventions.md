@@ -71,7 +71,7 @@ the token is**, not by habit:
 
 ## Theming source of truth
 
-`@acronis-platform/design-tokens` (raw DTCG) → `@acronis-platform/tokens-pd`
+`@acronis-platform/design-tokens` (raw Design Tokens Community Group (DTCG) format) → `@acronis-platform/tokens-pd`
 (generated CSS, built by `tools/style-dictionary`) → this package's `@theme`
 bridge → component utilities. Change colors upstream and rebuild `tokens-pd`;
 don't fork values here.
