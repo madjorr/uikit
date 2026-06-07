@@ -33,9 +33,10 @@ defined deprecation path.
    **plus any new brand Figma introduces** — generation is data-driven, so a new
    Figma brand needs no code change.
 4. **Timeline — Q3 2026 (Jul–Sep).** Consumers need a usable set of base
-   components in Q3 2026. `ui-legacy` coexists **no later than** that point, then
-   goes security-only. **v1 scope** = all basic Base UI components + our
-   design-system components + selected complex components (Table & friends).
+   components in Q3 2026. `ui-legacy` coexists **until the end of Q3 2026** and is
+   **phased out by Q3 2026**; after that it is security-only. **v1 scope** = all
+   basic Base UI components + our design-system components + selected complex
+   components (Table & friends).
 
 ---
 
@@ -43,7 +44,7 @@ defined deprecation path.
 
 | Area             | Package                                         | Version | Maturity                               |
 | ---------------- | ----------------------------------------------- | ------- | -------------------------------------- |
-| Legacy lib       | `shadcn-uikit` (`ui-legacy`)                    | 0.36.3  | Mature — ~82 components → **freeze**   |
+| Legacy lib       | `shadcn-uikit` (`ui-legacy`)                    | 0.36.3  | Mature — 82 components → **freeze**    |
 | **Next-gen lib** | `ui-react`                                      | 0.3.0   | **2/82 components** (Button, Switch)   |
 | Tokens           | `design-tokens`                                 | 0.4.0   | DTCG JSON, Figma-synced, ajv-validated |
 | Token artifacts  | `tokens-pd` (built by `tools/style-dictionary`) | 0.6.0   | Per-brand CSS + Tailwind presets       |
@@ -66,7 +67,7 @@ contract must be stable before the component ladder accelerates.
 
 - [ ] **Theme delivery (mirror legacy)** — `tokens-pd` ships per-brand CSS
       exports that set `--av-*`, consumed by `ui-react` via `@theme inline`
-      (the Tailwind/CSS theme-injection directive used to expose those variables in component styles);
+      (Tailwind CSS v4 theme directive that maps CSS custom properties into theme tokens at build time; see https://tailwindcss.com/docs/theme#referencing-other-variables);
       selected by class toggle. Port the **white-label generation** concept (legacy
       `packages/ui-legacy/scripts/generate-white-label-themes.ts`) onto the Style
       Dictionary output.
