@@ -1,0 +1,27 @@
+# Button
+
+Triggers an action or event. Six styles — `default` (Primary), `secondary`,
+`ghost`, `destructive`, `ai`, `inverted` — across three sizes (`sm`, `default`,
+`lg`).
+
+## When to use
+
+- A user-initiated action: submit, save, cancel, open a dialog, run a command.
+
+## When not to use
+
+- Navigation to another page that should be a real link — compose with the
+  `render` prop so it renders an `<a>` (keeps link semantics), or use a link.
+- An icon-only control — use **ButtonIcon**.
+
+## Example (React — implemented)
+
+```tsx
+import { Button } from '@acronis-platform/ui-react';
+
+<Button variant="default" onClick={onSave}>Save changes</Button>
+<Button variant="destructive" disabled>Delete</Button>
+```
+
+Vue and Web Component implementations are planned and will target the same
+contract — see `api.yaml` `adapters`.

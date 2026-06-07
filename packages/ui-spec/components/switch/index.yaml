@@ -1,0 +1,11 @@
+spec_version: '1.0'
+component: Switch
+name: switch
+status: ready
+category: forms
+description: >-
+  A binary on/off toggle. Wraps the Base UI Switch primitive; the change takes
+  effect immediately (no separate submit).
+since: 0.4.0
+figma:
+  codeConnect: packages/ui-react/src/components/ui/switch/switch.figma.tsx

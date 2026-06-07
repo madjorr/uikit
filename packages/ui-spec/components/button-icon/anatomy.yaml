@@ -1,0 +1,22 @@
+spec_version: '1.0'
+component: ButtonIcon
+
+root:
+  element: button
+  role: button
+  description: 32×32 square icon-only button surface (background, border, radius).
+
+parts:
+  - id: icon
+    description: The single glyph (the button's content), sized to 16px.
+    element: svg
+
+states:
+  - { id: hover, trigger: pointer hover, affects: [root, icon] }
+  - {
+      id: active,
+      trigger: pointer or keyboard activation,
+      affects: [root, icon],
+    }
+  - { id: focus-visible, trigger: keyboard focus, affects: [root] }
+  - { id: disabled, trigger: 'disabled === true', affects: [root, icon] }

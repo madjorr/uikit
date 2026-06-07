@@ -1,0 +1,53 @@
+spec_version: '1.0'
+component: Switch
+
+# References only — values live in @acronis-platform/tokens-pd.
+#
+# KNOWN GAP: these are the design-intended `--ui-switch-*` tokens. The current
+# React implementation is not yet wired to them — it uses the shared semantic
+# bridge (bg-primary / bg-input / bg-background / ring) and `opacity-50` for
+# disabled. Wiring Switch to these tokens (as Button now is) is tracked
+# follow-up work; this spec is the target contract.
+source: '@acronis-platform/tokens-pd'
+
+tokens:
+  - {
+      name: --ui-switch-background-active,
+      affects: root,
+      description: Track fill when on,
+    }
+  - {
+      name: --ui-switch-background-inactive,
+      affects: root,
+      description: Track fill when off,
+    }
+  - { name: --ui-switch-background-disabled, affects: root }
+  - { name: --ui-switch-border-disabled, affects: root }
+  - {
+      name: --ui-switch-circle-on,
+      affects: thumb,
+      description: Thumb fill when on,
+    }
+  - {
+      name: --ui-switch-circle-off,
+      affects: thumb,
+      description: Thumb fill when off,
+    }
+  - { name: --ui-switch-circle-disabled, affects: thumb }
+  - { name: --ui-switch-units-width, affects: root }
+  - { name: --ui-switch-units-height, affects: root }
+  - { name: --ui-switch-units-radius, affects: root }
+  - { name: --ui-switch-units-border, affects: root }
+  - { name: --ui-switch-units-padding-x, affects: root }
+  - { name: --ui-switch-units-padding-y, affects: root }
+  - { name: --ui-switch-units-gap, affects: root }
+  - {
+      name: --ui-switch-units-circle,
+      affects: thumb,
+      description: Thumb diameter,
+    }
+  - {
+      name: --ui-focus-brand,
+      affects: root,
+      description: Focus-visible ring color,
+    }

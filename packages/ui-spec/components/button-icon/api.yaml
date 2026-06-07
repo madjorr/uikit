@@ -1,0 +1,54 @@
+spec_version: '1.0'
+component: ButtonIcon
+
+contract:
+  properties:
+    - name: disabled
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        Disables interaction. Applies the explicit disabled tokens (not opacity)
+        and suppresses click.
+    - name: type
+      type: "'button' | 'submit' | 'reset'"
+      required: false
+      default: "'button'"
+      description: Native HTML button type.
+    - name: aria-label
+      type: string
+      required: false
+      description: >-
+        Accessible name. Required in practice — this control is icon-only and
+        has no text to name it.
+
+  events:
+    - name: click
+      payload: MouseEvent
+      description: Fired on activation. Not fired while disabled.
+
+  content:
+    - name: default
+      description: A single icon (SVG), sized to 16px and tinted via currentColor.
+
+adapters:
+  react:
+    component: ButtonIcon
+    status: implemented
+    import: "import { ButtonIcon } from '@acronis-platform/ui-react'"
+    example: |
+      <ButtonIcon aria-label="Add">
+        <PlusIcon />
+      </ButtonIcon>
+  vue:
+    element: AvButtonIcon
+    status: planned
+    import: "import { AvButtonIcon } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvButtonIcon aria-label="Add"><PlusIcon /></AvButtonIcon>
+  web-components:
+    element: ui-button-icon
+    status: planned
+    import: "import '@acronis-platform/ui-wc/button-icon'"
+    example: |
+      <ui-button-icon aria-label="Add"><!-- icon --></ui-button-icon>

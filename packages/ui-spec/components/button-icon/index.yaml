@@ -1,0 +1,13 @@
+spec_version: '1.0'
+component: ButtonIcon
+name: button-icon
+status: ready
+category: actions
+description: >-
+  Icon-only button (32×32, 16px glyph). A single visual style with idle, hover,
+  active, and disabled states. Use when an action is represented by an icon
+  alone.
+since: 0.4.0
+figma:
+  node: '1210-918'
+  codeConnect: packages/ui-react/src/components/ui/button-icon/button-icon.figma.tsx

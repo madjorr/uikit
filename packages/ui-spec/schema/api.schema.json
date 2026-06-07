@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acronis.com/ui-spec/api.schema.json",
+  "title": "Component spec — api.yaml",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "component", "contract", "adapters"],
+  "properties": {
+    "spec_version": { "type": "string" },
+    "component": { "type": "string" },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["properties"],
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "type", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "required": { "type": "boolean" },
+              "default": {},
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "payload": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "signature": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "adapters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["react"],
+      "properties": {
+        "react": { "$ref": "#/$defs/adapter" },
+        "vue": { "$ref": "#/$defs/adapter" },
+        "web-components": { "$ref": "#/$defs/adapter" }
+      }
+    }
+  },
+  "$defs": {
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "component": { "type": "string" },
+        "element": { "type": "string" },
+        "import": { "type": "string" },
+        "example": { "type": "string" },
+        "status": { "enum": ["implemented", "planned"] }
+      }
+    }
+  }
+}

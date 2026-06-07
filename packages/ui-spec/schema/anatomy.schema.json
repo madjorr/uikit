@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acronis.com/ui-spec/anatomy.schema.json",
+  "title": "Component spec — anatomy.yaml",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "component", "root", "parts"],
+  "properties": {
+    "spec_version": { "type": "string" },
+    "component": { "type": "string" },
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["element"],
+      "properties": {
+        "element": { "type": "string" },
+        "role": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "element": { "type": "string" },
+          "optional": { "type": "boolean" },
+          "visible_when": { "type": "string" }
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "direction": { "type": "string" },
+        "align": { "type": "string" },
+        "order": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "trigger"],
+        "properties": {
+          "id": { "type": "string" },
+          "trigger": { "type": "string" },
+          "affects": { "type": "array", "items": { "type": "string" } },
+          "exclusive_with": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

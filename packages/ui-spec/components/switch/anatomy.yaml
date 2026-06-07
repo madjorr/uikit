@@ -1,0 +1,28 @@
+spec_version: '1.0'
+component: Switch
+
+root:
+  element: button
+  role: switch
+  description: >-
+    The track. A button with role="switch" and aria-checked reflecting state
+    (Base UI Switch.Root).
+
+parts:
+  - id: thumb
+    description: The sliding knob that moves between the off and on positions.
+    element: span
+
+states:
+  - {
+      id: checked,
+      trigger: 'checked === true (data-[checked])',
+      affects: [root, thumb],
+    }
+  - {
+      id: unchecked,
+      trigger: 'checked === false (data-[unchecked])',
+      affects: [root, thumb],
+    }
+  - { id: focus-visible, trigger: keyboard focus, affects: [root] }
+  - { id: disabled, trigger: 'disabled === true', affects: [root, thumb] }

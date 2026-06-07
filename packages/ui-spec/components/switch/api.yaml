@@ -1,0 +1,63 @@
+spec_version: '1.0'
+component: Switch
+
+contract:
+  properties:
+    - name: checked
+      type: boolean
+      required: false
+      description: Controlled checked state. Pair with the change event.
+    - name: default-checked
+      type: boolean
+      required: false
+      default: false
+      description: Initial checked state when uncontrolled.
+    - name: disabled
+      type: boolean
+      required: false
+      default: false
+      description: Disables interaction.
+    - name: required
+      type: boolean
+      required: false
+      default: false
+      description: Marks the control as required in a form.
+    - name: name
+      type: string
+      required: false
+      description: Form field name submitted with the form.
+    - name: value
+      type: string
+      required: false
+      description: Form field value when checked.
+
+  events:
+    - name: checked-change
+      payload: boolean
+      description: >-
+        Fired when the checked state changes (React: `onCheckedChange`). Payload
+        is the new checked value.
+
+adapters:
+  react:
+    component: Switch
+    status: implemented
+    import: "import { Switch } from '@acronis-platform/ui-react'"
+    example: |
+      <Switch
+        aria-label="Wireless"
+        checked={enabled}
+        onCheckedChange={setEnabled}
+      />
+  vue:
+    component: AvSwitch
+    status: planned
+    import: "import { AvSwitch } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvSwitch v-model="enabled" aria-label="Wireless" />
+  web-components:
+    element: ui-switch
+    status: planned
+    import: "import '@acronis-platform/ui-wc/switch'"
+    example: |
+      <ui-switch aria-label="Wireless"></ui-switch>

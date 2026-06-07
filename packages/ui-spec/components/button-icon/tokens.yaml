@@ -1,0 +1,25 @@
+spec_version: '1.0'
+component: ButtonIcon
+
+# References only — values live in @acronis-platform/tokens-pd. Geometry (32×32,
+# 4px radius, 1px border) comes from layout utilities, not tokens.
+source: '@acronis-platform/tokens-pd'
+
+tokens:
+  - { name: --ui-button-icon-background-idle, affects: root }
+  - { name: --ui-button-icon-background-hover, affects: root }
+  - { name: --ui-button-icon-background-active, affects: root }
+  - { name: --ui-button-icon-background-disabled, affects: root }
+  - { name: --ui-button-icon-icon-idle, affects: icon }
+  - { name: --ui-button-icon-icon-hover, affects: icon }
+  - { name: --ui-button-icon-icon-active, affects: icon }
+  - { name: --ui-button-icon-icon-disabled, affects: icon }
+  - { name: --ui-button-icon-border-idle, affects: root }
+  - { name: --ui-button-icon-border-hover, affects: root }
+  - { name: --ui-button-icon-border-active, affects: root }
+  - { name: --ui-button-icon-border-disabled, affects: root }
+  - {
+      name: --ui-focus-brand,
+      affects: root,
+      description: Focus-visible ring color,
+    }

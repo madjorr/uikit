@@ -1,0 +1,70 @@
+spec_version: '1.0'
+component: Button
+
+# Framework-agnostic contract. Property names are neutral; see `adapters` for
+# the per-framework syntax. Native button attributes (e.g. type, disabled,
+# autofocus, name, value) pass through in every framework.
+contract:
+  properties:
+    - name: variant
+      type: "'default' | 'secondary' | 'ghost' | 'destructive' | 'ai' | 'inverted'"
+      required: false
+      default: "'default'"
+      description: >-
+        Visual style. `default` is the Figma "Primary" style. Each variant maps
+        to its dedicated `--ui-button-<style>-*` tokens.
+    - name: size
+      type: "'default' | 'sm' | 'lg'"
+      required: false
+      default: "'default'"
+      description: Controls height and horizontal padding. `default` is 32px tall.
+    - name: disabled
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        Disables interaction. Applies the design's explicit per-variant disabled
+        tokens (not an opacity dim) and suppresses click.
+    - name: type
+      type: "'button' | 'submit' | 'reset'"
+      required: false
+      default: "'button'"
+      description: Native HTML button type.
+
+  events:
+    - name: click
+      payload: MouseEvent
+      description: Fired on activation (pointer or keyboard). Not fired while disabled.
+
+  content:
+    - name: default
+      description: >-
+        Label content. Plain text and/or an icon. An SVG child is auto-sized to
+        16px and tinted with the label color.
+
+adapters:
+  react:
+    component: Button
+    status: implemented
+    import: "import { Button } from '@acronis-platform/ui-react'"
+    example: |
+      <Button variant="default" onClick={onSave}>
+        Save changes
+      </Button>
+
+      {/* Polymorphic: render as another element via the `render` prop */}
+      <Button render={<a href="/docs" />} variant="ghost">Docs</Button>
+
+  vue:
+    component: AvButton
+    status: planned
+    import: "import { AvButton } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvButton variant="default" @click="onSave">Save changes</AvButton>
+
+  web-components:
+    element: ui-button
+    status: planned
+    import: "import '@acronis-platform/ui-wc/button'"
+    example: |
+      <ui-button variant="default">Save changes</ui-button>

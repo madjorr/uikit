@@ -1,0 +1,61 @@
+# AGENTS.md — `packages/ui-spec`
+
+`@acronis-platform/ui-spec` — **framework-agnostic** component specifications for
+the Acronis UI Kit. **Private** (not published). This is the **Phase 0 spike** of
+the proposal in [`context/component-specs-proposal.md`](../../context/component-specs-proposal.md):
+prove the spec format and its conformance check on three existing components
+(`button`, `button-icon`, `switch`) before scaling.
+
+Repo-wide rules live in the repo root `./context/`. This file documents only
+what's specific to this workspace.
+
+## What a spec is
+
+A spec describes **what a component is** — contract, anatomy, states, behavior,
+accessibility, and the tokens it consumes — independent of any framework. React
+is the only implementation today; the contract is written so a future Vue or Web
+Component implementation can target the same definition.
+
+## The 7-file format
+
+One directory per component under `components/<name>/`:
+
+| File               | Format | Purpose                                                               |
+| ------------------ | ------ | --------------------------------------------------------------------- |
+| `index.yaml`       | YAML   | Identity: component name, status, category, dependencies, Figma link  |
+| `anatomy.yaml`     | YAML   | Root element/role, named parts, visual states + triggers              |
+| `api.yaml`         | YAML   | Framework-agnostic contract (props/events/content/methods) + adapters |
+| `tokens.yaml`      | YAML   | **References** to the `--ui-*` tokens consumed — see below            |
+| `behavior.md`      | MD     | Given/When/Then behavior scenarios (incl. cross-component)            |
+| `accessibility.md` | MD     | ARIA, keyboard map, focus, contrast                                   |
+| `README.md`        | MD     | When to use / not use, quick examples                                 |
+
+YAML for structured/queryable data, Markdown for prose. The four YAML files are
+validated against JSON Schemas in `schema/`.
+
+## Tokens by reference — never duplicate values
+
+`tokens.yaml` lists **only token names** (`--ui-button-primary-background-idle`),
+the part each affects, and a description. **It must not restate values** — those
+live in `@acronis-platform/tokens-pd` (generated from `@acronis-platform/design-tokens`).
+The token-schema forbids a `value`/`default` key to enforce this. This is the
+single-source-of-truth rule that keeps specs from drifting from the design data.
+
+## Validation + conformance (this is the point)
+
+`pnpm --filter @acronis-platform/ui-spec test` runs `__tests__/specs.test.ts`:
+
+1. **Schema validation** — every YAML file validates against its `schema/*.json`.
+2. **Conformance** — for components built with `cva`, the spec's `api.yaml`
+   `variant`/`size` enums must match the actual `cva` keys in the
+   `@acronis-platform/ui-react` source (parsed via the TypeScript AST in
+   `lib/cva.ts`). This is what stops the spec from rotting into stale docs.
+
+When you add or change a component spec, run `test`. When you change a
+component's variants in `ui-react`, update its `api.yaml` or the conformance
+test fails.
+
+## Scripts
+
+`build`/`dev`/`clean` are no-ops (ships source YAML/MD). `lint`/`typecheck` run
+eslint/tsc over the `.ts` tooling. `test` (= `validate`) runs the vitest suite.

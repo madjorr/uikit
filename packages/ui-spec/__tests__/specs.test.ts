@@ -1,0 +1,62 @@
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import Ajv2020 from 'ajv/dist/2020';
+import { describe, expect, it } from 'vitest';
+
+import { extractCvaGroups } from '../lib/cva';
+import {
+  YAML_FILES,
+  listComponentNames,
+  loadSpec,
+  readSchema,
+  readYaml,
+  specFilePath,
+  type YamlFile,
+} from '../lib/load';
+import type { ApiSpec } from '../types';
+
+const ajv = new Ajv2020({ strict: false, allErrors: true });
+const validators = Object.fromEntries(
+  YAML_FILES.map((file) => [file, ajv.compile(readSchema(file))])
+) as Record<YamlFile, ReturnType<typeof ajv.compile>>;
+
+const componentNames = listComponentNames();
+const HERE = dirname(fileURLToPath(import.meta.url));
+
+describe('every component spec validates against its schema', () => {
+  for (const name of componentNames) {
+    for (const file of YAML_FILES) {
+      it(`${name}/${file}.yaml`, () => {
+        const data = readYaml<unknown>(specFilePath(name, file));
+        const valid = validators[file](data);
+        expect(
+          valid,
+          ajv.errorsText(validators[file].errors, { separator: '\n' })
+        ).toBe(true);
+      });
+    }
+  }
+});
+
+/** Pull the string-union members out of an `api.yaml` property `type`. */
+function enumMembers(api: ApiSpec, propName: string): string[] {
+  const prop = api.contract.properties.find((p) => p.name === propName);
+  if (!prop) return [];
+  return [...prop.type.matchAll(/'([^']+)'/g)].map((m) => m[1]).sort();
+}
+
+describe('cva ↔ contract conformance', () => {
+  it('Button: api.yaml variant/size enums match the cva keys in ui-react', () => {
+    const source = readFileSync(
+      resolve(HERE, '../../ui-react/src/components/ui/button/button.tsx'),
+      'utf8'
+    );
+    const groups = extractCvaGroups(source);
+    const api = loadSpec('button').api;
+
+    expect(Object.keys(groups).sort()).toEqual(['size', 'variant']);
+    expect(groups.variant.sort()).toEqual(enumMembers(api, 'variant'));
+    expect(groups.size.sort()).toEqual(enumMembers(api, 'size'));
+  });
+});

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acronis.com/ui-spec/index.schema.json",
+  "title": "Component spec — index.yaml",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "component",
+    "name",
+    "status",
+    "category",
+    "description"
+  ],
+  "properties": {
+    "spec_version": { "type": "string" },
+    "component": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "status": { "enum": ["draft", "ready", "stable", "deprecated"] },
+    "category": { "type": "string" },
+    "description": { "type": "string" },
+    "since": { "type": "string" },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "components": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "figma": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": { "type": "string" },
+        "codeConnect": { "type": "string" }
+      }
+    }
+  }
+}

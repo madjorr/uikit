@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acronis.com/ui-spec/tokens.schema.json",
+  "title": "Component spec — tokens.yaml (references only, no values)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "component", "source", "tokens"],
+  "properties": {
+    "spec_version": { "type": "string" },
+    "component": { "type": "string" },
+    "source": { "type": "string" },
+    "tokens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^--ui-[a-z0-9-]+$" },
+          "affects": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}
