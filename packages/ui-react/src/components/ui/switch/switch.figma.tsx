@@ -5,14 +5,18 @@ import figma from '@figma/code-connect';
 
 import { Switch } from './switch';
 
-figma.connect(Switch, 'FIGMA_NODE_URL', {
-  props: {
-    // Figma variant property names are case-sensitive — verify them in the
-    // component's Properties panel and adjust the left-hand keys if needed.
-    checked: figma.boolean('Checked'),
-    disabled: figma.boolean('Disabled'),
-  },
-  example: ({ checked, disabled }) => (
-    <Switch defaultChecked={checked} disabled={disabled} />
-  ),
-});
+figma.connect(
+  Switch,
+  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/shadcn-uikit?node-id=1838-1908&m=dev',
+  {
+    props: {
+      // Figma variant property names are case-sensitive — verify them in the
+      // component's Properties panel and adjust the left-hand keys if needed.
+      checked: figma.boolean('Checked'),
+      disabled: figma.boolean('Disabled'),
+    },
+    example: ({ checked, disabled }) => (
+      <Switch defaultChecked={checked} disabled={disabled} />
+    ),
+  }
+);

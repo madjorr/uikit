@@ -1,0 +1,60 @@
+# Publishes Figma Code Connect mappings for @acronis-platform/ui-react.
+#
+# Code Connect is push-based: Figma never pulls from the repo. This workflow IS
+# the "sync" — on every merge to main it runs `figma connect publish`, which
+# parses the co-located `*.figma.tsx` files and uploads the component → Figma
+# node mappings so designers see real ui-react snippets in Dev Mode.
+#
+# Required secret:
+#   FIGMA_ACCESS_TOKEN   A Figma personal access token with Code Connect write
+#                        scope (figd_…). Add it under the repo/org Actions
+#                        secrets. See packages/ui-react/context/figma-code-connect.md.
+#
+# Manual run: Actions tab → "Figma Code Connect" → Run workflow.
+name: Figma Code Connect
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/ui-react/src/components/**/*.figma.tsx'
+      - 'packages/ui-react/figma.config.json'
+      - '.github/workflows/figma-code-connect.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    # Don't run on forks — only the canonical repo holds the Figma token.
+    if: github.repository == 'acronis/uikit'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Fail fast: parse all *.figma.tsx and surface mapping errors before any
+      # upload. `figma connect publish` re-parses, but this keeps the failure
+      # mode obvious (validation vs. network/auth).
+      - name: Validate Code Connect
+        run: pnpm --filter @acronis-platform/ui-react figma:connect
+
+      - name: Publish Code Connect to Figma
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+        run: pnpm --filter @acronis-platform/ui-react figma:connect:publish
