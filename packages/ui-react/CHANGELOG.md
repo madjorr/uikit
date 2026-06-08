@@ -1,5 +1,12 @@
 # @acronis-platform/ui-react
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @acronis-platform/tokens-pd@0.7.2
+
 ## 0.5.0
 
 ### Minor Changes

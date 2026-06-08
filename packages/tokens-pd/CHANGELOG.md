@@ -1,5 +1,12 @@
 # @acronis-platform/tokens-pd
 
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [[`848c600`](https://github.com/acronis/uikit/commit/848c60036c7591cf1d1ab01996147660c3cca7d5)]:
+  - @acronis-platform/design-tokens@0.6.0
+
 ## 0.7.1
 
 ### Patch Changes

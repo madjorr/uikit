@@ -1,5 +1,13 @@
 # @acronis-platform/kitchen-sink
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @acronis-platform/tokens-pd@0.7.2
+  - @acronis-platform/ui-react@0.5.1
+
 ## 0.1.3
 
 ### Patch Changes
