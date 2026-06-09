@@ -1,5 +1,16 @@
 # @acronis-platform/ui-react
 
+## 0.11.0
+
+### Minor Changes
+
+- [#245](https://github.com/acronis/uikit/pull/245) [`0e5760d`](https://github.com/acronis/uikit/commit/0e5760d80ac4728826e20e7a0d64571a44a3c86b) Thanks [@leonid](https://github.com/leonid)! - Add `Select`: a composable select control built on the Base UI Select primitive
+  and themed with the shared `--ui-form-*` token tier. Exports `Select`,
+  `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectItem`, `SelectGroup`, and
+  `SelectGroupLabel`, with single/multiple selection, keyboard support, and a
+  trigger matching the Figma "Select" states (idle / hover / open+focus /
+  disabled).
+
 ## 0.10.0
 
 ### Minor Changes
