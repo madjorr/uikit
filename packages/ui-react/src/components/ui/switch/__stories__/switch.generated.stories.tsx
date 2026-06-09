@@ -37,7 +37,7 @@ export const FocusVisible: Story = {
 export const Toggle: Story = {
   render: () => <Switch aria-label="Toggle" />,
   play: async ({ canvasElement }) => {
-    const el = canvasElement.querySelector('[role="switch"]');
+    const el = canvasElement.querySelector('[role="switch"], button');
     if (el) await userEvent.click(el as HTMLElement);
   },
 };
