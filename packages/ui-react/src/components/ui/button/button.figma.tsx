@@ -24,9 +24,18 @@ figma.connect(
       disabled: figma.enum('State', {
         Disabled: true,
       }),
+      // The Figma button has two same-named "Icon" properties — a boolean
+      // visibility toggle and an instance-swap slot — so they're referenced by
+      // their full `Name#id` to disambiguate. When the toggle is on, the
+      // swapped icon instance is rendered as the button's leading child.
+      icon: figma.boolean('Icon#1173:2', {
+        true: figma.instance('Icon#1173:0'),
+        false: undefined,
+      }),
     },
-    example: ({ variant, disabled }) => (
+    example: ({ variant, disabled, icon }) => (
       <Button variant={variant} disabled={disabled}>
+        {icon}
         Label
       </Button>
     ),
