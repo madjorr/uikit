@@ -140,6 +140,7 @@ export function routeColor(path: string[]): { namespace: ColorNamespace; key: st
   const isSemantic = SEMANTIC_ROOTS.has(path[0]);
   const roleMap = isSemantic ? SEMANTIC_ROLE_MAP : COMPONENT_ROLE_MAP;
   for (let i = path.length - 1; i >= 0; i--) {
+    if (path[i] === WRAPPER_SEGMENT) continue;
     const namespace = roleMap.get(path[i]);
     if (namespace) {
       let key = '';
