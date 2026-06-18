@@ -31,7 +31,7 @@
     },
     "assets": {
       "type": "object",
-      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "propertyNames": { "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$" },
       "additionalProperties": { "$ref": "#/$defs/Asset" },
       "description": "Flat map of asset id -> Asset. Categorization lives in metadata, not in structure. Asset ids MAY start with a digit (illustrations pack uses 4-digit catalog ids)."
     }
@@ -91,7 +91,7 @@
                     "properties": {
                       "$file": {
                         "type": "string",
-                        "pattern": "^\\./packs/[a-z0-9-]+/[a-z0-9-]+\\.(png|webp)$"
+                        "pattern": "^\\./packs/[a-z0-9-]+/[a-zA-Z0-9-]+\\.(png|webp)$"
                       }
                     }
                   }
@@ -116,7 +116,7 @@
                     "properties": {
                       "$file": {
                         "type": "string",
-                        "pattern": "^\\./packs/[a-z0-9-]+/[a-z0-9-]+\\.svg$"
+                        "pattern": "^\\./packs/[a-z0-9-]+/[a-zA-Z0-9-]+\\.svg$"
                       }
                     }
                   }
@@ -160,7 +160,7 @@
       "properties": {
         "$file": {
           "type": "string",
-          "pattern": "^\\./packs/[a-z0-9-]+/[a-z0-9-]+\\.(svg|png|webp)$",
+          "pattern": "^\\./packs/[a-z0-9-]+/[a-zA-Z0-9-]+\\.(svg|png|webp)$",
           "description": "Project-relative path to the on-disk binary. MUST resolve under ./packs/<pack>/. File-extension / $type consistency (svg for vector, png|webp for raster) is a runtime invariant, not enforced by the schema."
         },
         "default": {
