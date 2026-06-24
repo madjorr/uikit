@@ -315,8 +315,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-1}",
-            "deep-sky": "{palette.electricblue.blue-1}"
+            "acronis": "{palette.electricblue.1}",
+            "deep-sky": "{palette.electricblue.1}"
           }
         },
         "info-hover": {
@@ -326,8 +326,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-2}",
-            "deep-sky": "{palette.electricblue.blue-2}"
+            "acronis": "{palette.electricblue.2}",
+            "deep-sky": "{palette.electricblue.2}"
           }
         },
         "info-pressed": {
@@ -337,8 +337,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-3}",
-            "deep-sky": "{palette.electricblue.blue-3}"
+            "acronis": "{palette.electricblue.3}",
+            "deep-sky": "{palette.electricblue.3}"
           }
         },
         "neutral": {
@@ -540,8 +540,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-7-primary}",
-            "deep-sky": "{palette.electricblue.blue-7-primary}"
+            "acronis": "{palette.electricblue.7}",
+            "deep-sky": "{palette.electricblue.7}"
           }
         },
         "info-hover": {
@@ -551,8 +551,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-8}",
-            "deep-sky": "{palette.electricblue.blue-8}"
+            "acronis": "{palette.electricblue.8}",
+            "deep-sky": "{palette.electricblue.8}"
           }
         },
         "info-pressed": {
@@ -562,8 +562,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-9}",
-            "deep-sky": "{palette.electricblue.blue-9}"
+            "acronis": "{palette.electricblue.9}",
+            "deep-sky": "{palette.electricblue.9}"
           }
         },
         "neutral": {
@@ -833,8 +833,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-4}",
-            "deep-sky": "{palette.electricblue.blue-4}"
+            "acronis": "{palette.electricblue.4}",
+            "deep-sky": "{palette.electricblue.4}"
           }
         },
         "info-strong": {
@@ -844,8 +844,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-8}",
-            "deep-sky": "{palette.electricblue.blue-8}"
+            "acronis": "{palette.electricblue.8}",
+            "deep-sky": "{palette.electricblue.8}"
           }
         },
         "neutral": {
@@ -1167,8 +1167,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-11}",
-            "deep-sky": "{palette.electricblue.blue-11}"
+            "acronis": "{palette.electricblue.11}",
+            "deep-sky": "{palette.electricblue.11}"
           }
         },
         "neutral": {
@@ -1189,8 +1189,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-11}",
-            "deep-sky": "{palette.electricblue.blue-11}"
+            "acronis": "{palette.electricblue.11}",
+            "deep-sky": "{palette.electricblue.11}"
           }
         },
         "success": {
@@ -1485,8 +1485,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-11}",
-            "deep-sky": "{palette.electricblue.blue-11}"
+            "acronis": "{palette.electricblue.11}",
+            "deep-sky": "{palette.electricblue.11}"
           }
         },
         "link": {
@@ -1496,8 +1496,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-11}",
-            "deep-sky": "{palette.electricblue.blue-11}"
+            "acronis": "{palette.electricblue.11}",
+            "deep-sky": "{palette.electricblue.11}"
           }
         },
         "link-disabled": {
@@ -1507,8 +1507,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-5}",
-            "deep-sky": "{palette.electricblue.blue-5}"
+            "acronis": "{palette.electricblue.5}",
+            "deep-sky": "{palette.electricblue.5}"
           }
         },
         "link-hover": {
@@ -1518,8 +1518,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-13-brand}",
-            "deep-sky": "{palette.electricblue.blue-13-brand}"
+            "acronis": "{palette.electricblue.13}",
+            "deep-sky": "{palette.electricblue.13}"
           }
         },
         "link-pressed": {
@@ -1529,8 +1529,8 @@
           },
           "platforms": ["PD"],
           "values": {
-            "acronis": "{palette.electricblue.blue-14}",
-            "deep-sky": "{palette.electricblue.blue-14}"
+            "acronis": "{palette.electricblue.14}",
+            "deep-sky": "{palette.electricblue.14}"
           }
         },
         "neutral": {
