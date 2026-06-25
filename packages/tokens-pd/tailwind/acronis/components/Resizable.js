@@ -6,8 +6,8 @@ export default {
   theme: {
     extend: {
       "borderColor": {
-        "resizable-border-active": "light-dark(rgb(23 99 207), rgb(48 125 232))",
-        "resizable-border-hover": "light-dark(rgb(23 99 207), rgb(48 125 232))"
+        "resizable-border-active": "light-dark(rgb(23 99 207), rgb(71 152 245))",
+        "resizable-border-hover": "light-dark(rgb(23 99 207), rgb(71 152 245))"
       },
       "spacing": {
         "resizable-bar-height": "32px",

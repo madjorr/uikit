@@ -7,14 +7,14 @@ export default {
     extend: {
       "backgroundColor": {
         "input-search-box-disabled": "light-dark(rgb(246 246 247), rgb(246 246 247))",
-        "input-search-box-hover": "light-dark(rgb(255 255 255), rgb(0 0 0))",
-        "input-search-box-idle": "light-dark(rgb(255 255 255), rgb(0 0 0))"
+        "input-search-box-hover": "light-dark(rgb(255 255 255), rgb(31 32 34))",
+        "input-search-box-idle": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
         "input-search-placeholder-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
         "input-search-placeholder-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
         "input-search-placeholder-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-search-required": "light-dark(rgb(226 54 54), rgb(226 54 54))",
+        "input-search-required": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-search-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
         "input-search-value-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
         "input-search-value-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))"

@@ -7,8 +7,8 @@ export default {
     extend: {
       "backgroundColor": {
         "input-text-global-box-disabled": "light-dark(rgb(246 246 247), rgb(246 246 247))",
-        "input-text-global-box-hover": "light-dark(rgb(255 255 255), rgb(0 0 0))",
-        "input-text-global-box-idle": "light-dark(rgb(255 255 255), rgb(0 0 0))"
+        "input-text-global-box-hover": "light-dark(rgb(255 255 255), rgb(31 32 34))",
+        "input-text-global-box-idle": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
         "input-text-global-label-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
@@ -17,18 +17,18 @@ export default {
         "input-text-global-placeholder-disabled": "light-dark(rgb(54 65 74), rgb(54 65 74))",
         "input-text-global-placeholder-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
         "input-text-global-placeholder-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-text-global-required": "light-dark(rgb(226 54 54), rgb(226 54 54))",
+        "input-text-global-required": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-text-global-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
         "input-text-global-value-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
         "input-text-global-value-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "input-text-error-msg-error": "light-dark(rgb(226 54 54), rgb(226 54 54))",
+        "input-text-error-msg-error": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-text-normal-description-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
         "input-text-normal-description-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
         "input-text-normal-description-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))"
       },
       "borderColor": {
-        "input-text-error-msg-box-border-color-hover": "light-dark(rgb(226 54 54), rgb(226 54 54))",
-        "input-text-error-msg-box-border-color-idle": "light-dark(rgb(226 54 54), rgb(226 54 54))",
+        "input-text-error-msg-box-border-color-hover": "light-dark(rgb(226 54 54), rgb(229 77 77))",
+        "input-text-error-msg-box-border-color-idle": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-text-normal-box-border-color-disabled": "light-dark(rgb(199 203 207), rgb(199 203 207))",
         "input-text-normal-box-border-color-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
         "input-text-normal-box-border-color-idle": "light-dark(rgb(199 203 207), rgb(199 203 207))"

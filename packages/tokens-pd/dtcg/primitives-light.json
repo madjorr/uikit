@@ -173,6 +173,13 @@
         }
       },
       "1": {
+        "$extensions": {
+          "com.figma.scopes": [
+            "LETTER_SPACING",
+            "FONT_VARIATIONS"
+          ],
+          "com.figma.variableId": "VariableID:1727:2410"
+        },
         "$type": "dimension",
         "$value": {
           "unit": "px",
@@ -182,6 +189,13 @@
       "$description": "Derived from Figma Text Styles; no source Variable. Refresh by re-pulling styles.json.",
       "$type": "dimension",
       "0-3": {
+        "$extensions": {
+          "com.figma.scopes": [
+            "LETTER_SPACING",
+            "FONT_VARIATIONS"
+          ],
+          "com.figma.variableId": "VariableID:1727:2408"
+        },
         "$type": "dimension",
         "$value": {
           "unit": "px",
@@ -538,7 +552,7 @@
       }
     },
     "electricblue": {
-      "blue-0": {
+      "electricblue-0": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -554,7 +568,7 @@
           ]
         }
       },
-      "blue-1": {
+      "electricblue-1": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -570,7 +584,7 @@
           ]
         }
       },
-      "blue-10": {
+      "electricblue-10": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -586,7 +600,7 @@
           ]
         }
       },
-      "blue-11": {
+      "electricblue-11": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -602,7 +616,7 @@
           ]
         }
       },
-      "blue-12": {
+      "electricblue-12": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -618,7 +632,7 @@
           ]
         }
       },
-      "blue-13-brand": {
+      "electricblue-13": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -634,7 +648,7 @@
           ]
         }
       },
-      "blue-14": {
+      "electricblue-14": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -650,7 +664,7 @@
           ]
         }
       },
-      "blue-2": {
+      "electricblue-2": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -666,7 +680,7 @@
           ]
         }
       },
-      "blue-3": {
+      "electricblue-3": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -682,7 +696,7 @@
           ]
         }
       },
-      "blue-4": {
+      "electricblue-4": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -698,7 +712,7 @@
           ]
         }
       },
-      "blue-5": {
+      "electricblue-5": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -714,7 +728,7 @@
           ]
         }
       },
-      "blue-6": {
+      "electricblue-6": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -730,7 +744,7 @@
           ]
         }
       },
-      "blue-7-primary": {
+      "electricblue-7-primary": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -746,7 +760,7 @@
           ]
         }
       },
-      "blue-8": {
+      "electricblue-8": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -762,7 +776,7 @@
           ]
         }
       },
-      "blue-9": {
+      "electricblue-9": {
         "$extensions": {
           "com.figma.hiddenFromPublishing": true,
           "com.figma.scopes": [],
@@ -2081,6 +2095,41 @@
               228,
               16.67,
               11.76
+            ]
+          }
+        }
+      },
+      "fixed": {
+        "dark": {
+          "$extensions": {
+            "com.figma.hiddenFromPublishing": true,
+            "com.figma.scopes": [],
+            "com.figma.variableId": "VariableID:3665:6952"
+          },
+          "$type": "color",
+          "$value": {
+            "alpha": 0.898,
+            "colorSpace": "hsl",
+            "components": [
+              228,
+              16.67,
+              11.76
+            ]
+          }
+        },
+        "light": {
+          "$extensions": {
+            "com.figma.hiddenFromPublishing": true,
+            "com.figma.scopes": [],
+            "com.figma.variableId": "VariableID:3669:5473"
+          },
+          "$type": "color",
+          "$value": {
+            "colorSpace": "hsl",
+            "components": [
+              0,
+              0,
+              100
             ]
           }
         }

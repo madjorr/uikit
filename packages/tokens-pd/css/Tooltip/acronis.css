@@ -10,7 +10,7 @@
   --ui-tooltip-container-padding-y: 8px;
   --ui-tooltip-container-width-max: 256px;
   --ui-tooltip-container-width-min: 48px;
-  --ui-tooltip-label-color: light-dark(rgb(255 255 255), rgb(0 0 0));
+  --ui-tooltip-label-color: light-dark(rgb(255 255 255), rgb(255 255 255));
 }
 
 [data-theme='light'], :host([data-theme='light']) {
