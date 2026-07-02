@@ -189,12 +189,11 @@ const SidebarPrimaryFooter = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<'div'>
 >(({ className, ...props }, ref) => (
-  <div
+    <div
     ref={ref}
     className={cn(
       'flex flex-col shrink-0 gap-[var(--ui-sidebar-primary-global-footer-list-gap)]',
       'border-t border-[var(--ui-sidebar-primary-global-container-footer-border-color)] [border-top-width:var(--ui-sidebar-primary-global-container-footer-border-width)]',
-      'py-[var(--ui-sidebar-primary-section-container-padding-y)]',
       className
     )}
     {...props}
@@ -206,13 +205,12 @@ const SidebarPrimarySection = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<'div'>
 >(({ className, ...props }, ref) => (
-  // `firstSection` in Figma only toggles the top divider — derive it from DOM
   // position (`:not(:first-child)`) instead of a prop.
   <div
     ref={ref}
     className={cn(
-      'flex flex-col py-[var(--ui-sidebar-primary-section-container-padding-y)]',
-      '[&:not(:first-child)]:border-t [&:not(:first-child)]:border-[var(--ui-sidebar-primary-section-container-border-color)] [&:not(:first-child)]:[border-top-width:var(--ui-sidebar-primary-section-container-border-width)]',
+      'flex flex-col pb-[var(--ui-sidebar-primary-section-container-padding-y)]',
+      '[&:not(:first-child)]:border-t [&:not(:first-child)]:border-[var(--ui-sidebar-primary-section-container-border-color)] [&:not(:first-child)]:[border-top-width:var(--ui-sidebar-primary-section-container-border-width)] [&:not(:first-child)]:pt-[var(--ui-sidebar-primary-section-container-padding-y)]',
       className
     )}
     {...props}
@@ -400,7 +398,12 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
         {...props}
       >
         {icon != null && (
-          <span className="flex shrink-0 items-center self-start mt-[var(--ui-sidebar-primary-menu-item-global-icon-margin-t)]">
+          <span
+            className={cn(
+              'flex shrink-0 items-center self-start mt-[var(--ui-sidebar-primary-menu-item-global-icon-margin-t)] transition-transform',
+              !expanded && 'rotate-180'
+            )}
+          >
             {icon}
           </span>
         )}
