@@ -52,31 +52,16 @@ const box = (children: ReactNode, height = 240) => (
 );
 
 export const Default: Story = {
-  render: () =>
+  args: { orientation: 'horizontal' },
+  render: (args) =>
     box(
-      <ResizablePanelGroup orientation="horizontal">
+      <ResizablePanelGroup {...args}>
         <ResizablePanel defaultSize={40} minSize={20}>
           <div style={cellStyle}>Sidebar</div>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={60}>
           <div style={cellStyle}>Content</div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    ),
-};
-
-export const WithoutGrip: Story = {
-  name: 'Without grab-bar grip',
-  render: () =>
-    box(
-      <ResizablePanelGroup orientation="horizontal">
-        <ResizablePanel defaultSize={50}>
-          <div style={cellStyle}>One</div>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={50}>
-          <div style={cellStyle}>Two</div>
         </ResizablePanel>
       </ResizablePanelGroup>
     ),
@@ -89,7 +74,7 @@ export const Vertical: Story = {
         <ResizablePanel defaultSize={60}>
           <div style={cellStyle}>Editor</div>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={40}>
           <div style={cellStyle}>Preview</div>
         </ResizablePanel>
@@ -104,11 +89,11 @@ export const ThreePanels: Story = {
         <ResizablePanel defaultSize={25} minSize={15}>
           <div style={cellStyle}>Nav</div>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={50}>
           <div style={cellStyle}>List</div>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={25} minSize={15}>
           <div style={cellStyle}>Detail</div>
         </ResizablePanel>
@@ -123,13 +108,13 @@ export const Nested: Story = {
         <ResizablePanel defaultSize={40} minSize={20}>
           <div style={cellStyle}>Sidebar</div>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={60}>
           <ResizablePanelGroup orientation="vertical">
             <ResizablePanel defaultSize={55}>
               <div style={cellStyle}>Content</div>
             </ResizablePanel>
-            <ResizableHandle withHandle />
+            <ResizableHandle />
             <ResizablePanel defaultSize={45}>
               <div style={cellStyle}>Console</div>
             </ResizablePanel>

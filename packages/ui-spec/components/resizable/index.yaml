@@ -10,5 +10,5 @@ description: >-
   resizes its neighbouring panels on drag or arrow keys.
 since: 0.23.0
 figma:
-  node: '3476-5078'
+  node: '4649-6681'
   codeConnect: packages/ui-react/src/components/ui/resizable/resizable.figma.tsx

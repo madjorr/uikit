@@ -8,26 +8,6 @@ source: '@acronis-platform/tokens-pd'
 
 tokens:
   - {
-      name: --ui-resizable-bar-width,
-      affects: bar,
-      description: Grab-bar grip and handle width (7px),
-    }
-  - {
-      name: --ui-resizable-bar-height,
-      affects: bar,
-      description: Grab-bar grip height (32px),
-    }
-  - {
-      name: --ui-resizable-bar-color,
-      affects: bar,
-      description: Grab-bar grip fill,
-    }
-  - {
-      name: --ui-resizable-bar-border-radius,
-      affects: bar,
-      description: Grab-bar grip corner radius (4px),
-    }
-  - {
       name: --ui-resizable-border-width,
       affects: handle,
       description: Divider line thickness (1px),
@@ -38,9 +18,14 @@ tokens:
       description: Divider line style (solid),
     }
   - {
+      name: --ui-border-on-surface-border,
+      affects: handle,
+      description: Divider line color — idle (rest),
+    }
+  - {
       name: --ui-resizable-border-color-hover,
       affects: handle,
-      description: Divider line color — idle / hover,
+      description: Divider line color — hover,
     }
   - {
       name: --ui-resizable-border-color-active,

@@ -6,16 +6,14 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../resizab
 
 const Group = ({
   orientation = 'horizontal',
-  withHandle,
   handleClassName,
 }: {
   orientation?: 'horizontal' | 'vertical';
-  withHandle?: boolean;
   handleClassName?: string;
 }) => (
   <ResizablePanelGroup orientation={orientation}>
     <ResizablePanel defaultSize={50}>One</ResizablePanel>
-    <ResizableHandle withHandle={withHandle} className={handleClassName} />
+    <ResizableHandle className={handleClassName} />
     <ResizablePanel defaultSize={50}>Two</ResizablePanel>
   </ResizablePanelGroup>
 );
@@ -28,12 +26,9 @@ describe('Resizable', () => {
     expect(screen.getByRole('separator')).toBeInTheDocument();
   });
 
-  it('renders the grab-bar grip only when withHandle is set', () => {
-    const { rerender } = render(<Group />);
+  it('renders a self-closing handle (no grab-bar pill)', () => {
+    render(<Group />);
     expect(screen.getByRole('separator').children).toHaveLength(0);
-
-    rerender(<Group withHandle />);
-    expect(screen.getByRole('separator').children).toHaveLength(1);
   });
 
   it('forwards className to the handle', () => {

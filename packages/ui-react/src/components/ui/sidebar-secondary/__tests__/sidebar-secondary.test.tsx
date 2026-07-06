@@ -1,11 +1,10 @@
 import { createRef } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
   SidebarSecondary,
-  SidebarSecondaryCollapsedBreadcrumb,
   SidebarSecondaryCollapseTrigger,
   SidebarSecondaryContent,
   SidebarSecondaryFooter,
@@ -13,10 +12,6 @@ import {
   SidebarSecondaryMenu,
   SidebarSecondaryMenuItem,
   SidebarSecondaryMenuItemExtras,
-  SidebarSecondaryMenuSub,
-  SidebarSecondaryMenuSubContent,
-  SidebarSecondaryMenuSubItem,
-  SidebarSecondaryMenuSubTrigger,
   SidebarSecondarySection,
   SidebarSecondarySectionLabel,
 } from '../sidebar-secondary';
@@ -35,26 +30,15 @@ function Panel(props: React.ComponentProps<typeof SidebarSecondary>) {
             <SidebarSecondaryMenuItem href="/devices">
               Devices
             </SidebarSecondaryMenuItem>
-            <SidebarSecondaryMenuSub defaultOpen>
-              <SidebarSecondaryMenuSubTrigger>
-                Policies
-              </SidebarSecondaryMenuSubTrigger>
-              <SidebarSecondaryMenuSubContent>
-                <SidebarSecondaryMenuSubItem href="/policies/backup" selected>
-                  Backup
-                </SidebarSecondaryMenuSubItem>
-                <SidebarSecondaryMenuSubItem href="/policies/av">
-                  Antivirus
-                </SidebarSecondaryMenuSubItem>
-              </SidebarSecondaryMenuSubContent>
-            </SidebarSecondaryMenuSub>
+            <SidebarSecondaryMenuItem href="/policies/backup" selected>
+              Backup
+            </SidebarSecondaryMenuItem>
+            <SidebarSecondaryMenuItem href="/policies/av">
+              Antivirus
+            </SidebarSecondaryMenuItem>
           </SidebarSecondaryMenu>
         </SidebarSecondarySection>
       </SidebarSecondaryContent>
-      <SidebarSecondaryCollapsedBreadcrumb
-        parentLabel="Protection"
-        currentLabel="Dashboard"
-      />
       <SidebarSecondaryFooter>
         <SidebarSecondaryMenu>
           <SidebarSecondaryMenuItem href="/settings">
@@ -143,42 +127,45 @@ describe('SidebarSecondary', () => {
     expect(screen.getAllByText('Dashboard').length).toBeGreaterThan(0);
   });
 
-  it('indents level-2 sub-items', () => {
-    render(<Panel />);
-    const backup = screen.getByRole('link', { name: 'Backup' });
-    expect(backup).toHaveClass(
-      'pl-[calc(var(--ui-sidebar-secondary-menu-item-global-container-padding-x)+var(--ui-sidebar-secondary-menu-item-global-icon-size)+var(--ui-sidebar-secondary-menu-item-global-container-gap))]'
-    );
-  });
-
-  it('wires the disclosure: trigger toggles the panel via Base UI Collapsible', async () => {
+  it('auto-derives collapsed breadcrumb from Header label and selected MenuItem', () => {
+    // CollapsedBreadcrumb with no explicit props — should pull from context.
     render(
-      <SidebarSecondary>
-        <SidebarSecondaryMenu>
-          <SidebarSecondaryMenuSub>
-            <SidebarSecondaryMenuSubTrigger>
-              Policies
-            </SidebarSecondaryMenuSubTrigger>
-            <SidebarSecondaryMenuSubContent>
-              <SidebarSecondaryMenuSubItem href="/p/a">
-                Backup
-              </SidebarSecondaryMenuSubItem>
-            </SidebarSecondaryMenuSubContent>
-          </SidebarSecondaryMenuSub>
-        </SidebarSecondaryMenu>
+      <SidebarSecondary expanded={false}>
+        <SidebarSecondaryHeader label="Assets" />
+        <SidebarSecondaryContent>
+          <SidebarSecondarySection>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryMenuItem href="#" selected>
+                All devices
+              </SidebarSecondaryMenuItem>
+            </SidebarSecondaryMenu>
+          </SidebarSecondarySection>
+        </SidebarSecondaryContent>
       </SidebarSecondary>
     );
-    const trigger = screen.getByRole('button', { name: /Policies/ });
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await userEvent.click(trigger);
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('link', { name: 'Backup' })).toBeInTheDocument();
+    // parentLabel auto-derived from Header
+    expect(screen.getAllByText('Assets').length).toBeGreaterThanOrEqual(2); // heading + breadcrumb
+    // currentLabel auto-derived from selected MenuItem
+    expect(screen.getAllByText('All devices').length).toBeGreaterThanOrEqual(2); // link + breadcrumb
   });
 
-  it('opens the disclosure initially with defaultOpen', () => {
-    render(<Panel />);
-    const trigger = screen.getByRole('button', { name: /Policies/ });
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  it('indents items inside an expandable section via extra start padding on the item (full-width hover)', () => {
+    render(
+      <SidebarSecondary>
+        <SidebarSecondaryContent>
+          <SidebarSecondarySection expandable>
+            <SidebarSecondarySectionLabel>Config</SidebarSecondarySectionLabel>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryMenuItem href="/p">Policies</SidebarSecondaryMenuItem>
+            </SidebarSecondaryMenu>
+          </SidebarSecondarySection>
+        </SidebarSecondaryContent>
+      </SidebarSecondary>
+    );
+    const item = screen.getByRole('link', { name: 'Policies' });
+    expect(item).toHaveClass(
+      'ps-[calc(var(--ui-sidebar-secondary-menu-item-global-container-padding-x)+var(--ui-sidebar-secondary-section-container-header-gap)+16px)]'
+    );
   });
 
   it('uncontrolled: defaultExpanded initializes and the collapse trigger toggles the width/state', async () => {
@@ -199,8 +186,10 @@ describe('SidebarSecondary', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
     await userEvent.click(trigger);
     expect(nav).toHaveAttribute('data-state', 'collapsed');
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await userEvent.click(trigger);
+    // Re-query: button remounts inside Tooltip wrapper when collapsed.
+    const collapsedTrigger = screen.getByRole('button', { name: 'Collapse menu' });
+    expect(collapsedTrigger).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(collapsedTrigger);
     expect(nav).toHaveAttribute('data-state', 'expanded');
   });
 
@@ -301,13 +290,17 @@ describe('SidebarSecondary', () => {
     render(
       <SidebarSecondary>
         <SidebarSecondaryMenu>
-          <SidebarSecondaryMenuItem href="/a">
+          <SidebarSecondaryMenuItem
+            href="/a"
+            extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}
+          >
             Logs
-            <SidebarSecondaryMenuItemExtras variant="externalLink" />
           </SidebarSecondaryMenuItem>
-          <SidebarSecondaryMenuItem href="/b">
+          <SidebarSecondaryMenuItem
+            href="/b"
+            extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘F" />}
+          >
             Search
-            <SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘F" />
           </SidebarSecondaryMenuItem>
         </SidebarSecondaryMenu>
       </SidebarSecondary>
@@ -337,14 +330,9 @@ describe('SidebarSecondary — expandable section', () => {
               <SidebarSecondaryMenuItem href="/policies">
                 Policies
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuSub>
-                <SidebarSecondaryMenuSubTrigger>Add-ons</SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="/addons/a">
-                    Backup
-                  </SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
+              <SidebarSecondaryMenuItem href="/addons">
+                Add-ons
+              </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
@@ -434,5 +422,55 @@ describe('SidebarSecondary — expandable section', () => {
     );
     expect(screen.queryByRole('button', { name: /Overview/ })).not.toBeInTheDocument();
     expect(screen.getByText('Overview')).toBeInTheDocument();
+  });
+});
+
+describe('Resize', () => {
+  it('renders resize edge by default (resizable defaults to true)', () => {
+    render(<Panel />);
+    expect(screen.getByRole('separator', { name: /resize sidebar/i })).toBeInTheDocument();
+  });
+
+  it('does not render resize edge when resizable is false', () => {
+    render(<Panel resizable={false} />);
+    expect(screen.queryByRole('separator', { name: /resize sidebar/i })).not.toBeInTheDocument();
+  });
+
+  it('clicking the resize edge toggles expanded state (after debounce)', async () => {
+    const onChange = vi.fn();
+    render(<Panel resizable onExpandedChange={onChange} />);
+    const edge = screen.getByRole('separator', { name: /resize sidebar/i });
+    await userEvent.click(edge);
+    // Click is delayed 250ms to allow double-click disambiguation.
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(false);
+    });
+  });
+
+  it('double-clicking the resize edge resets width without toggling', async () => {
+    const onWidth = vi.fn();
+    const onChange = vi.fn();
+    render(<Panel resizable onWidthChange={onWidth} onExpandedChange={onChange} />);
+    const edge = screen.getByRole('separator', { name: /resize sidebar/i });
+    await userEvent.dblClick(edge);
+    // Double-click resets to the token-derived defaultWidth.
+    await waitFor(() => {
+      expect(onWidth).toHaveBeenCalled();
+    });
+    // Single-click should have been cancelled by the double-click.
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('applies inline width when resizable and expanded', () => {
+    render(<Panel resizable />);
+    const nav = screen.getByRole('navigation');
+    // Width is derived from the expanded-container-width token (or 256 fallback).
+    expect(nav.style.width).not.toBe('');
+  });
+
+  it('does not apply inline width when not resizable', () => {
+    render(<Panel resizable={false} />);
+    const nav = screen.getByRole('navigation');
+    expect(nav.style.width).toBe('');
   });
 });

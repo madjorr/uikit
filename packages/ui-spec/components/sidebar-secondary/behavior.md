@@ -46,8 +46,10 @@
 **Given** `expanded={false}`
 **When** it renders
 **Then** the root has `data-state="collapsed"` (48px width)
+**And** the header is hidden
 **And** the content section list is hidden
 **And** the collapsed-breadcrumb is shown: parent → separator → current page
+**And** the breadcrumb labels render vertically (`writing-mode: vertical-rl`)
 **And** menu-item labels (when any rows remain) are kept in the DOM as `sr-only`
 
 > The content and the collapsed-breadcrumb are both authored and present in the

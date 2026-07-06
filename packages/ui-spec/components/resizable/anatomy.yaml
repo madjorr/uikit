@@ -10,14 +10,13 @@ schematic: |
   |                         | d |                         |
   |                         | l |                         |
   |                         | e |                         |
-  |                         |[bar]                        |
+  |                         | | |                         |
   |                         | | |                         |
   +-------------------------+---+-------------------------+
      group  -> the PanelGroup container; lays panels out along one axis
      panel  -> a resizable region; sized by defaultSize / min / max
-     handle -> draggable separator (role="separator"); 1px divider line,
-               --ui-resizable-border-color-hover (rest) / -active (drag)
-     bar    -> grab-bar grip pill (--ui-resizable-bar-*), shown when withHandle
+     handle -> draggable separator (role="separator"); 9px hit area,
+               1px divider: --ui-border-on-surface-border (idle) / -hover / -active
 
 root:
   element: div
@@ -41,18 +40,11 @@ parts:
   - id: handle
     description: >-
       The draggable separator between two panels (`role="separator"`). Renders a
-      centered 1px divider line — `--ui-resizable-border-color-hover` at rest,
+      centered 1px divider line — `--ui-border-on-surface-border` at rest (idle),
+      `--ui-resizable-border-color-hover` on pointer hover,
       `--ui-resizable-border-color-active` while dragging — and shows the
       `--ui-resizable-cursor`. Carries `aria-orientation` reflecting the axis.
     element: div
-  - id: bar
-    description: >-
-      The grab-bar grip pill centered on the handle (`--ui-resizable-bar-*`:
-      7×32, 4px radius). Rendered only when `withHandle` is set; rotates 90° in a
-      vertical group.
-    element: div
-    optional: true
-    visible_when: the handle's `withHandle` prop is set
 
 layout:
   type: flex

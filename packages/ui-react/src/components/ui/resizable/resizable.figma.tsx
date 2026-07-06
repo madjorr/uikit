@@ -1,20 +1,21 @@
 // Figma Code Connect — status: COMPLETE
-// Mapped to the "Resizable" component in the shadcn-uikit Figma file — the
-// draggable handle (a 7px divider with a grab-bar pill). It has no variant
-// properties; the example shows the handle composed into a panel group so the
-// snippet documents real usage.
+// Mapped to the "Resizable" component set in the ui-react Figma file (node
+// 4649:6681) — a 9px-wide draggable separator with a 1px centered divider.
+// The component set has a `state` variant (idle/hover/active/focus) that
+// documents interaction states; these map to CSS pseudo-classes, not props.
+// The example shows the handle composed into a panel group.
 import figma from '@figma/code-connect';
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './resizable';
 
 figma.connect(
   ResizableHandle,
-  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/shadcn-uikit?node-id=3476-5078',
+  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/ui-react?node-id=4649-6681',
   {
     example: () => (
       <ResizablePanelGroup orientation="horizontal">
         <ResizablePanel defaultSize={50}>Panel one</ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={50}>Panel two</ResizablePanel>
       </ResizablePanelGroup>
     ),

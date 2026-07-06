@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import {
-  BoxIcon,
-  ChevronLeftIcon,
-  LayoutGridIcon,
+  BoltIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  DatabaseIcon,
+  GridIcon,
   PlusIcon,
-  ServerIcon,
-  ShoppingCartIcon,
+  CogIcon,
+  SquareIcon,
 } from '@acronis-platform/icons-react/stroke-mono';
 
 import { ButtonIcon } from '../../button-icon';
@@ -14,7 +16,6 @@ import { Tag } from '../../tag';
 
 import {
   SidebarSecondary,
-  SidebarSecondaryCollapsedBreadcrumb,
   SidebarSecondaryCollapseTrigger,
   SidebarSecondaryContent,
   SidebarSecondaryFooter,
@@ -22,10 +23,6 @@ import {
   SidebarSecondaryMenu,
   SidebarSecondaryMenuItem,
   SidebarSecondaryMenuItemExtras,
-  SidebarSecondaryMenuSub,
-  SidebarSecondaryMenuSubContent,
-  SidebarSecondaryMenuSubItem,
-  SidebarSecondaryMenuSubTrigger,
   SidebarSecondarySection,
   SidebarSecondarySectionLabel,
 } from '../sidebar-secondary';
@@ -61,6 +58,18 @@ const meta = {
         category: 'Events',
       },
     },
+    resizable: {
+      control: 'boolean',
+      description:
+        'Enable the draggable resize edge on the right border. When `true`, the sidebar can be resized between the expanded-width token and twice that value.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+        category: 'Behavior',
+      },
+    },
+    width: { table: { disable: true } },
+    onWidthChange: { table: { disable: true } },
     render: {
       control: false,
       description:
@@ -76,10 +85,32 @@ const meta = {
         category: 'Behavior',
       },
     },
+    resizeAriaLabel: {
+      control: 'text',
+      description:
+        'Accessible label for the resize edge (`role="separator"`). Consumers should localize this string.',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: "'Resize sidebar'" },
+        category: 'i18n',
+      },
+    },
+    resizeTooltipExpanded: {
+      control: false,
+      description:
+        'Tooltip content shown when the sidebar is expanded. Pass `null` to hide the tooltip entirely.',
+      table: { type: { summary: 'ReactNode' }, category: 'i18n' },
+    },
+    resizeTooltipCollapsed: {
+      control: false,
+      description:
+        'Tooltip content shown when the sidebar is collapsed. Pass `null` to hide the tooltip entirely.',
+      table: { type: { summary: 'ReactNode' }, category: 'i18n' },
+    },
     children: {
       control: false,
       description:
-        'Composed sidebar parts (Header, Content, Section, Menu, MenuSub, CollapsedBreadcrumb, Footer, …).',
+        'Composed sidebar parts (Header, Content, Section, Menu, Footer, …).',
       table: { type: { summary: 'ReactNode' }, category: 'Content' },
     },
   },
@@ -99,9 +130,9 @@ function Shell({
 }
 
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <Shell>
-      <SidebarSecondary>
+      <SidebarSecondary {...args}>
         <SidebarSecondaryHeader label="Protection" />
         <SidebarSecondaryContent>
           <SidebarSecondarySection>
@@ -109,91 +140,40 @@ export const Default: Story = {
               Overview
             </SidebarSecondarySectionLabel>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+              <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
                 Dashboard
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#" icon={<ServerIcon />}>
+              <SidebarSecondaryMenuItem href="#" icon={<DatabaseIcon />}>
                 Devices
               </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
-          <SidebarSecondarySection>
+          <SidebarSecondarySection expandable>
             <SidebarSecondarySectionLabel>
               Configuration
             </SidebarSecondarySectionLabel>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuSub defaultOpen>
-                <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>
-                  Policies
-                </SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="#" selected>
-                    Backup
-                  </SidebarSecondaryMenuSubItem>
-                  <SidebarSecondaryMenuSubItem href="#">
-                    Antivirus
-                  </SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
-              <SidebarSecondaryMenuItem href="#" icon={<ShoppingCartIcon />}>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+                Backup
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+                Antivirus
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem
+                href="#"
+                icon={<BoltIcon />}
+                extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}
+              >
                 Add-ons
-                <SidebarSecondaryMenuItemExtras variant="externalLink" />
               </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
-        <SidebarSecondaryCollapsedBreadcrumb
-          parentLabel="Protection"
-          currentLabel="Dashboard"
-        />
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>
             {/* Uncontrolled panel: the trigger toggles `expanded` via context. */}
-            <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-              Collapse menu
-            </SidebarSecondaryCollapseTrigger>
-          </SidebarSecondaryMenu>
-        </SidebarSecondaryFooter>
-      </SidebarSecondary>
-    </Shell>
-  ),
-};
-
-// The generic component reference from Figma node 2468-59502: placeholder
-// "Header" / "Section Header" / three identical "Menu Item" rows (no leading
-// icons) and a footer collapse affordance with a leading chevron + a `⌘J`
-// shortcut. Uncontrolled, so clicking the footer toggles the rail to the
-// CollapsedBreadcrumb (carrying the design's collapsed-rail labels).
-export const Reference: Story = {
-  name: 'Reference (Figma anatomy)',
-  render: () => (
-    <Shell>
-      <SidebarSecondary>
-        <SidebarSecondaryHeader label="Header" />
-        <SidebarSecondaryContent>
-          <SidebarSecondarySection>
-            <SidebarSecondarySectionLabel>
-              Section Header
-            </SidebarSecondarySectionLabel>
-            <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#">Menu Item</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Menu Item</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Menu Item</SidebarSecondaryMenuItem>
-            </SidebarSecondaryMenu>
-          </SidebarSecondarySection>
-        </SidebarSecondaryContent>
-        <SidebarSecondaryCollapsedBreadcrumb
-          parentLabel="Header"
-          currentLabel="Current Page Name"
-        />
-        <SidebarSecondaryFooter>
-          <SidebarSecondaryMenu>
-            <SidebarSecondaryCollapseTrigger
-              icon={<ChevronLeftIcon />}
-              shortcut="⌘J"
-            >
-              Menu Item
+            <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+              Collapse
             </SidebarSecondaryCollapseTrigger>
           </SidebarSecondaryMenu>
         </SidebarSecondaryFooter>
@@ -206,27 +186,24 @@ export const Collapsed: Story = {
   name: 'Collapsed (breadcrumb rail)',
   render: () => (
     <Shell>
-      <SidebarSecondary expanded={false}>
+      <SidebarSecondary defaultExpanded={false}>
         <SidebarSecondaryHeader label="Protection" />
         <SidebarSecondaryContent>
           <SidebarSecondarySection>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+              <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
                 Dashboard
               </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
-        <SidebarSecondaryCollapsedBreadcrumb
-          parentLabel="Protection"
-          currentLabel="Dashboard"
-        />
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
-            {/* Chevron-left auto-flips to a right-pointing "expand" chevron in
-                the collapsed rail. */}
-            <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-              Expand menu
+            <SidebarSecondaryMenuItem href="#" icon={<CogIcon />}>
+              Settings
+            </SidebarSecondaryMenuItem>
+            <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+              Collapse
             </SidebarSecondaryCollapseTrigger>
           </SidebarSecondaryMenu>
         </SidebarSecondaryFooter>
@@ -243,13 +220,13 @@ export const Selected: Story = {
         <SidebarSecondaryContent>
           <SidebarSecondarySection>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+              <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
                 Selected item
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#" icon={<ServerIcon />}>
+              <SidebarSecondaryMenuItem href="#" icon={<DatabaseIcon />}>
                 Unselected item
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#" icon={<BoxIcon />}>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
                 Another item
               </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
@@ -260,37 +237,29 @@ export const Selected: Story = {
   ),
 };
 
-export const Expandable: Story = {
-  name: 'Expandable disclosure (open + closed)',
+export const ExpandableSectionOpenClosed: Story = {
+  name: 'Expandable section (open + closed)',
   render: () => (
     <Shell>
       <SidebarSecondary>
         <SidebarSecondaryContent>
-          <SidebarSecondarySection>
+          <SidebarSecondarySection expandable>
+            <SidebarSecondarySectionLabel>Open section</SidebarSecondarySectionLabel>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuSub defaultOpen>
-                <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />} selected>
-                  Open group
-                </SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="#" selected>
-                    Child one
-                  </SidebarSecondaryMenuSubItem>
-                  <SidebarSecondaryMenuSubItem href="#">
-                    Child two
-                  </SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
-              <SidebarSecondaryMenuSub>
-                <SidebarSecondaryMenuSubTrigger icon={<ServerIcon />}>
-                  Closed group
-                </SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="#">
-                    Hidden child
-                  </SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />} selected>
+                Child one
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+                Child two
+              </SidebarSecondaryMenuItem>
+            </SidebarSecondaryMenu>
+          </SidebarSecondarySection>
+          <SidebarSecondarySection expandable defaultOpen={false}>
+            <SidebarSecondarySectionLabel>Closed section</SidebarSecondarySectionLabel>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryMenuItem href="#" icon={<DatabaseIcon />}>
+                Hidden child
+              </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
@@ -306,13 +275,43 @@ export const WithExtras: Story = {
         <SidebarSecondaryContent>
           <SidebarSecondarySection>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#" icon={<BoxIcon />}>
+              <SidebarSecondaryMenuItem
+                href="#"
+                icon={<SquareIcon />}
+                extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘F" />}
+              >
                 Shortcut
-                <SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘F" />
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#" icon={<ShoppingCartIcon />}>
+              <SidebarSecondaryMenuItem
+                href="#"
+                icon={<BoltIcon />}
+                extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}
+              >
                 External link
-                <SidebarSecondaryMenuItemExtras variant="externalLink" />
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem
+                href="#"
+                icon={<DatabaseIcon />}
+                extras={
+                  <SidebarSecondaryMenuItemExtras
+                    variant="tag"
+                    tag={<Tag variant="neutral" size="sm">New</Tag>}
+                  />
+                }
+              >
+                With tag
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem
+                href="#"
+                icon={<GridIcon />}
+                extras={
+                  <SidebarSecondaryMenuItemExtras
+                    variant="tag-externalLink"
+                    tag={<Tag variant="neutral" size="sm">Beta</Tag>}
+                  />
+                }
+              >
+                Tag + external link
               </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
@@ -333,21 +332,21 @@ export const Controlled: Story = {
           <SidebarSecondaryContent>
             <SidebarSecondarySection>
               <SidebarSecondaryMenu>
-                <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+                <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
                   Dashboard
                 </SidebarSecondaryMenuItem>
-                {/* Controlled: the trigger calls toggleExpanded → onExpandedChange,
-                    and this consumer owns the `expanded` state. */}
-                <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-                  Collapse menu
-                </SidebarSecondaryCollapseTrigger>
               </SidebarSecondaryMenu>
             </SidebarSecondarySection>
           </SidebarSecondaryContent>
-          <SidebarSecondaryCollapsedBreadcrumb
-            parentLabel="Protection"
-            currentLabel="Dashboard"
-          />
+            {/* Controlled: the trigger calls toggleExpanded → onExpandedChange,
+              and this consumer owns the `expanded` state. */}
+          <SidebarSecondaryFooter>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+                Collapse
+              </SidebarSecondaryCollapseTrigger>
+            </SidebarSecondaryMenu>
+          </SidebarSecondaryFooter>
         </SidebarSecondary>
       </Shell>
     );
@@ -356,7 +355,7 @@ export const Controlled: Story = {
 
 // Collapsible sections (Figma "Section" expandable variant). Mirrors the
 // "Protection" reference: one open section of items, several collapsed sections,
-// a submenu nested inside a section, and a header-less section ("Chat").
+// and a header-less section ("Chat").
 export const ExpandableSections: Story = {
   name: 'Expandable sections',
   render: () => (
@@ -388,14 +387,7 @@ export const ExpandableSections: Story = {
           <SidebarSecondarySection expandable defaultOpen={false}>
             <SidebarSecondarySectionLabel>Disaster recovery</SidebarSecondarySectionLabel>
             <SidebarSecondaryMenu>
-              {/* A submenu (item-level disclosure) nested inside an expandable section. */}
-              <SidebarSecondaryMenuSub>
-                <SidebarSecondaryMenuSubTrigger>Runbooks</SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="#">Primary site</SidebarSecondaryMenuSubItem>
-                  <SidebarSecondaryMenuSubItem href="#">Secondary site</SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
+              <SidebarSecondaryMenuItem href="#">Runbooks</SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
           <SidebarSecondarySection expandable defaultOpen={false}>
@@ -419,8 +411,8 @@ export const ExpandableSections: Story = {
         </SidebarSecondaryContent>
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-              Collapse menu
+            <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+              Collapse
             </SidebarSecondaryCollapseTrigger>
           </SidebarSecondaryMenu>
         </SidebarSecondaryFooter>
@@ -441,7 +433,7 @@ export const SectionActionsAndRollup: Story = {
           <SidebarSecondarySection expandable>
             <SidebarSecondarySectionLabel
               actions={
-                <ButtonIcon variant="ghost" aria-label="Add dashboard">
+                <ButtonIcon aria-label="Add dashboard">
                   <PlusIcon />
                 </ButtonIcon>
               }
@@ -482,8 +474,8 @@ export const SectionActionsAndRollup: Story = {
         </SidebarSecondaryContent>
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-              Collapse menu
+            <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+              Collapse
             </SidebarSecondaryCollapseTrigger>
           </SidebarSecondaryMenu>
         </SidebarSecondaryFooter>
@@ -492,92 +484,173 @@ export const SectionActionsAndRollup: Story = {
   ),
 };
 
-// The "Assets" reference: grouped, expandable sections of (icon-less) items, with
-// count Tags on leaf rows ("832" / "56") and a status Tag ("NEW") — all via the
-// `tag` extra. Mirrors the Figma Assets example.
-export const Assets: Story = {
+// ---------------------------------------------------------------------------
+// Realistic example: expandable sections with computed rollup counts
+// ---------------------------------------------------------------------------
+
+// A real developer would have per-item data and derive the section total.
+const devicesData = [
+  { label: 'All devices', count: 932 },
+  { label: 'Managed devices', count: null },
+  { label: 'Discovered devices', count: 56 },
+] as const;
+
+const devicesTotal = devicesData.reduce((sum, d) => sum + (d.count ?? 0), 0);
+
+export const RealisticAssets: Story = {
+  name: 'Realistic (computed rollup counts)',
   render: () => (
-    <Shell height={640}>
+    <Shell height={600}>
       <SidebarSecondary>
         <SidebarSecondaryHeader label="Assets" />
         <SidebarSecondaryContent>
+          {/* Devices — expandable, with a rollup tag that shows the section
+              total only while the section is collapsed. */}
           <SidebarSecondarySection expandable>
-            <SidebarSecondarySectionLabel>Devices</SidebarSecondarySectionLabel>
+            <SidebarSecondarySectionLabel
+              unreadRollup={
+                <Tag variant="neutral" size="sm">
+                  {devicesTotal}
+                </Tag>
+              }
+            >
+              Devices
+            </SidebarSecondarySectionLabel>
             <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#" selected>
-                All devices
-                <SidebarSecondaryMenuItemExtras
-                  variant="tag"
-                  tag={
-                    <Tag variant="neutral" size="sm">
-                      832
-                    </Tag>
+              {devicesData.map((item) => (
+                <SidebarSecondaryMenuItem
+                  key={item.label}
+                  href="#"
+                  selected={item.label === 'All devices'}
+                  extras={
+                    item.count != null ? (
+                      <SidebarSecondaryMenuItemExtras
+                        variant="tag"
+                        tag={
+                          <Tag variant="neutral" size="sm">
+                            {item.count}
+                          </Tag>
+                        }
+                      />
+                    ) : undefined
                   }
-                />
-              </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Managed devices</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">
-                Discovered devices
-                <SidebarSecondaryMenuItemExtras
-                  variant="tag"
-                  tag={
-                    <Tag variant="neutral" size="sm">
-                      56
-                    </Tag>
-                  }
-                />
-              </SidebarSecondaryMenuItem>
+                >
+                  {item.label}
+                </SidebarSecondaryMenuItem>
+              ))}
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
-          <SidebarSecondarySection expandable>
-            <SidebarSecondarySectionLabel>Virtualization</SidebarSecondarySectionLabel>
-            <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#">VMware</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Virtuozzo</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Cyber Frame</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Scale Computing</SidebarSecondaryMenuItem>
-            </SidebarSecondaryMenu>
-          </SidebarSecondarySection>
-          <SidebarSecondarySection expandable>
-            <SidebarSecondarySectionLabel>Public cloud</SidebarSecondarySectionLabel>
-            <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#">Microsoft Azure</SidebarSecondaryMenuItem>
-            </SidebarSecondaryMenu>
-          </SidebarSecondarySection>
-          <SidebarSecondarySection expandable>
-            <SidebarSecondarySectionLabel>SaaS</SidebarSecondarySectionLabel>
-            <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#">Microsoft 365</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Microsoft Entra ID</SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">
-                Mail servers
-                <SidebarSecondaryMenuItemExtras
-                  variant="tag"
-                  tag={
-                    <Tag variant="success" size="sm">
-                      NEW
-                    </Tag>
-                  }
-                />
-              </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuItem href="#">Google Workspace</SidebarSecondaryMenuItem>
-            </SidebarSecondaryMenu>
-          </SidebarSecondarySection>
-          <SidebarSecondarySection expandable>
-            <SidebarSecondarySectionLabel>Network</SidebarSecondarySectionLabel>
-            <SidebarSecondaryMenu>
-              <SidebarSecondaryMenuItem href="#">Network Attached Storage</SidebarSecondaryMenuItem>
-            </SidebarSecondaryMenu>
-          </SidebarSecondarySection>
+
+          {/* Remaining sections — expandable but without counts */}
+          {['Virtualization', 'Public cloud', 'SaaS', 'Network'].map((name) => (
+            <SidebarSecondarySection key={name} expandable defaultOpen={false}>
+              <SidebarSecondarySectionLabel>{name}</SidebarSecondarySectionLabel>
+              <SidebarSecondaryMenu>
+                <SidebarSecondaryMenuItem href="#">Overview</SidebarSecondaryMenuItem>
+                <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>
+              </SidebarSecondaryMenu>
+            </SidebarSecondarySection>
+          ))}
         </SidebarSecondaryContent>
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryCollapseTrigger icon={<ChevronLeftIcon />}>
-              Collapse menu
+            <SidebarSecondaryCollapseTrigger
+              icon={<ChevronsLeftIcon />}
+              expandIcon={<ChevronsRightIcon />}
+              extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}
+            >
+              Collapse
             </SidebarSecondaryCollapseTrigger>
           </SidebarSecondaryMenu>
         </SidebarSecondaryFooter>
       </SidebarSecondary>
     </Shell>
+  ),
+};
+
+export const Localized: Story = {
+  name: 'Localized resize labels (es)',
+  render: () => (
+    <Shell>
+      <SidebarSecondary
+        resizeAriaLabel="Redimensionar barra lateral"
+        resizeTooltipExpanded={
+          <>
+            <span className="font-semibold">Redimensionar:</span> Arrastrar
+            <br />
+            <span className="font-semibold">Colapsar:</span> Clic
+            <br />
+            <span className="font-semibold">Restablecer:</span> Doble clic
+          </>
+        }
+        resizeTooltipCollapsed={
+          <>
+            <span className="font-semibold">Redimensionar:</span> Arrastrar
+            <br />
+            <span className="font-semibold">Expandir:</span> Clic
+          </>
+        }
+      >
+        <SidebarSecondaryHeader label="Protección" />
+        <SidebarSecondaryContent>
+          <SidebarSecondarySection>
+            <SidebarSecondarySectionLabel>
+              Descripción general
+            </SidebarSecondarySectionLabel>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
+                Panel
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem href="#" icon={<DatabaseIcon />}>
+                Dispositivos
+              </SidebarSecondaryMenuItem>
+            </SidebarSecondaryMenu>
+          </SidebarSecondarySection>
+        </SidebarSecondaryContent>
+        <SidebarSecondaryFooter>
+          <SidebarSecondaryMenu>
+            <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} expandTooltip="Expandir" extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+              Contraer
+            </SidebarSecondaryCollapseTrigger>
+          </SidebarSecondaryMenu>
+        </SidebarSecondaryFooter>
+      </SidebarSecondary>
+    </Shell>
+  ),
+};
+
+export const NotResizable: Story = {
+  name: 'Not resizable (fixed width)',
+  render: () => (
+    <Shell height={600}>
+      <SidebarSecondary resizable={false}>
+        <SidebarSecondaryHeader label="Protection" />
+        <SidebarSecondaryContent>
+          <SidebarSecondarySection>
+            <SidebarSecondarySectionLabel>
+              Overview
+            </SidebarSecondarySectionLabel>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryMenuItem href="#" icon={<GridIcon />} selected>
+                Dashboard
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem href="#" icon={<DatabaseIcon />}>
+                Devices
+              </SidebarSecondaryMenuItem>
+              <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+                Policies
+              </SidebarSecondaryMenuItem>
+            </SidebarSecondaryMenu>
+          </SidebarSecondarySection>
+        </SidebarSecondaryContent>
+          <SidebarSecondaryFooter>
+            <SidebarSecondaryMenu>
+              <SidebarSecondaryCollapseTrigger icon={<ChevronsLeftIcon />} expandIcon={<ChevronsRightIcon />} extras={<SidebarSecondaryMenuItemExtras variant="shortcut" shortcut="⌘?" />}>
+                Collapse
+              </SidebarSecondaryCollapseTrigger>
+            </SidebarSecondaryMenu>
+          </SidebarSecondaryFooter>
+        </SidebarSecondary>
+      </Shell>
   ),
 };

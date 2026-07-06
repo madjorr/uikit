@@ -44,8 +44,8 @@ root:
 parts:
   - id: header
     description: >-
-      Title row (`<div>` + `<h2>`, 24/32 heading). Padding switches on
-      expanded/collapsed.
+      Title row (`<div>` + `<h2>`, 24/32 heading). Hidden in collapsed mode;
+      the collapsed-breadcrumb's parentLabel serves as the header equivalent.
     element: div
   - id: content
     description: >-
@@ -55,7 +55,10 @@ parts:
   - id: collapsed-breadcrumb
     description: >-
       The rail-mode location indicator (`<div>`): parent label → separator icon
-      (ChevronRight) → current page. Shown only when collapsed.
+      (ChevronDown) → current page. Shown only when collapsed. Labels render
+      vertically via writing-mode: vertical-rl. Auto-rendered internally by the
+      root — labels are derived from the header and the selected menu-item via
+      context.
     element: div
   - id: footer
     description: Footer menu region (`<div>`) with a top divider.

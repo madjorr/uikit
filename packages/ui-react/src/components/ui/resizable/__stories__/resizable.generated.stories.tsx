@@ -19,44 +19,38 @@ export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
       <ResizablePanelGroup aria-label="Resizable example">
-        <ResizablePanel defaultSize={50}>One</ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={50}>Two</ResizablePanel>
-      </ResizablePanelGroup>
+      <ResizablePanel defaultSize={50}>One</ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={50}>Two</ResizablePanel>
+    </ResizablePanelGroup>
     </div>
   ),
 };
 
 export const Hover: Story = {
   parameters: { pseudo: { hover: true } },
-  render: () => (
-    <ResizablePanelGroup aria-label="Resizable example">
+  render: () => <ResizablePanelGroup aria-label="Resizable example">
       <ResizablePanel defaultSize={50}>One</ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>Two</ResizablePanel>
-    </ResizablePanelGroup>
-  ),
+    </ResizablePanelGroup>,
 };
 
 export const Active: Story = {
   parameters: { pseudo: { active: true } },
-  render: () => (
-    <ResizablePanelGroup aria-label="Resizable example">
+  render: () => <ResizablePanelGroup aria-label="Resizable example">
       <ResizablePanel defaultSize={50}>One</ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>Two</ResizablePanel>
-    </ResizablePanelGroup>
-  ),
+    </ResizablePanelGroup>,
 };
 
 export const FocusVisible: Story = {
-  render: () => (
-    <ResizablePanelGroup aria-label="Resizable example">
+  render: () => <ResizablePanelGroup aria-label="Resizable example">
       <ResizablePanel defaultSize={50}>One</ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>Two</ResizablePanel>
-    </ResizablePanelGroup>
-  ),
+    </ResizablePanelGroup>,
   // Real keyboard focus — paints :focus-visible without a pseudo-states addon.
   play: async () => {
     await userEvent.tab();

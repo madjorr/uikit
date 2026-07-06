@@ -9,16 +9,11 @@ import figma from '@figma/code-connect';
 
 import {
   SidebarSecondary,
-  SidebarSecondaryCollapsedBreadcrumb,
   SidebarSecondaryContent,
   SidebarSecondaryFooter,
   SidebarSecondaryHeader,
   SidebarSecondaryMenu,
   SidebarSecondaryMenuItem,
-  SidebarSecondaryMenuSub,
-  SidebarSecondaryMenuSubContent,
-  SidebarSecondaryMenuSubItem,
-  SidebarSecondaryMenuSubTrigger,
   SidebarSecondarySection,
   SidebarSecondarySectionLabel,
 } from './sidebar-secondary';
@@ -42,23 +37,12 @@ figma.connect(
               <SidebarSecondaryMenuItem href="#" selected>
                 Dashboard
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuSub>
-                <SidebarSecondaryMenuSubTrigger>
-                  Policies
-                </SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="#">
-                    Backup
-                  </SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
+              <SidebarSecondaryMenuItem href="#">
+                Policies
+              </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
-        <SidebarSecondaryCollapsedBreadcrumb
-          parentLabel="Protection"
-          currentLabel="Dashboard"
-        />
         <SidebarSecondaryFooter>
           <SidebarSecondaryMenu>
             <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>

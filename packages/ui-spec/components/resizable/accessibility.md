@@ -35,11 +35,12 @@ pointer.
 - As a `separator` with `aria-orientation`, the handle is announced as a
   resizable splitter. `aria-valuenow` / `aria-valuemin` / `aria-valuemax` are
   managed by the underlying panel library to convey the current split.
-- The grab-bar pill is purely decorative (a child of the handle) and exposes no
-  separate semantics.
+- The handle has no decorative children — its visual affordance is the cursor
+  change and the border color shift on hover/active.
 
 ## Contrast
 
-- The divider line and grip use `--ui-resizable-border-color-*` / `-bar-color`,
-  which resolve per brand/theme; they must keep a visible contrast against the
-  adjacent panel surfaces in both light and dark schemes.
+- The divider line uses `--ui-border-on-surface-border` (idle) and
+  `--ui-resizable-border-color-hover` / `-active`, which resolve per brand/theme;
+  they must keep a visible contrast against the adjacent panel surfaces in both
+  light and dark schemes.

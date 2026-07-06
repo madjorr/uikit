@@ -4,14 +4,29 @@ import { useRender } from '@base-ui/react/use-render';
 import { Collapsible } from '@base-ui/react/collapsible';
 import {
   ChevronDownIcon,
-  ChevronRightIcon,
-  SquareArrowUpRightIcon,
+  ArrowSquareUpRightIcon,
 } from '@acronis-platform/icons-react/stroke-mono';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-import { ScrollArea } from '../scroll-area';
+/** Document direction (falls back to 'ltr' during SSR). */
+function getDocDir(): 'ltr' | 'rtl' {
+  if (typeof document === 'undefined') return 'ltr';
+  return document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
+}
+
+// Resize constraints — mirrors the design-token defaults.
+// CSS still uses `var(--ui-sidebar-secondary-expanded-container-width)` so
+// brands that override the token get the correct visual width; these JS
+// constants only govern the drag-resize clamping range.
+const SIDEBAR_EXPANDED_WIDTH = 256; // --ui-sidebar-secondary-expanded-container-width
+const SIDEBAR_MAX_WIDTH = SIDEBAR_EXPANDED_WIDTH * 2;
 
 // Composable SidebarSecondary primitives mirroring the Figma "SidebarSecondary"
 // component set (node 2468:59502, variant expanded|collapsed). Every color and
@@ -33,22 +48,63 @@ import { ScrollArea } from '../scroll-area';
 // single value each). So the cva base carries the global icon/label colors and
 // the two variants only swap the container fill.
 //
-// The Level-1 expandable disclosure (SidebarSecondaryMenuSub) is the canonical
-// Base UI Collapsible use — it gives `aria-expanded`/`aria-controls` for free and
-// per-row open state. The trigger gets `data-panel-open` when open, which rotates
-// the chevron.
-//
 // R6 (collapsed separator icon): resolved from the Figma node metadata — the
-// collapsed `iconSeparator` instance's mainComponent is "ChevronRight", so the
-// separator defaults to `ChevronRightIcon` (16px), tinted by
-// `--ui-sidebar-secondary-collapsed-icon-separator-color`. The disclosure chevron
+// collapsed `iconSeparator` instance's mainComponent is "ChevronDown" (updated
+// from ChevronRight), so the separator defaults to `ChevronDownIcon` (16px),
+// tinted by `--ui-sidebar-secondary-collapsed-icon-separator-color`. In the
+// vertical breadcrumb flow (writing-mode: vertical-rl) the downward chevron
+// visually points "forward" in the reading direction. The disclosure chevron
 // uses `ChevronDownIcon` rotated via `data-panel-open`. The focus ring reuses the
 // shared `--ui-focus-brand` (no sidebar focus token exists — R1).
+
+const defaultResizeTooltipExpanded = (
+  <>
+    <span className="font-semibold">Resize:</span> Drag
+    <br />
+    <span className="font-semibold">Collapse:</span> Click
+    <br />
+    <span className="font-semibold">Reset size:</span> Double click
+  </>
+);
+
+const defaultResizeTooltipCollapsed = (
+  <>
+    <span className="font-semibold">Resize:</span> Drag
+    <br />
+    <span className="font-semibold">Expand:</span> Click
+  </>
+);
 
 interface SidebarSecondaryContextValue {
   expanded: boolean;
   /** Flip the panel width — drives the controlled/uncontrolled `expanded` state. */
   toggleExpanded: () => void;
+  /** Whether resize is enabled. */
+  resizable: boolean;
+  /** Current width in px (only meaningful when resizable + expanded). */
+  width: number;
+  /** Update the width (used by the resize edge during drag). */
+  setWidth: (width: number) => void;
+  /** Min resize width — derived from `--ui-sidebar-secondary-expanded-container-width`. */
+  minWidth: number;
+  /** Max resize width — expanded-width × RESIZE_MAX_WIDTH_FACTOR. */
+  maxWidth: number;
+  /** Default (reset) width — equals expanded-container-width token. */
+  defaultWidth: number;
+  /** Label registered by `SidebarSecondaryHeader` — consumed by the collapsed breadcrumb. */
+  headerLabel: React.ReactNode;
+  /** Register the header label (called by `SidebarSecondaryHeader`). */
+  setHeaderLabel: (label: React.ReactNode) => void;
+  /** Label of the currently selected `MenuItem` — consumed by the collapsed breadcrumb. */
+  selectedLabel: React.ReactNode;
+  /** Register the selected item label (called by `SidebarSecondaryMenuItem`). */
+  setSelectedLabel: (label: React.ReactNode) => void;
+  /** Accessible label for the resize edge separator. */
+  resizeAriaLabel: string;
+  /** Tooltip content shown when the sidebar is expanded. */
+  resizeTooltipExpanded: React.ReactNode;
+  /** Tooltip content shown when the sidebar is collapsed. */
+  resizeTooltipCollapsed: React.ReactNode;
 }
 
 const SidebarSecondaryContext =
@@ -61,6 +117,19 @@ function useSidebarSecondaryContext(): SidebarSecondaryContextValue {
     React.useContext(SidebarSecondaryContext) ?? {
       expanded: true,
       toggleExpanded: () => {},
+      resizable: false,
+      width: SIDEBAR_EXPANDED_WIDTH,
+      setWidth: () => {},
+      minWidth: SIDEBAR_EXPANDED_WIDTH,
+      maxWidth: SIDEBAR_MAX_WIDTH,
+      defaultWidth: SIDEBAR_EXPANDED_WIDTH,
+      headerLabel: undefined,
+      setHeaderLabel: () => {},
+      selectedLabel: undefined,
+      setSelectedLabel: () => {},
+      resizeAriaLabel: 'Resize sidebar',
+      resizeTooltipExpanded: defaultResizeTooltipExpanded,
+      resizeTooltipCollapsed: defaultResizeTooltipCollapsed,
     }
   );
 }
@@ -98,10 +167,167 @@ export interface SidebarSecondaryProps
   /** Fires when the expanded state changes (e.g. a consumer toggle). */
   onExpandedChange?: (expanded: boolean) => void;
   /**
+   * Enable the draggable resize edge on the right border.
+   * When `true`, the sidebar can be resized between the expanded-width token
+   * and twice that value.
+   */
+  resizable?: boolean;
+  /** Controlled width in px (only used when `resizable`). */
+  width?: number;
+  /** Fires when the width changes due to a drag interaction. */
+  onWidthChange?: (width: number) => void;
+  /** Accessible label for the resize edge (`role="separator"`). Defaults to `'Resize sidebar'`. */
+  resizeAriaLabel?: string;
+  /** Tooltip content shown when the sidebar is expanded. Pass `null` to hide the tooltip entirely. */
+  resizeTooltipExpanded?: React.ReactNode;
+  /** Tooltip content shown when the sidebar is collapsed. Pass `null` to hide the tooltip entirely. */
+  resizeTooltipCollapsed?: React.ReactNode;
+  /**
    * Replace the rendered `<nav>` with another element or component
    * (Base UI composition). Accepts a React element or a render function.
    */
   render?: useRender.RenderProp;
+}
+
+// ---------------------------------------------------------------------------
+// SidebarSecondaryResizeEdge — internal drag/click handle on the right edge
+// ---------------------------------------------------------------------------
+// Styled identically to `ResizableHandle` (Figma 4649:6681): 9px hit-area,
+// 1px centered divider, idle → `--ui-border-on-surface-border`,
+// hover → `--ui-resizable-border-color-hover`,
+// drag  → `--ui-resizable-border-color-active`.
+// ---------------------------------------------------------------------------
+
+function SidebarSecondaryResizeEdge() {
+  const ctx = useSidebarSecondaryContext();
+  const { expanded, toggleExpanded, resizable } = ctx;
+
+  // Mutable ref so the closure-captured pointermove handler always reads
+  // the latest context without re-attaching listeners.
+  const ctxRef = React.useRef(ctx);
+  ctxRef.current = ctx;
+
+  // Track whether a pointermove actually happened between down→up so we can
+  // suppress the click that the browser fires after every pointerup.
+  const didDragRef = React.useRef(false);
+
+  // Hide the tooltip while dragging.
+  const [tooltipOpen, setTooltipOpen] = React.useState(false);
+  const [dragging, setDragging] = React.useState(false);
+
+  // Delay single-click so a double-click can cancel it.
+  const clickTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  if (!resizable) return null;
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const el = e.currentTarget;
+    el.setPointerCapture(e.pointerId);
+    didDragRef.current = false;
+    setDragging(true);
+    setTooltipOpen(false);
+
+    // Disable the width transition while dragging so resize follows the
+    // cursor without animation lag.
+    const sidebarEl = el.closest('[data-state]') as HTMLElement | null;
+    if (!sidebarEl) return;
+    sidebarEl.style.transitionProperty = 'none';
+    const isRtl = getComputedStyle(sidebarEl).direction === 'rtl';
+    const sidebarRect = sidebarEl.getBoundingClientRect();
+
+    const { minWidth, maxWidth } = ctxRef.current;
+    const collapseThreshold = minWidth / 2;
+
+    const onPointerMove = (ev: PointerEvent) => {
+      didDragRef.current = true;
+      const newWidth = isRtl
+        ? sidebarRect.right - ev.clientX
+        : ev.clientX - sidebarRect.left;
+      const { expanded: isExpanded } = ctxRef.current;
+
+      if (isExpanded) {
+        if (newWidth < collapseThreshold) {
+          ctxRef.current.toggleExpanded();
+        } else {
+          ctxRef.current.setWidth(
+            Math.min(Math.max(newWidth, minWidth), maxWidth)
+          );
+        }
+      } else {
+        if (newWidth > collapseThreshold) {
+          ctxRef.current.toggleExpanded();
+        }
+      }
+    };
+
+    const onPointerUp = () => {
+      setDragging(false);
+      // Restore transition so collapse/expand animates.
+      if (sidebarEl) sidebarEl.style.transitionProperty = '';
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+    };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  };
+
+  const handleClick = () => {
+    // Suppress click when the interaction was a drag.
+    if (didDragRef.current) return;
+    // Cancel any pending click timer (dblclick fires two clicks).
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    // Wait to see if a double-click follows.
+    clickTimerRef.current = setTimeout(() => {
+      toggleExpanded();
+    }, 250);
+  };
+
+  const handleDoubleClick = () => {
+    // Cancel the pending single-click toggle.
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
+    if (!expanded) toggleExpanded();
+    ctxRef.current.setWidth(ctxRef.current.defaultWidth);
+  };
+
+  const handleTooltipOpenChange = (open: boolean) => {
+    // Never open the tooltip while dragging.
+    if (dragging) return;
+    setTooltipOpen(open);
+  };
+
+  return (
+    <Tooltip open={tooltipOpen} onOpenChange={handleTooltipOpenChange}>
+      <TooltipTrigger
+        render={
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label={ctx.resizeAriaLabel}
+            className={cn(
+              // 9px hit area matching ResizableHandle, absolutely positioned on inline-end edge.
+              'absolute end-0 top-0 h-full w-[9px] ltr:translate-x-1/2 rtl:-translate-x-1/2 cursor-[var(--ui-resizable-cursor,ew-resize)] z-10',
+              // 1px centered divider — same idle/hover/active token chain as ResizableHandle.
+              'after:absolute after:inset-y-0 after:left-1/2 after:-translate-x-1/2 after:transition-colors',
+              'after:w-[var(--ui-resizable-border-width,1px)] after:bg-[var(--ui-border-on-surface-border)]',
+              'hover:after:bg-[var(--ui-resizable-border-color-hover)]',
+              'active:after:bg-[var(--ui-resizable-border-color-active)]'
+            )}
+            onPointerDown={handlePointerDown}
+            onClick={handleClick}
+            onDoubleClick={handleDoubleClick}
+          />
+        }
+      />
+      <TooltipContent side={getDocDir() === 'rtl' ? 'left' : 'right'} align="center">
+        {expanded ? ctx.resizeTooltipExpanded : ctx.resizeTooltipCollapsed}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 const SidebarSecondary = React.forwardRef<HTMLElement, SidebarSecondaryProps>(
@@ -111,6 +337,12 @@ const SidebarSecondary = React.forwardRef<HTMLElement, SidebarSecondaryProps>(
       expanded: expandedProp,
       defaultExpanded = true,
       onExpandedChange,
+      resizable: resizableProp = true,
+      width: widthProp,
+      onWidthChange,
+      resizeAriaLabel = 'Resize sidebar',
+      resizeTooltipExpanded = defaultResizeTooltipExpanded,
+      resizeTooltipCollapsed = defaultResizeTooltipCollapsed,
       'aria-label': ariaLabel = 'Section navigation',
       render,
       children,
@@ -124,14 +356,53 @@ const SidebarSecondary = React.forwardRef<HTMLElement, SidebarSecondaryProps>(
       onExpandedChange
     );
 
+    // Width is independent of expanded/collapsed — it persists across cycles.
+    const [width, setWidthState] = React.useState(SIDEBAR_EXPANDED_WIDTH);
+    const isWidthControlled = widthProp !== undefined;
+    const currentWidth = isWidthControlled ? widthProp : width;
+    const setWidth = React.useCallback(
+      (next: number) => {
+        if (!isWidthControlled) setWidthState(next);
+        onWidthChange?.(next);
+      },
+      [isWidthControlled, onWidthChange]
+    );
+
     // Collapse is driven by the consumer through the layout context — the
     // `SidebarSecondaryCollapseTrigger` calls `toggleExpanded`, which updates
     // uncontrolled state and always emits `onExpandedChange`. Controlled
     // consumers ignore the internal state and react to the callback.
+    // Breadcrumb auto-wiring: Header and the selected MenuItem register their
+    // labels so the collapsed breadcrumb can display them without manual props.
+    const [headerLabel, setHeaderLabel] = React.useState<React.ReactNode>(undefined);
+    const [selectedLabel, setSelectedLabel] = React.useState<React.ReactNode>(undefined);
+
     const context = React.useMemo<SidebarSecondaryContextValue>(
-      () => ({ expanded, toggleExpanded: () => setExpanded(!expanded) }),
-      [expanded, setExpanded]
+      () => ({
+        expanded,
+        toggleExpanded: () => setExpanded(!expanded),
+        resizable: resizableProp,
+        width: currentWidth,
+        setWidth,
+        minWidth: SIDEBAR_EXPANDED_WIDTH,
+        maxWidth: SIDEBAR_MAX_WIDTH,
+        defaultWidth: SIDEBAR_EXPANDED_WIDTH,
+        headerLabel,
+        setHeaderLabel,
+        selectedLabel,
+        setSelectedLabel,
+        resizeAriaLabel,
+        resizeTooltipExpanded,
+        resizeTooltipCollapsed,
+      }),
+      [expanded, setExpanded, resizableProp, currentWidth, setWidth, headerLabel, selectedLabel, resizeAriaLabel, resizeTooltipExpanded, resizeTooltipCollapsed]
     );
+
+    // When resizable + expanded, width is driven by inline style instead of tokens.
+    const inlineStyle: React.CSSProperties | undefined =
+      resizableProp
+        ? { width: expanded ? currentWidth : undefined }
+        : undefined;
 
     const element = useRender({
       render,
@@ -147,11 +418,18 @@ const SidebarSecondary = React.forwardRef<HTMLElement, SidebarSecondaryProps>(
             string,
             string
           >),
+          style: inlineStyle,
           className: cn(
-            'group/sidebar flex h-full flex-col bg-[var(--ui-sidebar-secondary-global-container-color)] border-r border-[var(--ui-sidebar-secondary-global-container-border-color)] [border-right-width:var(--ui-sidebar-secondary-global-container-border-width)] w-[var(--ui-sidebar-secondary-collapsed-container-width)] data-[state=expanded]:w-[var(--ui-sidebar-secondary-expanded-container-width)] transition-[width]',
+            'group/sidebar relative flex h-full flex-col bg-[var(--ui-sidebar-secondary-global-container-color)] border-e border-[var(--ui-sidebar-secondary-global-container-border-color)] [border-inline-end-width:var(--ui-sidebar-secondary-global-container-border-width)] w-[var(--ui-sidebar-secondary-collapsed-container-width)] data-[state=expanded]:w-[var(--ui-sidebar-secondary-expanded-container-width)] transition-[width]',
             className
           ),
-          children,
+          children: (
+            <>
+              <SidebarSecondaryCollapsedBreadcrumb />
+              {children}
+              <SidebarSecondaryResizeEdge />
+            </>
+          ),
         },
         props
       ),
@@ -175,98 +453,105 @@ export interface SidebarSecondaryHeaderProps
 const SidebarSecondaryHeader = React.forwardRef<
   HTMLDivElement,
   SidebarSecondaryHeaderProps
->(({ className, label, children, ...props }, ref) => (
-  // Hidden in collapsed mode — the CollapsedBreadcrumb's parent label carries the
-  // section context in the rail, so a truncated single-letter heading is omitted.
-  <div
-    ref={ref}
-    className={cn(
-      'flex items-center shrink-0',
-      'hidden group-data-[state=expanded]/sidebar:flex',
-      'px-[var(--ui-sidebar-secondary-collapsed-container-header-padding-x)] py-[var(--ui-sidebar-secondary-collapsed-container-header-padding-y)]',
-      'group-data-[state=expanded]/sidebar:px-[var(--ui-sidebar-secondary-expanded-container-header-padding-x)] group-data-[state=expanded]/sidebar:py-[var(--ui-sidebar-secondary-expanded-container-header-padding-y)]',
-      className
-    )}
-    {...props}
-  >
-    <h2 className="ui-sidebar-secondary-global-header-label-text-style truncate text-[var(--ui-sidebar-secondary-global-header-label-color)]">
-      {label ?? children}
-    </h2>
-  </div>
-));
+>(({ className, label, children, ...props }, ref) => {
+  const { setHeaderLabel } = useSidebarSecondaryContext();
+  const resolvedLabel = label ?? children;
+
+  // Register the header text so the collapsed breadcrumb can auto-display it.
+  React.useEffect(() => {
+    setHeaderLabel(resolvedLabel);
+  }, [resolvedLabel, setHeaderLabel]);
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'hidden items-center shrink-0',
+        'group-data-[state=expanded]/sidebar:flex',
+        'px-[var(--ui-sidebar-secondary-global-container-header-padding-x)] py-[var(--ui-sidebar-secondary-global-container-header-padding-y)]',
+        className
+      )}
+      {...props}
+    >
+      <h2 className="ui-sidebar-secondary-global-header-label-text-style truncate text-[var(--ui-sidebar-secondary-global-header-label-color)]">
+        {resolvedLabel}
+      </h2>
+    </div>
+  );
+});
 SidebarSecondaryHeader.displayName = 'SidebarSecondaryHeader';
 
 const SidebarSecondaryContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<'div'>
->(({ className, children, ...props }, ref) => (
-  // Expanded: the section list, scrolling inside a ScrollArea whose overlay
-  // scrollbar floats over the content and reserves no gutter (full-bleed rows
-  // are never cropped). Hidden in collapsed mode, where the CollapsedBreadcrumb
-  // sibling takes over.
-  <ScrollArea
+>(({ className, ...props }, ref) => (
+  // Expanded: the section list. Hidden in collapsed mode, where the
+  // CollapsedBreadcrumb sibling takes over.
+  <div
     ref={ref}
     className={cn(
-      'min-h-0 flex-1',
-      'hidden group-data-[state=expanded]/sidebar:block',
+      'flex flex-1 flex-col overflow-y-auto gap-[var(--ui-sidebar-secondary-global-section-list-gap)]',
+      'hidden group-data-[state=expanded]/sidebar:flex',
       className
     )}
     {...props}
-  >
-    <div className="flex flex-col gap-[var(--ui-sidebar-secondary-global-section-list-gap)]">
-      {children}
-    </div>
-  </ScrollArea>
+  />
 ));
 SidebarSecondaryContent.displayName = 'SidebarSecondaryContent';
 
 export interface SidebarSecondaryCollapsedBreadcrumbProps
   extends React.ComponentPropsWithoutRef<'div'> {
-  /** The parent section label (breadcrumbLabel). */
-  parentLabel: React.ReactNode;
-  /** The current page label (labelCurrentPage). */
-  currentLabel: React.ReactNode;
-  /** Separator between the two; defaults to a 16px ChevronRightIcon (R6). */
+  /**
+   * The parent section label (breadcrumbLabel).
+   * Auto-derived from the `SidebarSecondaryHeader` label when omitted.
+   */
+  parentLabel?: React.ReactNode;
+  /**
+   * The current page label (labelCurrentPage).
+   * Auto-derived from the selected `SidebarSecondaryMenuItem` when omitted.
+   */
+  currentLabel?: React.ReactNode;
+  /** Separator between the two; defaults to a 16px ChevronDownIcon. */
   separator?: React.ReactNode;
 }
 
 const SidebarSecondaryCollapsedBreadcrumb = React.forwardRef<
   HTMLDivElement,
   SidebarSecondaryCollapsedBreadcrumbProps
->(({ className, parentLabel, currentLabel, separator, ...props }, ref) => (
+>(({ className, parentLabel, currentLabel, separator, ...props }, ref) => {
+  const { headerLabel, selectedLabel } = useSidebarSecondaryContext();
+  const resolvedParent = parentLabel ?? headerLabel;
+  const resolvedCurrent = currentLabel ?? selectedLabel;
+
+  return (
   // Shown only in collapsed mode — toggled by the same data-[state] selector so
-  // it stays in the DOM (SSR-present) with no JS branch. Stacked top→bottom:
-  // parent → separator → current page. In the ~48px rail the labels are rotated
-  // to read vertically (`writing-mode: vertical-rl`, glyphs tilted 90° clockwise,
-  // reading top-to-bottom) so long labels run down the rail instead of clipping;
-  // the separator chevron is turned to point down to match that flow.
+  // it stays in the DOM (SSR-present) with no JS branch. Laid out vertically:
+  // parent → separator → current page.
   <div
     ref={ref}
     className={cn(
-      // `flex-1` so the rail fills the space between the (hidden) header and the
-      // footer, keeping the collapse trigger pinned to the bottom; the breadcrumb
-      // content stays at the top of that space.
-      'flex flex-1 flex-col items-center',
+      'flex flex-1 flex-col items-center min-h-0',
       'gap-[var(--ui-sidebar-secondary-collapsed-container-content-gap)] py-[var(--ui-sidebar-secondary-collapsed-container-content-padding-y)]',
       'flex group-data-[state=expanded]/sidebar:hidden',
       className
     )}
     {...props}
   >
-    <span className="ui-sidebar-secondary-collapsed-breadcrumb-label-text-style whitespace-nowrap [writing-mode:vertical-rl] text-[var(--ui-sidebar-secondary-collapsed-breadcrumb-label-color)]">
-      {parentLabel}
+    <span className="[writing-mode:vertical-rl] [direction:ltr] shrink-0 ui-sidebar-secondary-collapsed-breadcrumb-label-text-style text-[var(--ui-sidebar-secondary-collapsed-breadcrumb-label-color)]">
+      {resolvedParent}
     </span>
     <span
       aria-hidden="true"
       className="inline-flex items-center text-[var(--ui-sidebar-secondary-collapsed-icon-separator-color)] [&>svg]:size-[var(--ui-sidebar-secondary-collapsed-icon-separator-size)]"
     >
-      {separator ?? <ChevronRightIcon size={16} className="rotate-90" />}
+      {separator ?? <ChevronDownIcon size={16} />}
     </span>
-    <span className="ui-sidebar-secondary-collapsed-label-current-page-text-style whitespace-nowrap [writing-mode:vertical-rl] text-[var(--ui-sidebar-secondary-collapsed-label-current-page-color)]">
-      {currentLabel}
+    <span className="[writing-mode:vertical-rl] [direction:ltr] flex-1 min-h-0 overflow-hidden ui-sidebar-secondary-collapsed-label-current-page-text-style text-[var(--ui-sidebar-secondary-collapsed-label-current-page-color)]">
+      {resolvedCurrent}
     </span>
   </div>
-));
+  );
+});
 SidebarSecondaryCollapsedBreadcrumb.displayName =
   'SidebarSecondaryCollapsedBreadcrumb';
 
@@ -376,11 +661,8 @@ export interface SidebarSecondarySectionLabelProps
 
 const sectionLabelTextClass =
   'ui-sidebar-secondary-section-label-section-text-style text-[var(--ui-sidebar-secondary-section-label-section-color)]';
-// The group header is at least 36px tall (Figma node 4011-4472), with the label
-// vertically centered. No header-height token exists, so the 36px floor is set
-// directly; horizontal padding stays tokenized.
 const sectionHeaderPadClass =
-  'flex min-h-9 items-center px-[var(--ui-sidebar-secondary-section-container-header-padding-x)]';
+  'min-h-[var(--ui-sidebar-secondary-menu-item-global-container-height-min)] py-[var(--ui-sidebar-secondary-section-container-header-padding-y)] px-[var(--ui-sidebar-secondary-section-container-header-padding-x)]';
 
 const SidebarSecondarySectionLabel = React.forwardRef<
   HTMLDivElement,
@@ -429,7 +711,7 @@ const SidebarSecondarySectionLabel = React.forwardRef<
     >
       <Collapsible.Trigger
         className={cn(
-          'group/section flex min-w-0 flex-1 items-center gap-[var(--ui-sidebar-secondary-section-container-header-gap)] text-left',
+          'group/section flex min-w-0 flex-1 items-center gap-[var(--ui-sidebar-secondary-section-container-header-gap)] text-start',
           sectionLabelTextClass,
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-brand)] focus-visible:ring-inset'
         )}
@@ -437,7 +719,7 @@ const SidebarSecondarySectionLabel = React.forwardRef<
         <ChevronDownIcon
           size={16}
           aria-hidden="true"
-          className="shrink-0 -rotate-90 transition-transform group-data-[panel-open]/section:rotate-0 text-[var(--ui-sidebar-secondary-section-icon-arrow-color)]"
+          className="shrink-0 ltr:-rotate-90 rtl:rotate-90 transition-transform group-data-[panel-open]/section:rotate-0 text-[var(--ui-sidebar-secondary-section-icon-arrow-color)]"
         />
         <span className="min-w-0 flex-1 truncate">{children}</span>
         {unreadRollup != null && (
@@ -481,7 +763,7 @@ SidebarSecondaryMenu.displayName = 'SidebarSecondaryMenu';
 // value is unchanged (runtime var() references honor brand overrides only on the
 // referenced token).
 const sidebarSecondaryRowClasses =
-  'group/row flex w-full items-center gap-[var(--ui-sidebar-secondary-menu-item-global-container-gap)] min-h-[var(--ui-sidebar-secondary-menu-item-global-container-height-min)] px-[var(--ui-sidebar-secondary-menu-item-global-container-padding-x)] py-[var(--ui-sidebar-secondary-menu-item-global-container-padding-y)] no-underline ui-sidebar-secondary-menu-item-global-label-text-style transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-brand)] focus-visible:ring-inset text-[var(--ui-sidebar-secondary-menu-item-global-label-color-color)] [&_svg]:shrink-0 [&_svg]:size-[var(--ui-sidebar-secondary-menu-item-global-icon-size)] [&_svg]:text-[var(--ui-sidebar-secondary-menu-item-global-icon-color-color)]';
+  'group/row flex w-full items-start gap-[var(--ui-sidebar-secondary-menu-item-global-container-gap)] min-h-[var(--ui-sidebar-secondary-menu-item-global-container-height-min)] px-[var(--ui-sidebar-secondary-menu-item-global-container-padding-x)] py-[var(--ui-sidebar-secondary-menu-item-global-container-padding-y)] no-underline ui-sidebar-secondary-menu-item-global-label-text-style transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-brand)] focus-visible:ring-inset text-[var(--ui-sidebar-secondary-menu-item-global-label-color-color)] [&_svg]:shrink-0 [&_svg]:size-[var(--ui-sidebar-secondary-menu-item-global-icon-size)] [&_svg]:text-[var(--ui-sidebar-secondary-menu-item-global-icon-color-color)]';
 
 const sidebarSecondaryMenuItemVariants = cva(sidebarSecondaryRowClasses, {
   variants: {
@@ -502,8 +784,10 @@ export interface SidebarSecondaryMenuItemProps
     Omit<VariantProps<typeof sidebarSecondaryMenuItemVariants>, 'variant'> {
   /** Marks the current route: sets the `selected` variant + `aria-current="page"`. */
   selected?: boolean;
-  /** Optional leading 16px icon (Level-1 only; `hasIcon` in Figma). */
+  /** Optional leading 16px icon (`hasIcon` in Figma). */
   icon?: React.ReactNode;
+  /** Trailing extras (tag, shortcut, external-link icon — `hasExtras` in Figma). */
+  extras?: React.ReactNode;
   children?: React.ReactNode;
   /** Replace the rendered `<a>` (e.g. a router `Link` or a `<button>`). */
   render?: useRender.RenderProp;
@@ -512,23 +796,15 @@ export interface SidebarSecondaryMenuItemProps
 const SidebarSecondaryMenuItem = React.forwardRef<
   HTMLAnchorElement,
   SidebarSecondaryMenuItemProps
->(({ className, selected = false, icon, render, children, ...props }, ref) => {
-  const { expanded } = useSidebarSecondaryContext();
+>(({ className, selected = false, icon, extras, render, children, ...props }, ref) => {
+  const { expanded, setSelectedLabel } = useSidebarSecondaryContext();
+  const { expandable } = React.useContext(SidebarSecondarySectionContext);
 
-  // Trailing extras (tag / shortcut / external link) are passed as children but
-  // must sit at the right edge of the row, after the title — so split them out:
-  // the title takes the remaining width and truncates with an ellipsis, while the
-  // extras stay `shrink-0` on the right (the row's `gap` is their left margin).
-  const items = React.Children.toArray(children);
-  const extras = items.filter(
-    (child): child is React.ReactElement =>
-      React.isValidElement(child) &&
-      (child.type as { displayName?: string }).displayName ===
-        'SidebarSecondaryMenuItemExtras'
-  );
-  const label = items.filter(
-    (child) => !extras.includes(child as React.ReactElement)
-  );
+  // Register this item's label when selected so the collapsed breadcrumb
+  // auto-displays the current page without manual props.
+  React.useEffect(() => {
+    if (selected) setSelectedLabel(children);
+  }, [selected, children, setSelectedLabel]);
 
   const inner = useRender({
     render,
@@ -540,6 +816,11 @@ const SidebarSecondaryMenuItem = React.forwardRef<
           sidebarSecondaryMenuItemVariants({
             variant: selected ? 'selected' : 'unselected',
           }),
+          // Inside an expandable section, increase start padding so the
+          // label aligns with the section header text (after chevron + gap)
+          // while keeping the container full-width for hover/active fills.
+          expandable &&
+            'ps-[calc(var(--ui-sidebar-secondary-menu-item-global-container-padding-x)+var(--ui-sidebar-secondary-section-container-header-gap)+16px)]',
           className
         ),
         'aria-current': selected ? 'page' : undefined,
@@ -553,16 +834,11 @@ const SidebarSecondaryMenuItem = React.forwardRef<
             {/* Keep the label in the DOM as `sr-only` in collapsed/rail mode so
                 an icon-only row keeps an accessible name (a11y §7). */}
             <span
-              className={cn(
-                'min-w-0 flex-1 truncate text-left',
-                !expanded && 'sr-only'
-              )}
+              className={cn('flex-1 min-w-[60px] truncate text-start', !expanded && 'sr-only')}
             >
-              {label}
+              {children}
             </span>
-            {extras.length > 0 && (
-              <span className="flex shrink-0 items-center">{extras}</span>
-            )}
+            {extras}
           </>
         ),
       },
@@ -573,137 +849,6 @@ const SidebarSecondaryMenuItem = React.forwardRef<
   return <li className="contents">{inner}</li>;
 });
 SidebarSecondaryMenuItem.displayName = 'SidebarSecondaryMenuItem';
-
-export type SidebarSecondaryMenuSubProps = React.ComponentPropsWithoutRef<
-  typeof Collapsible.Root
->;
-
-const SidebarSecondaryMenuSub = React.forwardRef<
-  HTMLDivElement,
-  SidebarSecondaryMenuSubProps
->(({ className, render, ...props }, ref) => (
-  // Disclosure row: Base UI Collapsible gives per-row open state +
-  // aria-expanded/aria-controls. Rendered as the list `<li>` wrapper.
-  <Collapsible.Root
-    ref={ref}
-    render={render ?? <li />}
-    className={cn('contents', className)}
-    {...props}
-  />
-));
-SidebarSecondaryMenuSub.displayName = 'SidebarSecondaryMenuSub';
-
-export interface SidebarSecondaryMenuSubTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof Collapsible.Trigger> {
-  /** Marks the parent row as selected. */
-  selected?: boolean;
-  /** Optional leading 16px icon. */
-  icon?: React.ReactNode;
-}
-
-const SidebarSecondaryMenuSubTrigger = React.forwardRef<
-  HTMLButtonElement,
-  SidebarSecondaryMenuSubTriggerProps
->(({ className, selected = false, icon, children, ...props }, ref) => {
-  const { expanded } = useSidebarSecondaryContext();
-
-  return (
-    <Collapsible.Trigger
-      ref={ref}
-      aria-current={selected ? 'page' : undefined}
-      className={cn(
-        sidebarSecondaryMenuItemVariants({
-          variant: selected ? 'selected' : 'unselected',
-        }),
-        'text-left',
-        className
-      )}
-      {...props}
-    >
-      {icon != null && (
-        <span className="flex shrink-0 items-center self-start mt-[var(--ui-sidebar-secondary-menu-item-global-icon-margin-t)]">
-          {icon}
-        </span>
-      )}
-      <span className={cn('flex-1 truncate', !expanded && 'sr-only')}>
-        {children}
-      </span>
-      {/* Chevron rotates when the panel is open (Base UI sets data-panel-open
-          on the trigger). Hidden in collapsed rail mode. */}
-      <ChevronDownIcon
-        size={16}
-        aria-hidden="true"
-        className={cn(
-          'shrink-0 transition-transform group-data-[panel-open]/row:rotate-180',
-          !expanded && 'hidden'
-        )}
-      />
-    </Collapsible.Trigger>
-  );
-});
-SidebarSecondaryMenuSubTrigger.displayName = 'SidebarSecondaryMenuSubTrigger';
-
-export type SidebarSecondaryMenuSubContentProps =
-  React.ComponentPropsWithoutRef<typeof Collapsible.Panel>;
-
-const SidebarSecondaryMenuSubContent = React.forwardRef<
-  HTMLDivElement,
-  SidebarSecondaryMenuSubContentProps
->(({ className, children, ...props }, ref) => (
-  <Collapsible.Panel ref={ref} className={cn(className)} {...props}>
-    <ul className="flex flex-col gap-[var(--ui-sidebar-secondary-section-menu-item-list-gap)]">
-      {children}
-    </ul>
-  </Collapsible.Panel>
-));
-SidebarSecondaryMenuSubContent.displayName = 'SidebarSecondaryMenuSubContent';
-
-export interface SidebarSecondaryMenuSubItemProps
-  extends Omit<React.ComponentPropsWithoutRef<'a'>, 'children'> {
-  /** Marks the current route (Level-2 — no icon). */
-  selected?: boolean;
-  children?: React.ReactNode;
-  /** Replace the rendered `<a>` (e.g. a router `Link`). */
-  render?: useRender.RenderProp;
-}
-
-const SidebarSecondaryMenuSubItem = React.forwardRef<
-  HTMLAnchorElement,
-  SidebarSecondaryMenuSubItemProps
->(({ className, selected = false, render, children, ...props }, ref) => {
-  const { expanded } = useSidebarSecondaryContext();
-
-  const inner = useRender({
-    render,
-    ref,
-    defaultTagName: 'a',
-    props: mergeProps<'a'>(
-      {
-        className: cn(
-          sidebarSecondaryMenuItemVariants({
-            variant: selected ? 'selected' : 'unselected',
-          }),
-          // Level-2 left indent (no icon column). The dedicated level-2 padding
-          // token was removed in the next-gen sync; reconstruct the indent from
-          // surviving tokens so the label aligns under level-1 labels (row
-          // padding + icon column + gap).
-          'pl-[calc(var(--ui-sidebar-secondary-menu-item-global-container-padding-x)+var(--ui-sidebar-secondary-menu-item-global-icon-size)+var(--ui-sidebar-secondary-menu-item-global-container-gap))]',
-          className
-        ),
-        'aria-current': selected ? 'page' : undefined,
-        children: (
-          <span className={cn('flex-1 truncate text-left', !expanded && 'sr-only')}>
-            {children}
-          </span>
-        ),
-      },
-      props
-    ),
-  });
-
-  return <li className="contents">{inner}</li>;
-});
-SidebarSecondaryMenuSubItem.displayName = 'SidebarSecondaryMenuSubItem';
 
 export interface SidebarSecondaryMenuItemExtrasProps
   extends React.ComponentPropsWithoutRef<'span'> {
@@ -729,7 +874,7 @@ const SidebarSecondaryMenuItemExtras = React.forwardRef<
     <span
       ref={ref}
       className={cn(
-        'inline-flex items-center gap-[var(--ui-sidebar-secondary-menu-item-extras-global-container-gap)]',
+        'inline-flex items-center shrink-0 min-h-6 overflow-clip gap-[var(--ui-sidebar-secondary-menu-item-extras-global-container-gap)]',
         !expanded && 'hidden',
         className
       )}
@@ -742,7 +887,7 @@ const SidebarSecondaryMenuItemExtras = React.forwardRef<
         </span>
       )}
       {showExternal && (
-        <SquareArrowUpRightIcon
+        <ArrowSquareUpRightIcon
           size={16}
           className="text-[var(--ui-sidebar-secondary-menu-item-extras-global-external-icon-color)] size-[var(--ui-sidebar-secondary-menu-item-extras-global-external-icon-size)]"
         />
@@ -754,69 +899,67 @@ SidebarSecondaryMenuItemExtras.displayName = 'SidebarSecondaryMenuItemExtras';
 
 export interface SidebarSecondaryCollapseTriggerProps
   extends Omit<React.ComponentPropsWithoutRef<'button'>, 'children'> {
-  /** Leading 16px icon (e.g. a panel-left glyph). */
+  /** Icon shown when the sidebar is expanded (collapse affordance). */
   icon?: React.ReactNode;
-  /**
-   * Optional trailing keyboard-shortcut hint (e.g. `⌘J`), right-aligned and
-   * hidden alongside the label in collapsed mode.
-   */
-  shortcut?: React.ReactNode;
+  /** Icon shown when the sidebar is collapsed (expand affordance). Falls back to `icon` when omitted. */
+  expandIcon?: React.ReactNode;
+  /** Tooltip text shown when the sidebar is collapsed. Defaults to `'Expand'`. */
+  expandTooltip?: React.ReactNode;
+  /** Trailing extras (e.g. a keyboard shortcut hint), same slot as `SidebarSecondaryMenuItem`. */
+  extras?: React.ReactNode;
   children?: React.ReactNode;
 }
 
 // The footer "Collapse menu" affordance. A row-styled `<button>` that flips the
 // panel width via the layout context — the live wiring for the controllable
 // `expanded` state (B1). Keeps its label as `sr-only` in collapsed mode.
+// When collapsed, wraps the button in a Tooltip showing "Expand".
 const SidebarSecondaryCollapseTrigger = React.forwardRef<
   HTMLButtonElement,
   SidebarSecondaryCollapseTriggerProps
->(({ className, icon, shortcut, children, onClick, ...props }, ref) => {
+>(({ className, icon, expandIcon, expandTooltip = 'Expand', extras, children, onClick, ...props }, ref) => {
   const { expanded, toggleExpanded } = useSidebarSecondaryContext();
+
+  const activeIcon = expanded ? icon : (expandIcon ?? icon);
+
+  const button = (
+    <button
+      ref={ref}
+      type="button"
+      aria-expanded={expanded}
+      className={cn(
+        sidebarSecondaryMenuItemVariants({ variant: 'unselected' }),
+        'text-start',
+        className
+      )}
+      onClick={(event) => {
+        onClick?.(event);
+        if (!event.defaultPrevented) toggleExpanded();
+      }}
+      {...props}
+    >
+      {activeIcon != null && (
+        <span className="flex shrink-0 items-center self-start mt-[var(--ui-sidebar-secondary-menu-item-global-icon-margin-t)] rtl:-scale-x-100">
+          {activeIcon}
+        </span>
+      )}
+      <span className={cn('flex-1 min-w-[60px] truncate', !expanded && 'sr-only')}>
+        {children}
+      </span>
+      {extras}
+    </button>
+  );
 
   return (
     <li className="contents">
-      <button
-        ref={ref}
-        type="button"
-        aria-expanded={expanded}
-        className={cn(
-          sidebarSecondaryMenuItemVariants({ variant: 'unselected' }),
-          'text-left',
-          className
-        )}
-        onClick={(event) => {
-          onClick?.(event);
-          if (!event.defaultPrevented) toggleExpanded();
-        }}
-        {...props}
-      >
-        {icon != null && (
-          // Flip the chevron when collapsed so a chevron-left ("collapse")
-          // becomes a chevron-right ("expand") — the icon always points toward
-          // the action it triggers.
-          <span
-            className={cn(
-              'flex shrink-0 items-center self-start mt-[var(--ui-sidebar-secondary-menu-item-global-icon-margin-t)] transition-transform',
-              !expanded && 'rotate-180'
-            )}
-          >
-            {icon}
-          </span>
-        )}
-        <span className={cn('flex-1 truncate', !expanded && 'sr-only')}>
-          {children}
-        </span>
-        {shortcut != null && (
-          <span
-            className={cn(
-              'shrink-0 ui-sidebar-secondary-menu-item-extras-global-shortcut-text-style text-[var(--ui-sidebar-secondary-menu-item-extras-global-shortcut-color)]',
-              !expanded && 'sr-only'
-            )}
-          >
-            {shortcut}
-          </span>
-        )}
-      </button>
+      {expanded ? (
+        button
+      ) : (
+        <Tooltip>
+          <TooltipTrigger render={button} />
+          <TooltipContent side={getDocDir() === 'rtl' ? 'left' : 'right'}>{expandTooltip}</TooltipContent>
+        </Tooltip>
+      )}
     </li>
   );
 });
@@ -832,10 +975,6 @@ export {
   SidebarSecondarySectionLabel,
   SidebarSecondaryMenu,
   SidebarSecondaryMenuItem,
-  SidebarSecondaryMenuSub,
-  SidebarSecondaryMenuSubTrigger,
-  SidebarSecondaryMenuSubContent,
-  SidebarSecondaryMenuSubItem,
   SidebarSecondaryMenuItemExtras,
   SidebarSecondaryCollapseTrigger,
   sidebarSecondaryMenuItemVariants,
