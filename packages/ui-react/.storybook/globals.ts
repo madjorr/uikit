@@ -31,6 +31,7 @@ import tagDeepSky from '@acronis-platform/tokens-pd/css/Tag/deep-sky.css?raw';
 import tooltipDeepSky from '@acronis-platform/tokens-pd/css/Tooltip/deep-sky.css?raw';
 import sidebarPrimaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarPrimary/deep-sky.css?raw';
 import sidebarSecondaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarSecondary/deep-sky.css?raw';
+import tableDeepSky from '@acronis-platform/tokens-pd/css/Table/deep-sky.css?raw';
 
 export type Brand = 'acronis' | 'deep-sky';
 export type ColorMode = 'light' | 'dark';
@@ -54,6 +55,7 @@ const DEEP_SKY_OVERRIDES = [
   tooltipDeepSky,
   sidebarPrimaryDeepSky,
   sidebarSecondaryDeepSky,
+  tableDeepSky,
 ].join('\n');
 
 // Locales that read right-to-left, used when `direction` is left on 'auto'.

@@ -1,0 +1,129 @@
+spec_version: '1.0'
+component: Table
+
+# References only. Values live in @acronis-platform/tokens-pd (generated from
+# @acronis-platform/design-tokens) and resolve per brand/theme at paint time.
+# The token schema forbids a value/default key here — never restate values.
+source: '@acronis-platform/tokens-pd'
+
+tokens:
+  - {
+      name: --ui-table-global-row-color-idle,
+      affects: row,
+      description: Row background — idle (transparent),
+    }
+  - {
+      name: --ui-table-global-row-color-hover,
+      affects: row,
+      description: Row background — hover,
+    }
+  - {
+      name: --ui-table-global-row-color-active,
+      affects: row,
+      description: Row background — selected,
+    }
+  - {
+      name: --ui-table-global-cell-border-color,
+      affects: data-cell,
+      description: Cell bottom-divider color (also used by header-cell),
+    }
+  - {
+      name: --ui-table-global-cell-border-style,
+      affects: data-cell,
+      description: Cell bottom-divider style,
+    }
+  - {
+      name: --ui-table-global-cell-border-width,
+      affects: data-cell,
+      description: Cell bottom-divider width,
+    }
+  - {
+      name: --ui-table-global-cell-min-height,
+      affects: data-cell,
+      description: Minimum cell height (also used by header-cell),
+    }
+  - {
+      name: --ui-table-global-cell-padding-x,
+      affects: data-cell,
+      description: Cell horizontal padding (also used by header-cell),
+    }
+  - {
+      name: --ui-table-global-cell-padding-y,
+      affects: data-cell,
+      description: Cell vertical padding (also used by header-cell),
+    }
+  - {
+      name: --ui-table-global-cell-icon-margin-y,
+      affects: data-cell,
+      description: Vertical margin for a leading icon in a composed icon+text cell,
+    }
+  - {
+      name: --ui-table-global-cell-tag-margin-y,
+      affects: data-cell,
+      description: Vertical margin for a Tag in a composed tag cell,
+    }
+  - {
+      name: --ui-table-data-value-color-idle,
+      affects: data-cell,
+      description: Cell value text color — idle,
+    }
+  - {
+      name: --ui-table-data-value-color-disabled,
+      affects: data-cell,
+      description: Cell value text color — disabled,
+    }
+  - {
+      name: --ui-table-data-gap,
+      affects: data-cell,
+      description: Gap between a leading icon/dot and text in a composed cell,
+    }
+  - {
+      name: --ui-table-header-label-color,
+      affects: header-cell,
+      description: Header label text color,
+    }
+  - {
+      name: --ui-table-header-gap,
+      affects: header-cell,
+      description: Gap between the header label and its sort icon,
+    }
+  - {
+      name: --ui-table-header-cell-color-idle,
+      affects: header-cell,
+      description: Sortable header-cell background — idle (also used by row-actions/column-settings),
+    }
+  - {
+      name: --ui-table-header-cell-color-hover,
+      affects: header-cell,
+      description: Sortable header-cell background — hover (also used by row-actions/column-settings),
+    }
+  - {
+      name: --ui-table-header-cell-color-active,
+      affects: header-cell,
+      description: Sortable header-cell background — active (also used by row-actions/column-settings),
+    }
+  - {
+      name: --ui-table-header-sort-icon-color-active,
+      affects: header-cell,
+      description: Sort icon color when the column is sorted (asc or desc),
+    }
+  - {
+      name: --ui-table-header-sort-icon-color-inactive,
+      affects: header-cell,
+      description: Sort icon color when the column is unsorted,
+    }
+  - {
+      name: --ui-table-header-sort-icon-size,
+      affects: header-cell,
+      description: Sort icon size,
+    }
+  - {
+      name: --ui-focus-primary,
+      affects: row,
+      description: 'Shared focus-ring color — used by row (focus-within), header-cell, row-actions, and column-settings',
+    }
+  - {
+      name: --ui-glyph-on-surface-primary,
+      affects: row-actions,
+      description: Shared icon color — used by row-actions and column-settings,
+    }

@@ -1,0 +1,27 @@
+spec_version: '1.0'
+component: Table
+name: table
+status: ready
+category: data-display
+description: >-
+  Displays tabular data in rows and columns. A set of composable parts
+  (header, body, row, header cell, data cell) plus two dedicated icon-button
+  controls (per-row actions, header column settings) — sortable header cells
+  cycle through inactive/ascending/descending. Ships alongside `DataTable`, a
+  TanStack-Table-backed composition of these same parts for consumers who
+  want sorting, row selection, and row expansion wired up instead of building
+  it themselves; `DataTable` has no design of its own — it renders through
+  `Table`'s parts.
+since: 0.26.0
+dependencies:
+  components:
+    - Checkbox
+    - Tag
+    - ArrowDownIcon
+    - ArrowUpIcon
+    - ArrowsDownUpIcon
+    - CogIcon
+    - EllipsisIcon
+figma:
+  node: '3427-207'
+  codeConnect: packages/ui-react/src/components/ui/table/table.figma.tsx

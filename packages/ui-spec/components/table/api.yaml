@@ -1,0 +1,116 @@
+spec_version: '1.0'
+component: Table
+
+# Framework-agnostic contract for a *composable* table: rows and cells are
+# assembled from parts (see anatomy.yaml). Property names are neutral; see
+# `adapters` for the per-framework syntax. Native element attributes pass
+# through on the relevant part (e.g. `colSpan` on a data cell).
+contract:
+  properties:
+    - name: selected
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        On the row part: marks it selected, switching its background to the
+        active row token. Typically wired to a data-grid library's row-
+        selection state (e.g. `row.getIsSelected()`).
+    - name: sortDirection
+      type: "false | 'asc' | 'desc'"
+      required: false
+      default: false
+      description: >-
+        On the header-cell part: the column's current sort direction. When
+        provided together with `onSort`, the cell renders as an interactive
+        button with a 3-state sort icon; omit both for a plain, non-sortable
+        header cell. Maps 1:1 to TanStack Table's `column.getIsSorted()`.
+    - name: onSort
+      type: '(event: MouseEvent) => void'
+      required: false
+      default: undefined
+      description: >-
+        On the header-cell part: toggles sort when the header is clicked.
+        Maps 1:1 to TanStack Table's `column.getToggleSortingHandler()`.
+    - name: disabled
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        On the data-cell part: renders the cell's value with the disabled
+        text-color token.
+    - name: wrap
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        On the data-cell part: lets the value wrap across multiple lines
+        instead of truncating to one line with an ellipsis (the default) —
+        e.g. a full-width expanded-row description.
+    - name: resizeHandle
+      type: ReactNode
+      required: false
+      default: undefined
+      description: >-
+        On the header-cell part: an optional column-resize handle rendered
+        along the cell's trailing edge — e.g. wired to TanStack Table's
+        `header.getResizeHandler()`. No Figma design covers column resizing;
+        this is a plain, token-driven affordance for consumers who enable it.
+
+  events: []
+
+  content:
+    - name: default
+      description: >-
+        The composed table. Author it from the parts: a header row of
+        header cells, and a body of rows of data cells. Row-actions and
+        column-settings controls are placed inside a data-cell/header-cell
+        like any other cell content — they are not slots on the row.
+
+  methods: []
+
+adapters:
+  react:
+    component: Table
+    status: implemented
+    import: >-
+      import { Table, TableHeader, TableBody, TableRow, TableHeaderCell,
+      TableCell, TableActions, TableSettings } from '@acronis-platform/ui-react'
+    example: |
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHeaderCell sortDirection={sort} onSort={toggleSort}>
+              Name
+            </TableHeaderCell>
+            <TableHeaderCell>Owner</TableHeaderCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow selected>
+            <TableCell>invoice-0042.pdf</TableCell>
+            <TableCell>Jordan Lee</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
+  vue:
+    component: AvTable
+    status: planned
+    import: "import { AvTable, AvTableRow, AvTableCell } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvTable>
+        <AvTableRow selected>
+          <AvTableCell>invoice-0042.pdf</AvTableCell>
+        </AvTableRow>
+      </AvTable>
+
+  web-components:
+    element: ui-table
+    status: planned
+    import: "import '@acronis-platform/ui-wc/table'"
+    example: |
+      <ui-table>
+        <ui-table-row selected>
+          <ui-table-cell>invoice-0042.pdf</ui-table-cell>
+        </ui-table-row>
+      </ui-table>

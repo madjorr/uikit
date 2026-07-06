@@ -35,6 +35,12 @@ interface RenderHint {
   /** Root component/import to render when it differs from `index.component`
    *  (e.g. Resizable's root export is `ResizablePanelGroup`). */
   root?: string;
+  /**
+   * Skip the auto Disabled instance even when api.yaml has a `disabled`
+   * property — for composable multi-part specs (e.g. Table) where `disabled`
+   * belongs to a sub-part, not the root component being instantiated here.
+   */
+  skipDisabledInstance?: boolean;
 }
 
 const RENDER: Record<string, RenderHint> = {
@@ -204,6 +210,28 @@ const RENDER: Record<string, RenderHint> = {
       '    ',
     ].join('\n'),
   },
+  table: {
+    // `disabled` in api.yaml is scoped to the data-cell part, not the root
+    // `Table` (which has no such prop) — don't auto-add a Disabled instance.
+    skipDisabledInstance: true,
+    extraImports: [
+      "import { Table, TableHeader, TableBody, TableRow, TableHeaderCell, TableCell } from '../table';",
+    ],
+    sample: [
+      '',
+      '      <TableHeader>',
+      '        <TableRow>',
+      '          <TableHeaderCell>Name</TableHeaderCell>',
+      '        </TableRow>',
+      '      </TableHeader>',
+      '      <TableBody>',
+      '        <TableRow>',
+      '          <TableCell>invoice-0042.pdf</TableCell>',
+      '        </TableRow>',
+      '      </TableBody>',
+      '    ',
+    ].join('\n'),
+  },
 };
 
 const HEADER =
@@ -279,7 +307,7 @@ export const Matrix: Story = {
 };`);
     // Only emit the all-variants Disabled grid when the component actually has a
     // `disabled` prop (e.g. Button does; Tag doesn't).
-    if (hasProp(api, 'disabled')) {
+    if (hasProp(api, 'disabled') && !hint.skipDisabledInstance) {
       parts.push(`export const Disabled: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -299,7 +327,7 @@ export const Variants: Story = {
     </div>
   ),
 };`);
-    if (hasProp(api, 'disabled')) {
+    if (hasProp(api, 'disabled') && !hint.skipDisabledInstance) {
       parts.push(`export const Disabled: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
@@ -321,10 +349,13 @@ export const Variants: Story = {
 };`);
   } else {
     // Only show a disabled instance when the component actually has a
-    // `disabled` prop — composable components (e.g. breadcrumb) do not.
-    const disabledInst = hasProp(api, 'disabled')
-      ? `\n      ${inst(`${label} disabled`)}`
-      : '';
+    // `disabled` prop that applies to the root — composable components (e.g.
+    // breadcrumb) do not, and some (e.g. Table) have one scoped to a sub-part
+    // (opt out via `skipDisabledInstance`).
+    const disabledInst =
+      hasProp(api, 'disabled') && !hint.skipDisabledInstance
+        ? `\n      ${inst(`${label} disabled`)}`
+        : '';
     parts.push(`export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -334,10 +365,15 @@ export const Variants: Story = {
 };`);
   }
 
-  // ── kind=pseudo: one story per pseudo-state ──
+  // ── kind=pseudo: one story per distinct pseudo-class ──
+  // Multiple states can share a pseudo-class (e.g. Table's row `hover` and
+  // its icon-button `icon-button-hover` both use `:hover`) — only the root
+  // component is ever instantiated here, so emit each pseudo-class once.
   let needsPlay = false;
+  const seenPseudo = new Set<string>();
   for (const state of anatomy.states ?? []) {
-    if (state.kind !== 'pseudo' || !state.pseudo) continue;
+    if (state.kind !== 'pseudo' || !state.pseudo || seenPseudo.has(state.pseudo)) continue;
+    seenPseudo.add(state.pseudo);
     if (state.pseudo === ':focus-visible') {
       needsPlay = true;
       parts.push(`export const FocusVisible: Story = {
@@ -385,11 +421,18 @@ function generate(name: string): boolean {
   const comp = hint.root ?? index.component;
   const { body, needsPlay } = buildStories(comp, api, anatomy, hint);
 
+  // Skip the auto root-component import if a hint's extraImports already
+  // pulls from the same relative module — the hint is expected to include
+  // the root component in that combined import instead of a separate one.
+  const samePathImport = new RegExp(`from '\\.\\./${name}';?$`);
+  const rootAlreadyImported = (hint.extraImports ?? []).some((line) =>
+    samePathImport.test(line.trim())
+  );
   const imports = [
     "import type { Meta, StoryObj } from '@storybook/react-vite';",
     ...(needsPlay ? ["import { userEvent } from 'storybook/test';"] : []),
     ...(hint.extraImports ?? []),
-    `import { ${comp} } from '../${name}';`,
+    ...(rootAlreadyImported ? [] : [`import { ${comp} } from '../${name}';`]),
   ].join('\n');
 
   const file = `${HEADER}

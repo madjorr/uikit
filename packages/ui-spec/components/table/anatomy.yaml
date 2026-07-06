@@ -1,0 +1,113 @@
+spec_version: '1.0'
+component: Table
+
+schematic: |
+  root: <table> (wrapped in a scrollable container)
+  +---------------------------------------------------------------------+
+  | header: <thead>                                                     |
+  |  +-------------------+  +----------+  +---------------------------+ |
+  |  | header-cell       |  | ...      |  | header-cell               | |
+  |  |  Name  [sort icon]|  |          |  |  [column-settings]        | |
+  |  +-------------------+  +----------+  +---------------------------+ |
+  +---------------------------------------------------------------------+
+  | body: <tbody>                                                       |
+  |  row: <tr> (idle / hover / selected)                                |
+  |   +-----------------+  +----------+  +------------------------+     |
+  |   | data-cell       |  | ...      |  | data-cell [row-actions]|     |
+  |   +-----------------+  +----------+  +------------------------+     |
+  +---------------------------------------------------------------------+
+     header-cell -> --ui-table-header-label-color, optional 3-state sort icon
+     data-cell   -> --ui-table-data-value-color-* (content-type layouts are composition)
+     row         -> --ui-table-global-row-color-* (idle/hover/selected)
+     row-actions / column-settings -> icon-only controls reusing header-cell tokens
+
+root:
+  element: table
+  role: table
+  description: >-
+    The `<table>` element, wrapped in a `relative w-full overflow-auto` div
+    for horizontal scroll on narrow viewports. Contains a header and a body.
+
+parts:
+  - id: header
+    element: thead
+    description: Column header section containing one row of header cells.
+  - id: body
+    element: tbody
+    description: Data section containing one row per data item.
+  - id: row
+    element: tr
+    description: >-
+      A single row — used in both header and body. Idle/hover/selected via
+      `--ui-table-global-row-color-*`; a focused descendant control highlights
+      the whole row via the shared focus ring, not a Table-specific token.
+  - id: header-cell
+    element: th
+    description: >-
+      A column header. Optionally sortable — pass `sortDirection`/`onSort` to
+      render an interactive 3-state sort affordance (inactive/ascending/
+      descending); otherwise renders plain text with no button.
+  - id: data-cell
+    element: td
+    description: >-
+      A data cell. Content-type layouts (icon+text, status, severity dot,
+      date, tag) are composition patterns built from this part plus existing
+      primitives (icon components, `Tag`) — not separate components or props.
+  - id: row-actions
+    element: button
+    description: >-
+      Per-row "more actions" icon button (kebab glyph by default, overridable
+      via children). Reuses `header-cell`'s own background-state tokens.
+    optional: true
+  - id: column-settings
+    element: button
+    description: >-
+      Header column-settings icon button (gear glyph by default, overridable
+      via children). Reuses `header-cell`'s own background-state tokens.
+    optional: true
+
+layout:
+  type: table
+  order: [header, body]
+
+states:
+  - id: hover
+    trigger: pointer hover over a row
+    kind: pseudo
+    pseudo: ':hover'
+    affects: [row]
+  - id: selected
+    trigger: consumer marks the row selected (e.g. row-selection state)
+    kind: prop
+    prop: selected
+    affects: [row]
+  - id: focused
+    trigger: keyboard focus lands on a control inside the row
+    kind: pseudo
+    pseudo: ':focus-within'
+    affects: [row]
+  - id: sorted
+    trigger: consumer passes the column's current sort direction
+    kind: prop
+    prop: sortDirection
+    affects: [header-cell]
+  - id: cell-disabled
+    trigger: consumer marks a cell's value disabled
+    kind: prop
+    prop: disabled
+    affects: [data-cell]
+  - id: icon-button-hover
+    trigger: pointer hover over a row-actions/column-settings button
+    kind: pseudo
+    pseudo: ':hover'
+    affects: [row-actions, column-settings]
+  - id: icon-button-active
+    trigger: pointer or keyboard activation of a row-actions/column-settings button
+    kind: pseudo
+    pseudo: ':active'
+    affects: [row-actions, column-settings]
+  - id: icon-button-focus-visible
+    trigger: keyboard focus on a row-actions/column-settings button
+    kind: pseudo
+    pseudo: ':focus-visible'
+    affects: [row-actions, column-settings]
