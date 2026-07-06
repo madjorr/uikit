@@ -29,9 +29,12 @@ export const States: Story = {
             <SidebarPrimaryMenuItem href="#" icon={<BoxIcon />} selected>
               Assets
             </SidebarPrimaryMenuItem>
-            <SidebarPrimaryMenuItem href="#" icon={<UsersIcon />}>
+            <SidebarPrimaryMenuItem
+              href="#"
+              icon={<UsersIcon />}
+              extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />}
+            >
               Clients
-              <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
             </SidebarPrimaryMenuItem>
           </SidebarPrimaryMenu>
         </SidebarPrimarySection>
@@ -60,9 +63,12 @@ export const Hover: Story = {
             <SidebarPrimaryMenuItem href="#" icon={<BoxIcon />} selected>
               Assets
             </SidebarPrimaryMenuItem>
-            <SidebarPrimaryMenuItem href="#" icon={<UsersIcon />}>
+            <SidebarPrimaryMenuItem
+              href="#"
+              icon={<UsersIcon />}
+              extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />}
+            >
               Clients
-              <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
             </SidebarPrimaryMenuItem>
           </SidebarPrimaryMenu>
         </SidebarPrimarySection>
@@ -89,9 +95,12 @@ export const Active: Story = {
             <SidebarPrimaryMenuItem href="#" icon={<BoxIcon />} selected>
               Assets
             </SidebarPrimaryMenuItem>
-            <SidebarPrimaryMenuItem href="#" icon={<UsersIcon />}>
+            <SidebarPrimaryMenuItem
+              href="#"
+              icon={<UsersIcon />}
+              extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />}
+            >
               Clients
-              <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
             </SidebarPrimaryMenuItem>
           </SidebarPrimaryMenu>
         </SidebarPrimarySection>
@@ -117,9 +126,12 @@ export const FocusVisible: Story = {
             <SidebarPrimaryMenuItem href="#" icon={<BoxIcon />} selected>
               Assets
             </SidebarPrimaryMenuItem>
-            <SidebarPrimaryMenuItem href="#" icon={<UsersIcon />}>
+            <SidebarPrimaryMenuItem
+              href="#"
+              icon={<UsersIcon />}
+              extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />}
+            >
               Clients
-              <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
             </SidebarPrimaryMenuItem>
           </SidebarPrimaryMenu>
         </SidebarPrimarySection>

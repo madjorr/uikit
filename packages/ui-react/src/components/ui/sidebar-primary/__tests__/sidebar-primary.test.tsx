@@ -206,13 +206,19 @@ describe('SidebarPrimary', () => {
     render(
       <SidebarPrimary>
         <SidebarPrimaryMenu>
-          <SidebarPrimaryMenuItem href="/a">
+          <SidebarPrimaryMenuItem
+            href="/a"
+            extras={<SidebarPrimaryMenuItemExtras variant="externalLink" />}
+          >
             Inbox
-            <SidebarPrimaryMenuItemExtras variant="externalLink" />
           </SidebarPrimaryMenuItem>
-          <SidebarPrimaryMenuItem href="/b">
+          <SidebarPrimaryMenuItem
+            href="/b"
+            extras={
+              <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘H" />
+            }
+          >
             Home
-            <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘H" />
           </SidebarPrimaryMenuItem>
         </SidebarPrimaryMenu>
       </SidebarPrimary>
@@ -221,5 +227,48 @@ describe('SidebarPrimary', () => {
     expect(inbox.querySelector('svg')).toBeInTheDocument();
     const home = screen.getByRole('link', { name: /Home/ });
     expect(within(home).getByText('⌘H')).toBeInTheDocument();
+  });
+
+  it('renders extras as a sibling of the label, not nested inside its truncating span', () => {
+    render(
+      <SidebarPrimary>
+        <SidebarPrimaryMenu>
+          <SidebarPrimaryMenuItem
+            href="/a"
+            extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘H" />}
+          >
+            Home
+          </SidebarPrimaryMenuItem>
+        </SidebarPrimaryMenu>
+      </SidebarPrimary>
+    );
+    const link = screen.getByRole('link', { name: /Home/ });
+    const labelSpan = screen.getByText('Home');
+    // The shortcut text must NOT be inside the truncating label span — it's a
+    // flex sibling so it gets the row's gap instead of being crammed against
+    // the label text (see sidebar-primary.tsx SidebarPrimaryMenuItem `extras`).
+    expect(labelSpan).toHaveClass('truncate');
+    expect(within(labelSpan).queryByText('⌘H')).not.toBeInTheDocument();
+    expect(within(link).getByText('⌘H')).toBeInTheDocument();
+  });
+
+  it('gives the footer collapse trigger a shortcut extras slot as well', () => {
+    render(
+      <SidebarPrimary>
+        <SidebarPrimaryFooter>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryCollapseTrigger
+              extras={
+                <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘H" />
+              }
+            >
+              Collapse menu
+            </SidebarPrimaryCollapseTrigger>
+          </SidebarPrimaryMenu>
+        </SidebarPrimaryFooter>
+      </SidebarPrimary>
+    );
+    const trigger = screen.getByRole('button', { name: /Collapse menu/ });
+    expect(within(trigger).getByText('⌘H')).toBeInTheDocument();
   });
 });

@@ -265,6 +265,13 @@ export interface SidebarPrimaryMenuItemProps
   icon?: React.ReactNode;
   children?: React.ReactNode;
   /**
+   * Trailing affordance — a `SidebarPrimaryMenuItemExtras` element. Rendered as
+   * a flex sibling of the label (its own `gap` from `_global/container/gap`),
+   * not nested inside the label's truncating span — nesting it there collapses
+   * the row gap and lets `truncate` clip the affordance.
+   */
+  extras?: React.ReactNode;
+  /**
    * Replace the rendered `<a>` with another element or component (e.g. a router
    * `Link` or a `<button>`) via Base UI composition.
    */
@@ -274,45 +281,56 @@ export interface SidebarPrimaryMenuItemProps
 const SidebarPrimaryMenuItem = React.forwardRef<
   HTMLAnchorElement,
   SidebarPrimaryMenuItemProps
->(({ className, selected = false, icon, render, children, ...props }, ref) => {
-  const { expanded } = useSidebarPrimaryContext();
+>(
+  (
+    { className, selected = false, icon, render, children, extras, ...props },
+    ref
+  ) => {
+    const { expanded } = useSidebarPrimaryContext();
 
-  const inner = useRender({
-    render,
-    ref,
-    defaultTagName: 'a',
-    props: mergeProps<'a'>(
-      {
-        className: cn(
-          sidebarPrimaryMenuItemVariants({
-            variant: selected ? 'selected' : 'unselected',
-          }),
-          className
-        ),
-        'aria-current': selected ? 'page' : undefined,
-        children: (
-          <>
-            {icon != null && (
-              <span className="flex shrink-0 items-center self-start mt-[var(--ui-sidebar-primary-menu-item-global-icon-margin-t)]">
-                {icon}
+    const inner = useRender({
+      render,
+      ref,
+      defaultTagName: 'a',
+      props: mergeProps<'a'>(
+        {
+          className: cn(
+            sidebarPrimaryMenuItemVariants({
+              variant: selected ? 'selected' : 'unselected',
+            }),
+            className
+          ),
+          'aria-current': selected ? 'page' : undefined,
+          children: (
+            <>
+              {icon != null && (
+                <span className="flex shrink-0 items-center self-start mt-[var(--ui-sidebar-primary-menu-item-global-icon-margin-t)]">
+                  {icon}
+                </span>
+              )}
+              {/* Keep the label in the DOM in collapsed/rail mode as `sr-only` so
+                  the icon-only row keeps an accessible name (a11y §7) — never
+                  `display:none` the text. Extras are visually dropped when
+                  collapsed but stay queryable for the same reason. */}
+              <span
+                className={cn(
+                  'flex-1 truncate text-left',
+                  !expanded && 'sr-only'
+                )}
+              >
+                {children}
               </span>
-            )}
-            {/* Keep the label in the DOM in collapsed/rail mode as `sr-only` so
-                the icon-only row keeps an accessible name (a11y §7) — never
-                `display:none` the text. Extras are visually dropped when
-                collapsed but stay queryable for the same reason. */}
-            <span className={cn('flex-1 truncate text-left', !expanded && 'sr-only')}>
-              {children}
-            </span>
-          </>
-        ),
-      },
-      props
-    ),
-  });
+              {extras}
+            </>
+          ),
+        },
+        props
+      ),
+    });
 
-  return <li className="contents">{inner}</li>;
-});
+    return <li className="contents">{inner}</li>;
+  }
+);
 SidebarPrimaryMenuItem.displayName = 'SidebarPrimaryMenuItem';
 
 export interface SidebarPrimaryMenuItemExtrasProps
@@ -321,7 +339,12 @@ export interface SidebarPrimaryMenuItemExtrasProps
   variant: 'tag' | 'externalLink' | 'shortcut' | 'tag-externalLink';
   /** Shortcut text (e.g. "⌘H") for the `shortcut` variant. */
   shortcut?: string;
-  /** Tag content for the `tag` / `tag-externalLink` variants. */
+  /**
+   * Tag content for the `tag` / `tag-externalLink` variants. Figma constrains
+   * this slot's `Tag` instance to `size="sm"` (no other size is offered on
+   * MenuItemExtras) — always pass a `<Tag variant="info" size="sm">`, never the
+   * default size.
+   */
   tag?: React.ReactNode;
 }
 
@@ -368,6 +391,12 @@ export interface SidebarPrimaryCollapseTriggerProps
   /** Leading 16px icon (e.g. a panel-left glyph). */
   icon?: React.ReactNode;
   children?: React.ReactNode;
+  /**
+   * Trailing affordance — a `SidebarPrimaryMenuItemExtras` element (Figma
+   * shows a `⌘H` shortcut here). Rendered as a flex sibling of the label, same
+   * as `SidebarPrimaryMenuItem`'s `extras` prop.
+   */
+  extras?: React.ReactNode;
 }
 
 // The footer "Collapse menu" affordance (Figma). A menu-item-styled `<button>`
@@ -377,7 +406,7 @@ export interface SidebarPrimaryCollapseTriggerProps
 const SidebarPrimaryCollapseTrigger = React.forwardRef<
   HTMLButtonElement,
   SidebarPrimaryCollapseTriggerProps
->(({ className, icon, children, onClick, ...props }, ref) => {
+>(({ className, icon, children, extras, onClick, ...props }, ref) => {
   const { expanded, toggleExpanded } = useSidebarPrimaryContext();
 
   return (
@@ -410,6 +439,7 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
         <span className={cn('flex-1 truncate', !expanded && 'sr-only')}>
           {children}
         </span>
+        {extras}
       </button>
     </li>
   );

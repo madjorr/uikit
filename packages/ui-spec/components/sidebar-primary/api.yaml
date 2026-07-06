@@ -46,6 +46,16 @@ contract:
       required: false
       default: undefined
       description: Target URL of a menu-item link (passthrough on the `<a>`).
+    - name: extras
+      type: ReactNode
+      required: false
+      default: undefined
+      description: >-
+        Trailing affordance slot on a menu-item (or the footer collapse
+        trigger) — an `extras-variant` element. React: the `extras` prop on
+        `SidebarPrimaryMenuItem` / `SidebarPrimaryCollapseTrigger`, rendered as
+        a flex sibling of the label rather than composed as a child, so it
+        gets its own row gap and isn't clipped by the label's `truncate`.
     - name: extras-variant
       type: "'tag' | 'externalLink' | 'shortcut' | 'tag-externalLink'"
       required: true
@@ -101,9 +111,12 @@ adapters:
               <SidebarPrimaryMenuItem render={<Link to="/assets" />} icon={<BoxIcon />} selected>
                 Assets
               </SidebarPrimaryMenuItem>
-              <SidebarPrimaryMenuItem href="/clients" icon={<UsersIcon />}>
+              <SidebarPrimaryMenuItem
+                href="/clients"
+                icon={<UsersIcon />}
+                extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />}
+              >
                 Clients
-                <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
               </SidebarPrimaryMenuItem>
             </SidebarPrimaryMenu>
           </SidebarPrimarySection>

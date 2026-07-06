@@ -96,10 +96,15 @@ function LogoMark() {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
-  // Sidebars fill their container height; give stories a fixed viewport tall
-  // enough to show the full Figma nav (both sections + footer) without clipping.
-  return <div style={{ height: 620, display: 'flex' }}>{children}</div>;
+function Shell({
+  children,
+  height = 620,
+}: {
+  children: React.ReactNode;
+  /** Fixed viewport height — sidebars fill their container (`h-full`). */
+  height?: number;
+}) {
+  return <div style={{ height, display: 'flex' }}>{children}</div>;
 }
 
 // The Acronis Cyber Platform nav from the Figma example: a primary section of
@@ -149,6 +154,8 @@ function PrimaryNav() {
   );
 }
 
+// The Figma example always pairs the footer's "Collapse menu" row with a
+// `⌘H` shortcut extras — keep the demo content honest to that.
 function FooterNav() {
   return (
     <SidebarPrimaryFooter>
@@ -157,7 +164,10 @@ function FooterNav() {
           Help
         </SidebarPrimaryMenuItem>
         {/* Uncontrolled rail: the trigger toggles `expanded` via context. */}
-        <SidebarPrimaryCollapseTrigger icon={<ChevronsLeftIcon />}>
+        <SidebarPrimaryCollapseTrigger
+          icon={<ChevronsLeftIcon />}
+          extras={<SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘H" />}
+        >
           Collapse menu
         </SidebarPrimaryCollapseTrigger>
       </SidebarPrimaryMenu>
@@ -219,46 +229,127 @@ export const Selected: Story = {
   ),
 };
 
-export const WithExtras: Story = {
+export const ExtrasVariants: Story = {
+  name: 'MenuItemExtras — all variants',
   render: () => (
     <Shell>
       <SidebarPrimary>
         <SidebarPrimaryContent>
           <SidebarPrimarySection>
             <SidebarPrimaryMenu>
-              <SidebarPrimaryMenuItem href="#" icon={<StarIcon />}>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<StarIcon />}
+                extras={
+                  <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
+                }
+              >
                 Shortcut
-                <SidebarPrimaryMenuItemExtras variant="shortcut" shortcut="⌘K" />
               </SidebarPrimaryMenuItem>
-              <SidebarPrimaryMenuItem href="#" icon={<LayoutGridIcon />}>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<LayoutGridIcon />}
+                extras={<SidebarPrimaryMenuItemExtras variant="externalLink" />}
+              >
                 External link
-                <SidebarPrimaryMenuItemExtras variant="externalLink" />
               </SidebarPrimaryMenuItem>
-              <SidebarPrimaryMenuItem href="#" icon={<BoltIcon />}>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<BoltIcon />}
+                extras={
+                  <SidebarPrimaryMenuItemExtras
+                    variant="tag"
+                    tag={
+                      <Tag variant="info" size="sm">
+                        New
+                      </Tag>
+                    }
+                  />
+                }
+              >
                 Tag
-                <SidebarPrimaryMenuItemExtras
-                  variant="tag"
-                  tag={
-                    <Tag variant="info" size="sm">
-                      New
-                    </Tag>
-                  }
-                />
               </SidebarPrimaryMenuItem>
-              <SidebarPrimaryMenuItem href="#" icon={<BriefcaseIcon />}>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<BriefcaseIcon />}
+                extras={
+                  <SidebarPrimaryMenuItemExtras
+                    variant="tag-externalLink"
+                    tag={
+                      <Tag variant="info" size="sm">
+                        Beta
+                      </Tag>
+                    }
+                  />
+                }
+              >
                 Tag + external link
-                <SidebarPrimaryMenuItemExtras
-                  variant="tag-externalLink"
-                  tag={
-                    <Tag variant="info" size="sm">
-                      Beta
-                    </Tag>
-                  }
-                />
               </SidebarPrimaryMenuItem>
             </SidebarPrimaryMenu>
           </SidebarPrimarySection>
         </SidebarPrimaryContent>
+      </SidebarPrimary>
+    </Shell>
+  ),
+};
+
+export const Sections: Story = {
+  name: 'Multiple sections',
+  render: () => (
+    <Shell>
+      <SidebarPrimary>
+        <SidebarPrimaryContent>
+          {/* First section: no top divider/padding-top (anatomy.yaml `firstSection`). */}
+          <SidebarPrimarySection>
+            <SidebarPrimaryMenu>
+              <SidebarPrimaryMenuItem href="#" icon={<MonitorIcon />} selected>
+                Assets
+              </SidebarPrimaryMenuItem>
+              <SidebarPrimaryMenuItem href="#" icon={<ShieldCheckIcon />}>
+                Protection management
+              </SidebarPrimaryMenuItem>
+            </SidebarPrimaryMenu>
+          </SidebarPrimarySection>
+          {/* Every following section gets a top divider (`:not(:first-child)`). */}
+          <SidebarPrimarySection>
+            <SidebarPrimaryMenu>
+              <SidebarPrimaryMenuItem href="#" icon={<InboxIcon />}>
+                My inbox
+              </SidebarPrimaryMenuItem>
+              <SidebarPrimaryMenuItem href="#" icon={<StarIcon />}>
+                Favorites
+              </SidebarPrimaryMenuItem>
+            </SidebarPrimaryMenu>
+          </SidebarPrimarySection>
+          <SidebarPrimarySection>
+            <SidebarPrimaryMenu>
+              {/* `icon` is optional — the label just starts flush left. */}
+              <SidebarPrimaryMenuItem href="#">General settings</SidebarPrimaryMenuItem>
+              <SidebarPrimaryMenuItem href="#" icon={<BuildingIcon />}>
+                My company
+              </SidebarPrimaryMenuItem>
+            </SidebarPrimaryMenu>
+          </SidebarPrimarySection>
+        </SidebarPrimaryContent>
+      </SidebarPrimary>
+    </Shell>
+  ),
+};
+
+export const StickyFooter: Story = {
+  name: 'Overflow (sticky header/footer)',
+  render: () => (
+    // A short viewport forces `SidebarPrimaryContent` to scroll internally
+    // (`flex-1 overflow-y-auto`); the header and footer are `shrink-0` flex
+    // siblings, so they stay pinned and fully visible regardless of how much
+    // content is above/below them — no extra "sticky" wiring needed.
+    <Shell height={280}>
+      <SidebarPrimary>
+        <SidebarPrimaryHeader>
+          <LogoMark />
+        </SidebarPrimaryHeader>
+        <PrimaryNav />
+        <FooterNav />
       </SidebarPrimary>
     </Shell>
   ),
@@ -286,15 +377,7 @@ export const Controlled: Story = {
               </SidebarPrimaryMenu>
             </SidebarPrimarySection>
           </SidebarPrimaryContent>
-          <SidebarPrimaryFooter>
-            <SidebarPrimaryMenu>
-              {/* Controlled: the trigger calls toggleExpanded → onExpandedChange,
-                  and this consumer owns the `expanded` state. */}
-              <SidebarPrimaryCollapseTrigger icon={<ChevronsLeftIcon />}>
-                Collapse menu
-              </SidebarPrimaryCollapseTrigger>
-            </SidebarPrimaryMenu>
-          </SidebarPrimaryFooter>
+          <FooterNav />
         </SidebarPrimary>
       </Shell>
     );
