@@ -1,9 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { FolderIcon } from '@acronis-platform/icons-react/stroke-mono';
+import {
+  CircleInfoBlueIcon,
+  DotBlueIcon,
+} from '@acronis-platform/icons-react/stroke-multi';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { Checkbox } from '../../checkbox';
 import { Tag } from '../../tag';
 import {
   Table,
+  TableActions,
   TableBody,
   TableCaption,
   TableCell,
@@ -11,6 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableSettings,
 } from '../table';
 
 const meta = {
@@ -146,4 +154,127 @@ export const Selectable: Story = {
       </TableBody>
     </Table>
   ),
+};
+
+// A trailing TableActions (row menu) per data row and a TableSettings
+// (column visibility) trigger in the header — Figma nodes 4536-414 / 3698-497.
+export const WithRowActionsAndColumnSettings: Story = {
+  render: () => (
+    <Table className="w-[520px]">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Workload</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="p-0">
+            <TableSettings aria-label="Column settings" />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>web-server-01</TableCell>
+          <TableCell>
+            <Tag>Protected</Tag>
+          </TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>db-primary</TableCell>
+          <TableCell>
+            <Tag>Protected</Tag>
+          </TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+};
+
+// TableCell's `column` variant (Figma node 4536-97) — one component, six
+// content-type compositions.
+export const CellContentPatterns: Story = {
+  render: () => (
+    <Table className="w-[520px]">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Column</TableHead>
+          <TableHead>Rendered value</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>text</TableCell>
+          <TableCell>Simple value</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>date</TableCell>
+          <TableCell column="date">15 Jun, 2026</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>iconText</TableCell>
+          <TableCell column="iconText" icon={<FolderIcon />}>
+            Backups
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>status</TableCell>
+          <TableCell column="status" icon={<CircleInfoBlueIcon />}>
+            Info
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>severity</TableCell>
+          <TableCell column="severity" icon={<DotBlueIcon />}>
+            Low
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>tag</TableCell>
+          <TableCell column="tag">Label</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+};
+
+// Tabbing into a row's action button shows the row-level `focused` ring
+// (Figma node 4536-699) — the row itself isn't focusable, a control inside it is.
+export const RowFocused: Story = {
+  render: () => (
+    <Table className="w-[520px]">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Workload</TableHead>
+          <TableHead className="p-0">
+            <TableSettings aria-label="Column settings" />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>web-server-01</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>db-primary</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Tab order: TableSettings (header), then each row's TableActions.
+    await userEvent.tab();
+    await userEvent.tab();
+    await expect(canvas.getAllByRole('button', { name: 'Row actions' })[0]).toHaveFocus();
+  },
 };

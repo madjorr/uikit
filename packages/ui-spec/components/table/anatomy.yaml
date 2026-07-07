@@ -3,23 +3,25 @@ component: Table
 
 schematic: |
   root: <table> (in a horizontally scrollable container)
-  +-----------------------------------------------------------------+
-  | header: <thead>                                                 |
-  |   row: <tr>                                                     |
-  |     head: <th> Name ⇅   | head: <th> Status | head ▸ sortable  |
-  +-----------------------------------------------------------------+
-  | body: <tbody>                                                   |
-  |   row: <tr> (idle / hover / selected)                           |
-  |     cell: <td> John Smith | cell: <td> Active                   |
-  +-----------------------------------------------------------------+
-  | footer: <tfoot>                                                 |
-  |   row > cell: Total ............................. $750.00       |
-  +-----------------------------------------------------------------+
+  +-------------------------------------------------------------------------+
+  | header: <thead>                                                        |
+  |   row: <tr>                                                            |
+  |     head: <th> Name ⇅ | head: <th> Status | column-settings: <th> ⚙   |
+  +-------------------------------------------------------------------------+
+  | body: <tbody>                                                          |
+  |   row: <tr> (idle / hover / selected / focused)                        |
+  |     cell: <td> John Smith | cell: <td> Active | row-actions: <td> ⋯   |
+  +-------------------------------------------------------------------------+
+  | footer: <tfoot>                                                        |
+  |   row > cell: Total ............................. $750.00             |
+  +-------------------------------------------------------------------------+
   caption: <caption> (optional, below the table)
-     head    -> --ui-table-header-label-color, hover --ui-table-header-cell-color-hover
+     head       -> --ui-table-header-label-color, hover --ui-table-header-cell-color-hover
      sortable head -> sort icon (--ui-table-header-sort-icon-color-*) + aria-sort
-     row     -> idle/hover/active (selected) via --ui-table-global-row-color-*
-     cell    -> --ui-table-global-cell-{padding-x,padding-y,border-color}
+     resizable head -> resize-handle slot at the trailing edge (--ui-table-global-cell-border-color idle, --ui-focus-primary while dragging)
+     row        -> idle/hover/active (selected) via --ui-table-global-row-color-*; focused -> a 3px --ui-focus-primary ring (:focus-within)
+     cell       -> --ui-table-global-cell-{padding-x,padding-y,border-color}; disabled -> --ui-table-data-value-color-disabled; column="iconText"/"status"/"severity" -> icon + text with --ui-table-data-gap
+     row-actions / column-settings -> a flush 48px action cell (--ui-table-header-cell-color-{idle,hover,active})
 
 root:
   element: table
@@ -49,14 +51,30 @@ parts:
   - id: head
     description: >-
       A column header cell (`<th>`). When `sortable`, it renders a focusable sort
-      button with a sort icon and sets `aria-sort`.
+      button with a sort icon and sets `aria-sort`. Accepts a `resize-handle`
+      slot at its trailing edge.
     element: th
   - id: cell
-    description: A data cell (`<td>`) — padding/border from the cell tokens.
+    description: >-
+      A data cell (`<td>`) — padding/border from the cell tokens. `column`
+      selects a content-type composition (text/iconText/status/severity/date/tag);
+      `disabled` mutes the text color; `wrap` opts out of ellipsis truncation.
     element: td
   - id: caption
     description: Optional table caption (`<caption>`), muted, below the table.
     element: caption
+    optional: true
+  - id: row-actions
+    description: >-
+      `TableActions` — a row-actions trigger (kebab icon), typically the
+      trailing cell of a data row.
+    element: button
+    optional: true
+  - id: column-settings
+    description: >-
+      `TableSettings` — a column-settings trigger (gear icon), typically the
+      trailing cell of the header row.
+    element: button
     optional: true
 
 layout:
@@ -69,6 +87,13 @@ states:
       trigger: 'selected === true on a row',
       kind: prop,
       prop: selected,
+      affects: [row],
+    }
+  - {
+      id: focused,
+      trigger: 'keyboard focus on a control inside a row (e.g. a checkbox or row-actions button)',
+      kind: pseudo,
+      pseudo: ':focus-within',
       affects: [row],
     }
   - {
@@ -91,4 +116,25 @@ states:
       kind: pseudo,
       pseudo: ':focus-visible',
       affects: [head],
+    }
+  - {
+      id: cell-disabled,
+      trigger: 'disabled === true on a cell',
+      kind: prop,
+      prop: disabled,
+      affects: [cell],
+    }
+  - {
+      id: action-hover,
+      trigger: pointer hover over a row-actions/column-settings button,
+      kind: pseudo,
+      pseudo: ':hover',
+      affects: [row-actions, column-settings],
+    }
+  - {
+      id: action-focus,
+      trigger: keyboard focus on a row-actions/column-settings button,
+      kind: pseudo,
+      pseudo: ':focus-visible',
+      affects: [row-actions, column-settings],
     }

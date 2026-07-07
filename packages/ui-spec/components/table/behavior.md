@@ -17,7 +17,7 @@ Scenario: Activating a sortable header
   Given a sortable TableHead with an onSort handler
   When the user clicks it (or focuses it and presses Enter / Space)
   Then the sort event fires
-  And the consumer updates sort-direction, which swaps the icon (↑ asc / ↓ desc)
+  And the consumer updates sort-direction, which swaps the icon (↓ asc / ↑ desc)
   and sets aria-sort to "ascending" / "descending"
 ```
 
@@ -34,6 +34,57 @@ Scenario: Row selection is consumer-driven
   Given a checkbox rendered inside a leading cell
   When the user toggles it
   Then the consumer updates the row's selected prop (Table does not manage it)
+```
+
+```gherkin
+Scenario: A row shows keyboard focus
+  Given a TableRow containing a focusable control (a checkbox, TableActions, ...)
+  When the user tabs into that control
+  Then the row renders a 3px focus-within ring, independent of hover/selected
+```
+
+## Resizing and sizing
+
+```gherkin
+Scenario: A column header renders a resize handle
+  Given a TableHead with a resize-handle node
+  Then it renders at the header cell's trailing edge
+  And Table itself does not implement the drag interaction — the consumer
+  (typically DataTable) wires pointer/touch events to it
+```
+
+```gherkin
+Scenario: A cell or header receives an explicit width via style
+  Given a TableHead/TableCell with a `style` prop setting width/minWidth/maxWidth
+  Then the column renders at that size, since style passes through to the
+  native <th>/<td> (Table has no width prop of its own)
+```
+
+## Content-type cells
+
+```gherkin
+Scenario: A cell renders a content-type composition
+  Given a TableCell with column="iconText" | "status" | "severity" and an icon
+  Then it renders the icon followed by the text value, gapped by --ui-table-data-gap
+Given a TableCell with column="tag"
+  Then its content is wrapped in a Tag
+Given a TableCell with column="text" | "date" (or column omitted)
+  Then it renders plain, truncated text
+```
+
+```gherkin
+Scenario: A disabled cell
+  Given a TableCell with disabled = true
+  Then its text uses --ui-table-data-value-color-disabled and aria-disabled is set
+```
+
+## Row actions and column settings
+
+```gherkin
+Scenario: Trigger buttons are icon-only
+  Given a TableActions or TableSettings button
+  Then it renders a default icon (ellipsis / gear) unless children override it
+  And it requires an aria-label, since it carries no visible text
 ```
 
 ## Layout

@@ -47,16 +47,52 @@ contract:
       required: false
       default: '5'
       description: Number of skeleton rows when skeleton is set.
+    - name: enableColumnResizing
+      type: boolean
+      required: false
+      default: 'false'
+      description: Opt into drag-to-resize column headers.
+    - name: initialPageSize
+      type: number
+      required: false
+      default: '10'
+      description: Initial rows-per-page, before the user (or a bound DataTablePagination) changes it.
+    - name: onStateChange
+      type: '() => void'
+      required: false
+      description: >-
+        Invoked after any internal grid state change (sorting, filters,
+        visibility, selection, expansion, column sizing, pagination). The
+        instance exposed via `ref` mutates in place rather than producing a
+        new reference each render, so a sibling reading it through that same
+        ref (e.g. a bound DataTableToolbar/DataTablePagination) has no other
+        signal to know it should re-render — call a state setter here to
+        force one.
   events: []
-  methods: []
+  methods:
+    - name: ref
+      description: >-
+        The React adapter forwards a ref to the live TanStack `Table<TData>`
+        instance (exported as the `TanstackTable` type), so companion parts
+        (DataTableToolbar / DataTablePagination / DataTableColumnHeader /
+        DataTableViewOptions) can be bound to the exact same grid instead of a
+        second, independently-constructed `useReactTable` call.
 
 adapters:
   react:
     component: DataTable
     status: implemented
-    import: "import { DataTable } from '@acronis-platform/ui-react'"
+    import: "import { DataTable, type TanstackTable } from '@acronis-platform/ui-react'"
     example: |
       <DataTable columns={columns} data={rows} />
+
+      // Bind companion parts to the same instance via ref + onStateChange:
+      const [table, setTable] = useState<TanstackTable<Row> | null>(null);
+      const [, setTick] = useState(0);
+      <DataTableToolbar table={table} searchKey="email" />
+      <DataTable ref={setTable} columns={columns} data={rows}
+                 onStateChange={() => setTick((t) => t + 1)} />
+      <DataTablePagination table={table} />
   vue:
     component: AvDataTable
     status: planned

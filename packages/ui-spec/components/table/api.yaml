@@ -27,6 +27,41 @@ contract:
       description: >-
         On a sortable column header — the current sort direction (`false` =
         sortable but unsorted). Drives the sort icon and `aria-sort`.
+    - name: resize-handle
+      type: ReactNode
+      required: false
+      description: >-
+        On a column header — a drag-to-resize affordance rendered at the
+        cell's trailing edge. Purely presentational; the consumer (typically
+        `DataTable`) wires the drag interaction and passes the handle node in.
+    - name: wrap
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        On a cell — allow content to wrap instead of truncating with an
+        ellipsis.
+    - name: disabled
+      type: boolean
+      required: false
+      default: false
+      description: >-
+        On a cell — renders its content in a disabled/muted color and sets
+        `aria-disabled`.
+    - name: column
+      type: "'text' | 'iconText' | 'status' | 'severity' | 'date' | 'tag'"
+      required: false
+      default: text
+      description: >-
+        On a cell — a content-type composition. `iconText`/`status`/`severity`
+        render an optional leading icon (the `icon` prop) before the value;
+        `tag` wraps the value in a `Tag`; `text`/`date` render plain text.
+    - name: icon
+      type: ReactNode
+      required: false
+      description: >-
+        On a cell — the leading icon for `column="iconText"` / `"status"` /
+        `"severity"`.
 
   events:
     - name: sort
@@ -42,6 +77,14 @@ contract:
         The composed table. Author it from the parts: a header (rows of column
         headers), a body (rows of cells), an optional footer, and an optional
         caption. Cell content (text, tags, links, checkboxes, …) is arbitrary.
+    - name: TableActions
+      description: >-
+        Row-actions trigger (kebab icon) — an icon-only button, typically
+        placed as the trailing cell of a data row. Pass an `aria-label`.
+    - name: TableSettings
+      description: >-
+        Column-settings trigger (gear icon) — an icon-only button, typically
+        placed as the trailing cell of the header row. Pass an `aria-label`.
 
   methods: []
 
@@ -51,7 +94,8 @@ adapters:
     status: implemented
     import: >-
       import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead,
-      TableCell, TableCaption } from '@acronis-platform/ui-react'
+      TableCell, TableCaption, TableActions, TableSettings } from
+      '@acronis-platform/ui-react'
     example: |
       <Table>
         <TableHeader>
@@ -60,12 +104,18 @@ adapters:
               Name
             </TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="p-0">
+              <TableSettings aria-label="Column settings" />
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow selected={isSelected}>
             <TableCell>web-server-01</TableCell>
-            <TableCell><Tag>Protected</Tag></TableCell>
+            <TableCell column="tag">Protected</TableCell>
+            <TableCell className="p-0">
+              <TableActions aria-label="Row actions" />
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

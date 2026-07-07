@@ -28,6 +28,29 @@ headers natively. Use the parts as their elements intend.
 - A selected `TableRow` sets `data-state="selected"` for styling — pair it with
   the checkbox's checked state so the visual and programmatic states agree.
 
+## Row focus
+
+- A `TableRow` isn't itself focusable — a control inside it is (a checkbox,
+  `TableActions`, `TableSettings`). The row renders a `--ui-focus-primary`
+  focus-**within** ring so the whole row highlights when any of its controls
+  has keyboard focus, in addition to that control's own focus ring.
+
+## Row actions and column settings
+
+- `TableActions`/`TableSettings` are icon-only buttons — **always** pass an
+  `aria-label` (e.g. `"Row actions"` / `"Column settings"`); there's no
+  visible text for assistive tech to fall back on.
+- Both show a `--ui-focus-primary` focus-visible ring and are reachable by Tab.
+
+## Cells
+
+- `disabled` on a `TableCell` sets `aria-disabled` and mutes the text color —
+  it does not remove the cell from the tab order (a cell isn't focusable to
+  begin with; disable the interactive control inside it if there is one).
+- `column="iconText"`/`"status"`/`"severity"` icons are decorative next to a
+  text value already read by assistive tech — no extra `aria-label` is needed
+  on the icon itself.
+
 ## Contrast
 
 - Cell text uses `--ui-table-data-value-color-idle`, headers

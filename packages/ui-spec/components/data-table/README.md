@@ -2,16 +2,15 @@
 
 A data grid built on TanStack react-table v8, composed over the Table
 primitives — sorting, filtering, column visibility, row selection, pagination,
-and optional row expansion.
+resizing, column width strategies, and optional row expansion.
 
-> **Status: draft (design-pending v1).** Ported from the legacy
-> `@acronis-platform/shadcn-uikit` `data-table`. Adds no color of its own — it
-> composes already-themed ui-react components. Reconcile with
-> `/figma-component DataTable <url> --update` once a mockup lands.
+> Ported from the legacy `@acronis-platform/shadcn-uikit` `data-table`. Adds no
+> color of its own — it composes already-themed ui-react components.
 
 ## When to use
 
-- Tabular data that needs interaction — sorting, filtering, selection, paging.
+- Tabular data that needs interaction — sorting, filtering, selection, paging,
+  resizing.
 
 ## When not to use
 
@@ -23,14 +22,17 @@ and optional row expansion.
 | Export                  | Purpose                                                                             |
 | ----------------------- | ----------------------------------------------------------------------------------- |
 | `DataTable`             | The grid. Owns table state; takes `columns` / `data`.                               |
-| `DataTableColumnHeader` | A sortable column header — single-click toggle (↑/↓/↕). Use in a column's `header`. |
+| `DataTableColumnHeader` | A sortable column header — single-click toggle (↓/↑/⇅). Use in a column's `header`. |
 | `DataTableToolbar`      | Search box + Reset + view options. Takes a `table` instance.                        |
 | `DataTablePagination`   | Selection count, rows-per-page, page controls. Takes a `table`.                     |
 | `DataTableViewOptions`  | Column-visibility menu. Takes a `table`.                                            |
 
-`DataTable` manages its own table state. The companion parts operate on a
-TanStack `table` instance you build with `useReactTable` — render them around a
-`DataTable` (or your own `<Table>`), passing the same instance.
+`DataTable` manages its own table state and exposes the live TanStack `Table`
+instance via `ref` (typed as `TanstackTable<TData>`). Bind the companion parts
+to that same ref — not a second, independently-built `useReactTable` instance —
+so they read and drive the exact grid that's rendered. Since the ref's target
+mutates in place, pass `onStateChange` too so the components holding the ref
+re-render when state changes (see the example below).
 
 ## Example
 
@@ -45,11 +47,50 @@ const columns: ColumnDef<Payment>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
   },
-  { accessorKey: 'amount', header: 'Amount' },
+  // A fixed width, and a min/max range — omit both for content-based sizing.
+  { accessorKey: 'amount', header: 'Amount', size: 120 },
 ];
 
-<DataTable columns={columns} data={payments} />;
+<DataTable columns={columns} data={payments} enableColumnResizing />;
 ```
 
-For a toolbar + pagination, build a `table` with `useReactTable` and pass it to
-`DataTableToolbar` / `DataTablePagination` alongside the grid.
+## Toolbar + pagination bound to the same grid
+
+```tsx
+import { useState } from 'react';
+import {
+  DataTable,
+  DataTablePagination,
+  DataTableToolbar,
+  type TanstackTable,
+} from '@acronis-platform/ui-react';
+
+function Example() {
+  const [table, setTable] = useState<TanstackTable<Payment> | null>(null);
+  const [, setTick] = useState(0);
+  const forceRender = () => setTick((t) => t + 1);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {table && (
+        <DataTableToolbar
+          table={table}
+          searchKey="email"
+          searchPlaceholder="Filter emails…"
+        />
+      )}
+      <DataTable
+        ref={setTable}
+        columns={columns}
+        data={payments}
+        onStateChange={forceRender}
+      />
+      {table && <DataTablePagination table={table} />}
+    </div>
+  );
+}
+```
+
+A callback ref (`setTable`, not `useRef`) is what lets the first render after
+`DataTable` mounts already have the live instance to hand to the toolbar and
+pagination — a plain ref object wouldn't trigger a re-render on its own.

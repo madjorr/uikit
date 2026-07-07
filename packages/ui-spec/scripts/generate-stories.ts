@@ -43,6 +43,11 @@ interface RenderHint {
    *  called, so a generated "All States" story is a blank snapshot). Such
    *  components rely on their hand-written stories for VR. */
   skip?: boolean;
+  /** Suppress the generated `disabled` instance/story even though `hasProp(api,
+   *  'disabled')` is true — for components where `disabled` is scoped to a part
+   *  other than the root (e.g. Table's `disabled` is a TableCell prop; passing
+   *  it to the root `<Table>` would be meaningless). */
+  skipDisabledInstance?: boolean;
 }
 
 const RENDER: Record<string, RenderHint> = {
@@ -140,8 +145,10 @@ const RENDER: Record<string, RenderHint> = {
     ].join('\n'),
   },
   table: {
+    // `disabled` in api.yaml is scoped to TableCell, not the root Table.
+    skipDisabledInstance: true,
     extraImports: [
-      "import { TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption } from '../table';",
+      "import { TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableActions, TableSettings } from '../table';",
     ],
     sample: [
       '',
@@ -151,6 +158,7 @@ const RENDER: Record<string, RenderHint> = {
       '          <TableHead sortable sortDirection="asc">Invoice</TableHead>',
       '          <TableHead>Status</TableHead>',
       '          <TableHead className="text-right">Amount</TableHead>',
+      '          <TableHead className="p-0"><TableSettings aria-label="Column settings" /></TableHead>',
       '        </TableRow>',
       '      </TableHeader>',
       '      <TableBody>',
@@ -158,11 +166,13 @@ const RENDER: Record<string, RenderHint> = {
       '          <TableCell>INV001</TableCell>',
       '          <TableCell>Paid</TableCell>',
       '          <TableCell className="text-right">$250.00</TableCell>',
+      '          <TableCell className="p-0"><TableActions aria-label="Row actions" /></TableCell>',
       '        </TableRow>',
       '        <TableRow selected>',
       '          <TableCell>INV002</TableCell>',
       '          <TableCell>Pending</TableCell>',
       '          <TableCell className="text-right">$150.00</TableCell>',
+      '          <TableCell className="p-0"><TableActions aria-label="Row actions" /></TableCell>',
       '        </TableRow>',
       '      </TableBody>',
       '    ',
@@ -645,7 +655,7 @@ export const Matrix: Story = {
 };`);
     // Only emit the all-variants Disabled grid when the component actually has a
     // `disabled` prop (e.g. Button does; Tag doesn't).
-    if (hasProp(api, 'disabled')) {
+    if (hasProp(api, 'disabled') && !hint.skipDisabledInstance) {
       parts.push(`export const Disabled: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
@@ -665,7 +675,7 @@ export const Variants: Story = {
     </div>
   ),
 };`);
-    if (hasProp(api, 'disabled')) {
+    if (hasProp(api, 'disabled') && !hint.skipDisabledInstance) {
       parts.push(`export const Disabled: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
@@ -687,10 +697,12 @@ export const Variants: Story = {
 };`);
   } else {
     // Only show a disabled instance when the component actually has a
-    // `disabled` prop — composable components (e.g. breadcrumb) do not.
-    const disabledInst = hasProp(api, 'disabled')
-      ? `\n      ${inst(`${label} disabled`)}`
-      : '';
+    // `disabled` prop — composable components (e.g. breadcrumb) do not, and
+    // some (e.g. Table) have one scoped to a non-root part.
+    const disabledInst =
+      hasProp(api, 'disabled') && !hint.skipDisabledInstance
+        ? `\n      ${inst(`${label} disabled`)}`
+        : '';
     parts.push(`export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -701,9 +713,15 @@ export const Variants: Story = {
   }
 
   // ── kind=pseudo: one story per pseudo-state ──
+  // Multiple anatomy states can share one pseudo-class (e.g. Table's
+  // header-hover and action-hover both use `:hover`) — emit each pseudo only
+  // once or the generated file ends up with duplicate exports.
   let needsPlay = false;
+  const seenPseudo = new Set<string>();
   for (const state of anatomy.states ?? []) {
     if (state.kind !== 'pseudo' || !state.pseudo) continue;
+    if (seenPseudo.has(state.pseudo)) continue;
+    seenPseudo.add(state.pseudo);
     if (state.pseudo === ':focus-visible') {
       needsPlay = true;
       parts.push(`export const FocusVisible: Story = {

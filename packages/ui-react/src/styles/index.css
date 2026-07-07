@@ -32,6 +32,15 @@
 @import '@acronis-platform/tokens-pd/css/SidebarSecondary/acronis.css';
 @import '@acronis-platform/tokens-pd/css/Table/acronis.css';
 
+@layer base {
+  *,
+  *::before,
+  *::after {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 /* Theme switches via the `[data-theme]` attribute (set by the consumer /
    next-themes), which drives the tokens' `light-dark()` + `color-scheme` — mirror
    that for the `dark:` variant. */

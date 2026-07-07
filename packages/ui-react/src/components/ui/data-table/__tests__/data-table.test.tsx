@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
@@ -16,6 +9,7 @@ import {
   DataTableColumnHeader,
   DataTablePagination,
   DataTableToolbar,
+  type TanstackTable,
 } from '../index';
 
 type Row = { id: string; email: string; amount: number };
@@ -62,6 +56,38 @@ describe('DataTable', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sort by Amount' }));
     const cellsAfter = screen.getAllByRole('cell').map((c) => c.textContent);
     expect(cellsAfter).not.toEqual(cellsBefore);
+    // Now descending — DataTableColumnHeader shows an up arrow (Figma node 3435-268).
+    expect(
+      screen.getByRole('button', { name: 'Sort by Amount' }).querySelector('path')
+    ).toHaveAttribute('d', 'M12 21V3m-7 7 7-7 7 7');
+  });
+
+  it('applies size/minSize/maxSize as inline width styles, independent of resizing', () => {
+    const sized: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'ID', size: 80 },
+      { accessorKey: 'email', header: 'Email', minSize: 160, maxSize: 320 },
+      { accessorKey: 'amount', header: 'Amount' },
+    ];
+    render(<DataTable columns={sized} data={data.slice(0, 1)} />);
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers[0]).toHaveStyle({ width: '80px' });
+    expect(headers[1]).toHaveStyle({ minWidth: '160px', maxWidth: '320px' });
+    expect(headers[2].style.width).toBe('');
+    expect(headers[2].style.minWidth).toBe('');
+  });
+
+  it('renders a resize handle per column only when enableColumnResizing is set', () => {
+    const { container, rerender } = render(
+      <DataTable columns={columns} data={data.slice(0, 1)} />
+    );
+    expect(container.querySelectorAll('.cursor-col-resize')).toHaveLength(0);
+
+    rerender(
+      <DataTable columns={columns} data={data.slice(0, 1)} enableColumnResizing />
+    );
+    expect(container.querySelectorAll('.cursor-col-resize')).toHaveLength(
+      columns.length
+    );
   });
 
   it('renders expanded content for an expanded row', async () => {
@@ -140,26 +166,30 @@ describe('DataTable presentational features', () => {
 });
 
 function Harness() {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 5 } },
-    state: { columnFilters },
-  });
+  // A callback ref (rather than useRef) so the first render after DataTable
+  // mounts already has the live TanStack instance to hand to Toolbar/
+  // Pagination; `onStateChange` keeps it in sync for every later change too,
+  // since the ref target mutates in place and wouldn't otherwise trigger a
+  // re-render of this component.
+  const [table, setTable] = useState<TanstackTable<Row> | null>(null);
+  const [, setTick] = useState(0);
+  const forceRender = () => setTick((t) => t + 1);
+
   return (
     <div>
-      <DataTableToolbar table={table} searchKey="email" searchPlaceholder="Filter emails…" />
+      {table && (
+        <DataTableToolbar table={table} searchKey="email" searchPlaceholder="Filter emails…" />
+      )}
       <div data-testid="page-rows">
-        {table.getRowModel().rows.map((r) => (
-          <span key={r.id}>{r.original.email}</span>
-        ))}
+        <DataTable
+          ref={setTable}
+          columns={columns}
+          data={data}
+          initialPageSize={5}
+          onStateChange={forceRender}
+        />
       </div>
-      <DataTablePagination table={table} />
+      {table && <DataTablePagination table={table} />}
     </div>
   );
 }

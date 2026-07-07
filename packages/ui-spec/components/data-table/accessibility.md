@@ -10,6 +10,13 @@
 - Selection checkboxes need an `aria-label` ("Select row" / "Select all") since
   they have no visible label in the cell.
 - The view-options menu is keyboard-navigable (Base UI menu).
+- A drag-to-resize handle (`enableColumnResizing`) is a pointer-only affordance
+  with no keyboard equivalent today — content must remain usable at any
+  resulting column width (Table's cell truncation/wrap handles this), and
+  resizing is never the only way to reach a column's full content.
+- Focusing a row's control (a checkbox, `TableActions`/row-actions) shows the
+  Table primitive's row-level focus-within ring in addition to that control's
+  own focus ring — see Table's accessibility notes.
 
 ## Contrast
 

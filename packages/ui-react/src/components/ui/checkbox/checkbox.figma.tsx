@@ -42,3 +42,28 @@ figma.connect(
     ),
   }
 );
+
+// The Table row-selection checkbox is Checkbox itself, no separate component —
+// "TableCheckbox" in Figma is just this same Checkbox with hasLabel=false,
+// used in a table cell (node 3698-746, ui-react file).
+figma.connect(
+  Checkbox,
+  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/ui-react?node-id=3698-746',
+  {
+    props: {
+      checked: figma.enum('variant', {
+        checked: true,
+      }),
+      indeterminate: figma.enum('variant', {
+        indeterminate: true,
+      }),
+    },
+    example: ({ checked, indeterminate }) => (
+      <Checkbox
+        checked={checked}
+        indeterminate={indeterminate}
+        aria-label="Select row"
+      />
+    ),
+  }
+);

@@ -4,7 +4,7 @@ component: DataTable
 schematic: |
   toolbar:   [ search input ] [ Reset ✕ ]            [ ⚙ View ▾ ]   (view-options)
   table: <div> rounded border wrapper
-    column-header: per-column header — title + single-click sort toggle (↑/↓/↕)
+    column-header: per-column header — title + single-click sort toggle (↓/↑/⇅), optional resize-handle
     row:           data row (selectable; selected → tinted)
     expanded-row:  optional detail row under an expanded row
     empty-state:   "No results." row when there is no data
@@ -26,9 +26,11 @@ parts:
     element: button
     description: >-
       Sortable column header (DataTableColumnHeader) — a single-click toggle: the
-      title plus a trailing arrow (up = ascending, down = descending, both in the
+      title plus a trailing arrow (down = ascending, up = descending, both in the
       active blue; a muted up/down arrow when unsorted). One click cycles the sort
       direction. Column hiding lives in the toolbar's view-options menu, not here.
+      When `enableColumnResizing` is set, the underlying TableHead also renders a
+      drag-to-resize handle at its trailing edge.
   - id: row
     element: tr
     description: A data row; selectable, tinted when selected.
@@ -84,3 +86,27 @@ states:
     kind: prop
     prop: skeleton
     affects: [row, cell]
+  - id: resizable
+    trigger: enableColumnResizing is set
+    kind: prop
+    prop: enableColumnResizing
+    affects: [column-header]
+
+internal_state:
+  - id: column-sizing
+    type: 'Record<string, number>'
+    initial: '{}'
+    description: >-
+      Per-column widths while `enableColumnResizing` is set (TanStack's
+      `columnSizing` state). Not controllable via a prop; observe changes
+      through `onStateChange`.
+    changed_by: dragging a column header's resize handle
+  - id: pagination
+    type: '{ pageIndex: number; pageSize: number }'
+    initial: '{ pageIndex: 0, pageSize: initialPageSize }'
+    controlled_default: initialPageSize
+    description: >-
+      The current page index/size (TanStack's `pagination` state). Not
+      controllable via a prop beyond seeding the initial page size; observe
+      changes through `onStateChange` or a `ref`-bound DataTablePagination.
+    changed_by: DataTablePagination's page/page-size controls, or ref methods (nextPage, setPageSize, ...)

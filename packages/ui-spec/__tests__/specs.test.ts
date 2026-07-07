@@ -358,6 +358,21 @@ describe('cva ↔ contract conformance', () => {
     expect(groups.orientation.sort()).toEqual(enumMembers(api, 'orientation'));
   });
 
+  it('Table: api.yaml column enum matches the TableCell cva keys in ui-react', () => {
+    const source = readFileSync(
+      resolve(HERE, '../../ui-react/src/components/ui/table/table.tsx'),
+      'utf8'
+    );
+    const groups = extractCvaGroups(source);
+    const api = loadSpec('table').api;
+
+    // `tableIconButtonVariants` (TableActions/TableSettings) has no `variants`
+    // config, so `column` (TableCell's content-type composition) is the only
+    // cva axis extractCvaGroups finds.
+    expect(Object.keys(groups)).toEqual(['column']);
+    expect(groups.column.sort()).toEqual(enumMembers(api, 'column'));
+  });
+
   it('Avatar: api.yaml color enum matches the cva keys in ui-react', () => {
     const source = readFileSync(
       resolve(HERE, '../../ui-react/src/components/ui/avatar/avatar.tsx'),

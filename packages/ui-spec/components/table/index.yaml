@@ -1,18 +1,25 @@
 spec_version: '1.0'
 component: Table
 name: table
-status: draft
+status: ready
 category: data-display
 description: >-
   Displays rows and columns of data. A set of composable parts (header, body,
-  footer, row, column header, cell, caption) with sortable column headers and a
-  selected row state. Ported from the legacy shadcn-uikit `Table` and informed by
-  the pre-release Table design; themed by the `--ui-table-*` token tier. A
-  TanStack-backed data grid (`DataTable`) over these primitives is a planned
-  follow-up.
+  footer, row, column header, cell, caption, row-actions, column-settings) with
+  sortable/resizable column headers, per-cell content-type compositions, and
+  selected/focused row states. Ported from the legacy shadcn-uikit `Table` and
+  aligned to the ui-react Figma Table component family; themed by the
+  `--ui-table-*` token tier. The TanStack-backed `DataTable` data grid composes
+  these primitives.
 since: 0.10.0
 dependencies:
   components:
     - ArrowsDownUpIcon
     - ArrowUpIcon
     - ArrowDownIcon
+    - EllipsisIcon
+    - CogIcon
+    - Tag
+figma:
+  node: '3427-207'
+  codeConnect: packages/ui-react/src/components/ui/table/table.figma.tsx

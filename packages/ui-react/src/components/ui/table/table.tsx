@@ -3,9 +3,13 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   ArrowsDownUpIcon,
+  CogIcon,
+  EllipsisIcon,
 } from '@acronis-platform/icons-react/stroke-mono';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { Tag } from '../tag';
 
 // Composable table primitives ported from `@acronis-platform/shadcn-uikit`'s
 // `table` (packages/ui-legacy/src/components/ui/table.tsx) and informed by the
@@ -87,7 +91,13 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       ref={ref}
       data-state={selected ? 'selected' : undefined}
       className={cn(
-        'border-b border-[color:var(--ui-table-global-cell-border-color)] bg-[var(--ui-table-global-row-color-idle)] transition-colors hover:bg-[var(--ui-table-global-row-color-hover)] data-[state=selected]:bg-[var(--ui-table-global-row-color-active)]',
+        // The row itself isn't focusable — a control inside it is (a checkbox,
+        // TableActions/TableSettings) — so the keyboard-focus ring (Figma
+        // node 4536-699's `focused` state) is driven by `:focus-within`.
+        // `relative`/`z-10` only while focused, so the ring's box-shadow isn't
+        // visually clipped by adjacent rows' borders; `ring-inset` keeps it
+        // within the row's own box instead of overlapping neighboring rows.
+        'border-b border-[color:var(--ui-table-global-cell-border-color)] bg-[var(--ui-table-global-row-color-idle)] transition-colors hover:bg-[var(--ui-table-global-row-color-hover)] focus-within:relative focus-within:z-10 focus-within:outline-none focus-within:ring-[3px] focus-within:ring-inset focus-within:ring-[var(--ui-focus-primary)] data-[state=selected]:bg-[var(--ui-table-global-row-color-active)]',
         className
       )}
       {...props}
@@ -106,21 +116,36 @@ export interface TableHeadProps
   sortDirection?: SortDirection;
   /** Invoked when the user activates a sortable header (click / Enter / Space). */
   onSort?: () => void;
+  /** Optional drag-to-resize affordance, rendered at the cell's trailing edge. */
+  resizeHandle?: React.ReactNode;
 }
 
 function SortIcon({ direction }: { direction: SortDirection }) {
   const size = 'size-[var(--ui-table-header-sort-icon-size)]';
+  // Figma node 3435-268 (TableHeaderSortIcon): active-az (ascending) -> arrow
+  // pointing down, active-za (descending) -> arrow pointing up.
   if (direction === 'asc') {
-    return <ArrowUpIcon className={cn(size, 'text-[var(--ui-table-header-sort-icon-color-active)]')} />;
+    return <ArrowDownIcon className={cn(size, 'text-[var(--ui-table-header-sort-icon-color-active)]')} />;
   }
   if (direction === 'desc') {
-    return <ArrowDownIcon className={cn(size, 'text-[var(--ui-table-header-sort-icon-color-active)]')} />;
+    return <ArrowUpIcon className={cn(size, 'text-[var(--ui-table-header-sort-icon-color-active)]')} />;
   }
   return <ArrowsDownUpIcon className={cn(size, 'text-[var(--ui-table-header-sort-icon-color-inactive)]')} />;
 }
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ className, children, sortable, sortDirection = false, onSort, ...props }, ref) => (
+  (
+    {
+      className,
+      children,
+      sortable,
+      sortDirection = false,
+      onSort,
+      resizeHandle,
+      ...props
+    },
+    ref
+  ) => (
     <th
       ref={ref}
       aria-sort={
@@ -133,7 +158,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
               : undefined
       }
       className={cn(
-        'h-10 px-[var(--ui-table-header-cell-padding-x)] text-left align-middle text-sm font-semibold text-[var(--ui-table-header-label-color)] [&:has([role=checkbox])]:pr-0',
+        // `text-align`/color/font utilities passed via `className` must land
+        // here (the real, table-layout-participating box) — a `display:flex`
+        // wrapper below doesn't reposition its children from an ancestor's
+        // `text-align` (only `justify-content` does), so an inner-targeted
+        // className would silently break `text-right`/`text-center` overrides.
+        'relative p-0 text-left align-middle text-sm font-semibold text-[var(--ui-table-header-label-color)]',
         sortable &&
           'cursor-pointer transition-colors hover:bg-[var(--ui-table-header-cell-color-hover)]',
         className
@@ -144,33 +174,142 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
         <button
           type="button"
           onClick={onSort}
-          className="-mx-1 inline-flex items-center gap-[var(--ui-table-header-gap)] rounded-sm px-1 outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)]"
+          className="inline-flex min-h-[var(--ui-table-global-cell-min-height)] max-w-full min-w-0 items-center gap-[var(--ui-table-header-gap)] rounded-sm px-[var(--ui-table-header-cell-padding-x)] outline-none [&:has([role=checkbox])]:pr-0 focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)]"
         >
-          {children}
+          <span className="min-w-0 truncate">{children}</span>
           <SortIcon direction={sortDirection} />
         </button>
       ) : (
-        children
+        // `inline-flex` (not `flex`) so this stays an atomic inline-level box
+        // that the <th>'s own `text-align` can reposition — a block-level flex
+        // box would default to full width and ignore inherited `text-align`
+        // (only `justify-content` repositions a flex box's own children).
+        <span className="inline-flex max-w-full min-h-[var(--ui-table-global-cell-min-height)] min-w-0 items-center px-[var(--ui-table-header-cell-padding-x)] [&:has([role=checkbox])]:pr-0">
+          <span className="min-w-0 truncate">{children}</span>
+        </span>
       )}
+      {resizeHandle}
     </th>
   )
 );
 TableHead.displayName = 'TableHead';
 
-const TableCell = React.forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td
-    ref={ref}
-    className={cn(
-      'h-10 px-[var(--ui-table-global-cell-padding-x)] py-[var(--ui-table-global-cell-padding-y)] align-middle text-sm [&:has([role=checkbox])]:pr-0',
-      className
-    )}
-    {...props}
-  />
-));
+// Figma node 4536-97 (TableDataCell): one component, one `column` variant —
+// `iconText`/`status`/`severity` are the same "optional leading icon + text"
+// composition (an icon override slot, not a fixed status/severity enum);
+// `tag` wraps the value in the existing Tag component; `text`/`date` are
+// plain text.
+// `inline-flex` (not `flex`) so this stays an atomic inline-level box that the
+// <td>'s own `text-align` can reposition — a block-level flex box would
+// default to full width and ignore inherited `text-align` (only
+// `justify-content` repositions a flex box's own children).
+const tableCellContentVariants = cva('inline-flex max-w-full min-w-0 items-center', {
+  variants: {
+    column: {
+      text: '',
+      date: '',
+      iconText: 'gap-[var(--ui-table-data-gap)]',
+      status: 'gap-[var(--ui-table-data-gap)]',
+      severity: 'gap-[var(--ui-table-data-gap)]',
+      tag: '',
+    },
+  },
+  defaultVariants: { column: 'text' },
+});
+
+export interface TableCellProps
+  extends
+    React.TdHTMLAttributes<HTMLTableCellElement>,
+    VariantProps<typeof tableCellContentVariants> {
+  /** Allow content to wrap instead of truncating with an ellipsis. */
+  wrap?: boolean;
+  /** Render the cell's content in a disabled/muted state. */
+  disabled?: boolean;
+  /** Leading icon for `column="iconText"` / `"status"` / `"severity"`. */
+  icon?: React.ReactNode;
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, children, wrap, disabled, column, icon, ...props }, ref) => (
+    <td
+      ref={ref}
+      aria-disabled={disabled || undefined}
+      // `text-align`/color/font utilities passed via `className` must land
+      // here (the real, table-layout-participating box) — a `display:flex`
+      // wrapper below doesn't reposition its children from an ancestor's
+      // `text-align` (only `justify-content` does), so an inner-targeted
+      // className would silently break `text-right`/`text-center` overrides.
+      className={cn('p-0 align-middle text-sm', className)}
+      {...props}
+    >
+      <div
+        className={cn(
+          'min-h-[var(--ui-table-global-cell-min-height)] px-[var(--ui-table-global-cell-padding-x)] py-[var(--ui-table-global-cell-padding-y)] [&:has([role=checkbox])]:pr-0',
+          tableCellContentVariants({ column }),
+          disabled && 'text-[var(--ui-table-data-value-color-disabled)]'
+        )}
+      >
+        {(column === 'iconText' || column === 'status' || column === 'severity') &&
+          icon}
+        {column === 'tag' ? (
+          <Tag size="sm" className="shrink-0">
+            {children}
+          </Tag>
+        ) : (
+          <span className={cn('min-w-0', wrap ? 'whitespace-normal' : 'truncate')}>
+            {children}
+          </span>
+        )}
+      </div>
+    </td>
+  )
+);
 TableCell.displayName = 'TableCell';
+
+// Shared by TableActions/TableSettings — a flush, full-height/width trailing
+// action slot (Figma nodes 4536-414 / 3698-497), not an inset icon button:
+// the idle/hover/active backgrounds run edge-to-edge with the row, so (unlike
+// ButtonIcon) there's no border-radius on the button itself.
+const tableIconButtonVariants = cva(
+  'inline-flex h-[var(--ui-table-global-cell-min-height)] w-12 shrink-0 items-center justify-center px-[var(--ui-table-header-cell-padding-x)] outline-none transition-colors ' +
+    'bg-[var(--ui-table-header-cell-color-idle)] hover:bg-[var(--ui-table-header-cell-color-hover)] active:bg-[var(--ui-table-header-cell-color-active)] ' +
+    'focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)] ' +
+    '[&_svg]:size-4 [&_svg]:shrink-0'
+);
+
+export type TableActionsProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+/** Row-actions trigger (kebab icon). Icon-only — pass an `aria-label`. */
+const TableActions = React.forwardRef<HTMLButtonElement, TableActionsProps>(
+  ({ className, children, type = 'button', ...props }, ref) => (
+    <button
+      ref={ref}
+      type={type}
+      className={cn(tableIconButtonVariants(), className)}
+      {...props}
+    >
+      {children ?? <EllipsisIcon />}
+    </button>
+  )
+);
+TableActions.displayName = 'TableActions';
+
+export type TableSettingsProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+/** Column-settings trigger (gear icon). Icon-only — pass an `aria-label`. */
+const TableSettings = React.forwardRef<HTMLButtonElement, TableSettingsProps>(
+  ({ className, children, type = 'button', ...props }, ref) => (
+    <button
+      ref={ref}
+      type={type}
+      className={cn(tableIconButtonVariants(), className)}
+      {...props}
+    >
+      {children ?? <CogIcon />}
+    </button>
+  )
+);
+TableSettings.displayName = 'TableSettings';
 
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
@@ -193,4 +332,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableActions,
+  TableSettings,
 };

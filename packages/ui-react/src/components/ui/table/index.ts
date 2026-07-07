@@ -7,6 +7,11 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableActions,
+  TableSettings,
   type TableRowProps,
   type TableHeadProps,
+  type TableCellProps,
+  type TableActionsProps,
+  type TableSettingsProps,
 } from './table';

@@ -1,17 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { userEvent, within } from 'storybook/test';
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '../../checkbox';
 import { Tag } from '../../tag';
@@ -21,6 +11,7 @@ import {
   DataTablePagination,
   type DataTableProps,
   DataTableToolbar,
+  type TanstackTable,
 } from '../index';
 
 type Payment = {
@@ -109,31 +100,28 @@ export const Empty: Story = {
 };
 
 function WithToolbarAndPagination() {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-
-  const table = useReactTable({
-    data: payments,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    initialState: { pagination: { pageSize: 5 } },
-    state: { sorting, columnFilters, columnVisibility, rowSelection },
-  });
+  // A callback ref (rather than useRef) so the first render after DataTable
+  // mounts picks up the live TanStack instance — useRef's value wouldn't
+  // trigger a re-render on its own. `onStateChange` keeps this in sync for
+  // every later change too (the ref's target mutates in place, which alone
+  // doesn't cause this component to re-render).
+  const [table, setTable] = useState<TanstackTable<Payment> | null>(null);
+  const [, setTick] = useState(0);
+  const forceRender = () => setTick((t) => t + 1);
 
   return (
     <div className="flex flex-col gap-4">
-      <DataTableToolbar table={table} searchKey="email" searchPlaceholder="Filter emails…" />
-      <DataTable columns={columns} data={payments} />
-      <DataTablePagination table={table} />
+      {table && (
+        <DataTableToolbar table={table} searchKey="email" searchPlaceholder="Filter emails…" />
+      )}
+      <DataTable
+        ref={setTable}
+        columns={columns}
+        data={payments}
+        initialPageSize={5}
+        onStateChange={forceRender}
+      />
+      {table && <DataTablePagination table={table} />}
     </div>
   );
 }
@@ -175,6 +163,26 @@ export const Bordered: Story = {
 
 export const Skeleton: Story = {
   render: () => <DataTable columns={columns} data={[]} skeleton skeletonRows={5} />,
+};
+
+const widthStrategyColumns: ColumnDef<Payment>[] = [
+  // Fixed — always renders at exactly 80px.
+  { accessorKey: 'id', header: 'ID', size: 80 },
+  // Min/max — flexes between a floor and a ceiling.
+  { accessorKey: 'email', header: 'Email', minSize: 160, maxSize: 320 },
+  // Auto — no size/minSize/maxSize declared, sizes to content like a plain column.
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'amount', header: 'Amount' },
+];
+
+export const ColumnWidthStrategies: Story = {
+  render: () => <DataTable columns={widthStrategyColumns} data={payments} />,
+};
+
+export const ResizableColumns: Story = {
+  render: () => (
+    <DataTable columns={widthStrategyColumns} data={payments} enableColumnResizing />
+  ),
 };
 
 export const CurrentRow: Story = {

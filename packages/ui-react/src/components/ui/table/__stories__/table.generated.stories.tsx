@@ -11,6 +11,8 @@ import {
   TableHead,
   TableCell,
   TableCaption,
+  TableActions,
+  TableSettings,
 } from '../table';
 import { Table } from '../table';
 
@@ -34,6 +36,9 @@ export const States: Story = {
             </TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="p-0">
+              <TableSettings aria-label="Column settings" />
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -41,11 +46,17 @@ export const States: Story = {
             <TableCell>INV001</TableCell>
             <TableCell>Paid</TableCell>
             <TableCell className="text-right">$250.00</TableCell>
+            <TableCell className="p-0">
+              <TableActions aria-label="Row actions" />
+            </TableCell>
           </TableRow>
           <TableRow selected>
             <TableCell>INV002</TableCell>
             <TableCell>Pending</TableCell>
             <TableCell className="text-right">$150.00</TableCell>
+            <TableCell className="p-0">
+              <TableActions aria-label="Row actions" />
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -65,6 +76,9 @@ export const Hover: Story = {
           </TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="p-0">
+            <TableSettings aria-label="Column settings" />
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -72,11 +86,17 @@ export const Hover: Story = {
           <TableCell>INV001</TableCell>
           <TableCell>Paid</TableCell>
           <TableCell className="text-right">$250.00</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
         </TableRow>
         <TableRow selected>
           <TableCell>INV002</TableCell>
           <TableCell>Pending</TableCell>
           <TableCell className="text-right">$150.00</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
@@ -94,6 +114,9 @@ export const FocusVisible: Story = {
           </TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="p-0">
+            <TableSettings aria-label="Column settings" />
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -101,11 +124,17 @@ export const FocusVisible: Story = {
           <TableCell>INV001</TableCell>
           <TableCell>Paid</TableCell>
           <TableCell className="text-right">$250.00</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
         </TableRow>
         <TableRow selected>
           <TableCell>INV002</TableCell>
           <TableCell>Pending</TableCell>
           <TableCell className="text-right">$150.00</TableCell>
+          <TableCell className="p-0">
+            <TableActions aria-label="Row actions" />
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>

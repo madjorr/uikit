@@ -80,7 +80,27 @@ tokens:
       description: Sort icon color when unsorted,
     }
   - {
+      name: --ui-table-data-value-color-disabled,
+      affects: cell,
+      description: Cell text color when disabled,
+    }
+  - {
+      name: --ui-table-data-gap,
+      affects: cell,
+      description: Gap between icon and text for column="iconText"/"status"/"severity",
+    }
+  - {
+      name: --ui-table-header-cell-color-idle,
+      affects: row-actions,
+      description: Row-actions/column-settings background — idle,
+    }
+  - {
+      name: --ui-table-header-cell-color-active,
+      affects: row-actions,
+      description: Row-actions/column-settings background — active,
+    }
+  - {
       name: --ui-focus-primary,
       affects: head,
-      description: Focus-visible ring on the sort button,
+      description: 'Focus-visible ring on the sort/row-actions/column-settings buttons, the focus-within ring on a focused row, and the active resize-handle color',
     }
