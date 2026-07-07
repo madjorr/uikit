@@ -363,6 +363,67 @@ export const StickyFooter: Story = {
   ),
 };
 
+// Regression coverage for a consumer passing a raw node (e.g. `<Tag>`, an
+// icon) as `extras` instead of the expected `SidebarPrimaryMenuItemExtras` —
+// the parent hides `extras` on collapse regardless of node type, so this
+// must disappear in the rail just like the `SidebarPrimaryMenuItemExtras`
+// case (see sidebar-primary.tsx `extras` prop docs).
+function RawExtrasRail({ expanded }: { expanded?: boolean }) {
+  return (
+    <Shell>
+      <SidebarPrimary expanded={expanded}>
+        <SidebarPrimaryHeader>
+          <LogoMark />
+        </SidebarPrimaryHeader>
+        <SidebarPrimaryContent>
+          <SidebarPrimarySection>
+            <SidebarPrimaryMenu>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<InboxIcon />}
+                extras={
+                  <Tag variant="info" size="sm">
+                    99+
+                  </Tag>
+                }
+              >
+                Inbox
+              </SidebarPrimaryMenuItem>
+              <SidebarPrimaryMenuItem
+                href="#"
+                icon={<BriefcaseIcon />}
+                extras={<StarIcon aria-hidden="true" />}
+              >
+                Favorites
+              </SidebarPrimaryMenuItem>
+            </SidebarPrimaryMenu>
+          </SidebarPrimarySection>
+        </SidebarPrimaryContent>
+        <SidebarPrimaryFooter>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryCollapseTrigger
+              icon={<ChevronsLeftIcon />}
+              extras={<StarIcon aria-hidden="true" />}
+            >
+              Collapse menu
+            </SidebarPrimaryCollapseTrigger>
+          </SidebarPrimaryMenu>
+        </SidebarPrimaryFooter>
+      </SidebarPrimary>
+    </Shell>
+  );
+}
+
+export const RawExtrasExpanded: Story = {
+  name: 'Raw extras — expanded (visible)',
+  render: () => <RawExtrasRail expanded />,
+};
+
+export const RawExtrasCollapsed: Story = {
+  name: 'Raw extras — collapsed (hidden)',
+  render: () => <RawExtrasRail expanded={false} />,
+};
+
 export const Controlled: Story = {
   name: 'Controlled expand/collapse',
   render: function ControlledRail() {

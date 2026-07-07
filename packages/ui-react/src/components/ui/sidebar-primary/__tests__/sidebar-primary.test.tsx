@@ -252,6 +252,28 @@ describe('SidebarPrimary', () => {
     expect(within(link).getByText('⌘H')).toBeInTheDocument();
   });
 
+  it('hides a raw (non-SidebarPrimaryMenuItemExtras) extras node in collapsed/rail mode', () => {
+    render(
+      <SidebarPrimary expanded={false}>
+        <SidebarPrimaryMenu>
+          <SidebarPrimaryMenuItem href="/a" extras={<span>99+</span>}>
+            Inbox
+          </SidebarPrimaryMenuItem>
+        </SidebarPrimaryMenu>
+        <SidebarPrimaryFooter>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryCollapseTrigger extras={<span>99+</span>}>
+              Collapse menu
+            </SidebarPrimaryCollapseTrigger>
+          </SidebarPrimaryMenu>
+        </SidebarPrimaryFooter>
+      </SidebarPrimary>
+    );
+    const [itemExtras, triggerExtras] = screen.getAllByText('99+');
+    expect(itemExtras.parentElement).toHaveClass('hidden');
+    expect(triggerExtras.parentElement).toHaveClass('hidden');
+  });
+
   it('gives the footer collapse trigger a shortcut extras slot as well', () => {
     render(
       <SidebarPrimary>

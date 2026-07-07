@@ -270,7 +270,9 @@ export interface SidebarPrimaryMenuItemProps
    * Trailing affordance — a `SidebarPrimaryMenuItemExtras` element. Rendered as
    * a flex sibling of the label (its own `gap` from `_global/container/gap`),
    * not nested inside the label's truncating span — nesting it there collapses
-   * the row gap and lets `truncate` clip the affordance.
+   * the row gap and lets `truncate` clip the affordance. Hidden in collapsed/rail
+   * mode regardless of node type — the parent wraps it, so this holds even for
+   * a raw node rather than `SidebarPrimaryMenuItemExtras`.
    */
   extras?: React.ReactNode;
   /**
@@ -322,7 +324,9 @@ const SidebarPrimaryMenuItem = React.forwardRef<
               >
                 {children}
               </span>
-              {extras}
+              {extras != null && (
+                <span className={cn(!expanded && 'hidden')}>{extras}</span>
+              )}
             </>
           ),
         },
@@ -441,7 +445,9 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
         <span className={cn('flex-1 truncate', !expanded && 'sr-only')}>
           {children}
         </span>
-        {extras}
+        {extras != null && (
+          <span className={cn(!expanded && 'hidden')}>{extras}</span>
+        )}
       </button>
     </li>
   );
