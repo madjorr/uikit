@@ -17,6 +17,7 @@ import {
 import { AcronisIcon } from '@acronis-platform/icons-react/solid-mono';
 
 import { Tag } from '../../tag';
+import { TooltipProvider } from '../../tooltip';
 import {
   SidebarPrimary,
   SidebarPrimaryCollapseTrigger,
@@ -301,6 +302,81 @@ export const ExtrasVariants: Story = {
   ),
 };
 
+// Same four `extras` variants as above, but every label is long enough to
+// truncate — the tooltip must still target only the label span, never the
+// icon or the extras affordance next to it (shortcut / external-link / tag /
+// tag + external-link).
+export const ExtrasVariantsTruncated: Story = {
+  name: 'MenuItemExtras — all variants, truncated + tooltip',
+  render: () => (
+    <Shell>
+      <TooltipProvider delay={0}>
+        <SidebarPrimary>
+          <SidebarPrimaryContent>
+            <SidebarPrimarySection>
+              <SidebarPrimaryMenu>
+                <SidebarPrimaryMenuItem
+                  href="#"
+                  icon={<StarIcon />}
+                  extras={
+                    <SidebarPrimaryMenuItemExtras
+                      variant="shortcut"
+                      shortcut="⌘K"
+                    />
+                  }
+                >
+                  Shortcut with a very long label
+                </SidebarPrimaryMenuItem>
+                <SidebarPrimaryMenuItem
+                  href="#"
+                  icon={<LayoutGridIcon />}
+                  extras={
+                    <SidebarPrimaryMenuItemExtras variant="externalLink" />
+                  }
+                >
+                  External link with a very long label
+                </SidebarPrimaryMenuItem>
+                <SidebarPrimaryMenuItem
+                  href="#"
+                  icon={<BoltIcon />}
+                  extras={
+                    <SidebarPrimaryMenuItemExtras
+                      variant="tag"
+                      tag={
+                        <Tag variant="info" size="sm">
+                          New
+                        </Tag>
+                      }
+                    />
+                  }
+                >
+                  Tag with a very long label
+                </SidebarPrimaryMenuItem>
+                <SidebarPrimaryMenuItem
+                  href="#"
+                  icon={<BriefcaseIcon />}
+                  extras={
+                    <SidebarPrimaryMenuItemExtras
+                      variant="tag-externalLink"
+                      tag={
+                        <Tag variant="info" size="sm">
+                          Beta
+                        </Tag>
+                      }
+                    />
+                  }
+                >
+                  Tag and external link with a very long label
+                </SidebarPrimaryMenuItem>
+              </SidebarPrimaryMenu>
+            </SidebarPrimarySection>
+          </SidebarPrimaryContent>
+        </SidebarPrimary>
+      </TooltipProvider>
+    </Shell>
+  ),
+};
+
 export const Sections: Story = {
   name: 'Multiple sections',
   render: () => (
@@ -340,6 +416,56 @@ export const Sections: Story = {
           </SidebarPrimarySection>
         </SidebarPrimaryContent>
       </SidebarPrimary>
+    </Shell>
+  ),
+};
+
+// A label wider than the rail must truncate with an ellipsis, and reveal the
+// full text in a tooltip on hover — but only for the label itself, never the
+// icon or extras (hover-open coverage lives in sidebar-primary.test.tsx;
+// Base UI's floating-ui pointer tracking isn't reliably reproducible from a
+// `play` function in the headless visual-regression runner).
+// `TooltipProvider delay={0}` isn't required by consumers — it's only here so
+// a manual hover in Storybook's own UI opens instantly.
+export const LongLabels: Story = {
+  name: 'Long labels — truncation + tooltip',
+  render: () => (
+    <Shell>
+      <TooltipProvider delay={0}>
+        <SidebarPrimary>
+          <SidebarPrimaryContent>
+            <SidebarPrimarySection>
+              <SidebarPrimaryMenu>
+                <SidebarPrimaryMenuItem href="#" icon={<MonitorIcon />} selected>
+                  Assets
+                </SidebarPrimaryMenuItem>
+                <SidebarPrimaryMenuItem href="#" icon={<ShieldCheckIcon />}>
+                  Protection management console
+                </SidebarPrimaryMenuItem>
+                <SidebarPrimaryMenuItem
+                  href="#"
+                  icon={<BriefcaseIcon />}
+                  extras={
+                    <SidebarPrimaryMenuItemExtras
+                      variant="shortcut"
+                      shortcut="⌘K"
+                    />
+                  }
+                >
+                  Clients onboarding and offboarding workflows
+                </SidebarPrimaryMenuItem>
+              </SidebarPrimaryMenu>
+            </SidebarPrimarySection>
+          </SidebarPrimaryContent>
+          <SidebarPrimaryFooter>
+            <SidebarPrimaryMenu>
+              <SidebarPrimaryCollapseTrigger icon={<ChevronsLeftIcon />}>
+                Collapse this very long primary navigation rail
+              </SidebarPrimaryCollapseTrigger>
+            </SidebarPrimaryMenu>
+          </SidebarPrimaryFooter>
+        </SidebarPrimary>
+      </TooltipProvider>
     </Shell>
   ),
 };

@@ -1,8 +1,9 @@
-import { createRef } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { createRef, useRef } from 'react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { TooltipProvider } from '../../tooltip';
 import {
   SidebarPrimary,
   SidebarPrimaryCollapseTrigger,
@@ -13,7 +14,44 @@ import {
   SidebarPrimaryMenuItem,
   SidebarPrimaryMenuItemExtras,
   SidebarPrimarySection,
+  useIsOverflowing,
 } from '../sidebar-primary';
+
+// happy-dom's layout metrics are always 0, so `useIsOverflowing`'s
+// `scrollWidth > clientWidth` check never trips on its own — mock the
+// prototype getters to simulate a clipped (or not) label.
+function mockOverflow(overflowing: boolean) {
+  vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(
+    overflowing ? 200 : 100
+  );
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(100);
+}
+
+// A controllable stand-in for `ResizeObserver` — happy-dom's real
+// implementation never fires without genuine layout changes, so this lets
+// tests trigger a "resize" deterministically via `trigger()`.
+class FakeResizeObserver {
+  static instances: FakeResizeObserver[] = [];
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  private callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    FakeResizeObserver.instances.push(this);
+  }
+
+  trigger() {
+    this.callback([], this as unknown as ResizeObserver);
+  }
+}
+
+function OverflowProbe({ enabled }: { enabled: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isOverflowing = useIsOverflowing(ref, { enabled });
+  return <div ref={ref}>{isOverflowing ? 'overflowing' : 'not-overflowing'}</div>;
+}
 
 function Rail(props: React.ComponentProps<typeof SidebarPrimary>) {
   return (
@@ -45,6 +83,10 @@ function Rail(props: React.ComponentProps<typeof SidebarPrimary>) {
 }
 
 describe('SidebarPrimary', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders the composed rail without error', () => {
     render(<Rail />);
     expect(
@@ -292,5 +334,178 @@ describe('SidebarPrimary', () => {
     );
     const trigger = screen.getByRole('button', { name: /Collapse menu/ });
     expect(within(trigger).getByText('⌘H')).toBeInTheDocument();
+  });
+
+  describe('truncation tooltip', () => {
+    it('keeps min-w-0 alongside truncate on the label so it actually clips in a flex row', () => {
+      render(
+        <SidebarPrimaryMenu>
+          <SidebarPrimaryMenuItem href="/a">
+            Protection management console
+          </SidebarPrimaryMenuItem>
+        </SidebarPrimaryMenu>
+      );
+      expect(screen.getByText('Protection management console')).toHaveClass(
+        'min-w-0',
+        'truncate'
+      );
+    });
+
+    it('does not open the tooltip when the label is not clipped', async () => {
+      mockOverflow(false);
+      render(
+        <TooltipProvider delay={0}>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryMenuItem href="/a">Assets</SidebarPrimaryMenuItem>
+          </SidebarPrimaryMenu>
+        </TooltipProvider>
+      );
+      await userEvent.hover(screen.getByText('Assets'));
+      expect(screen.getAllByText('Assets')).toHaveLength(1);
+    });
+
+    it('opens a tooltip with the full label when it is clipped', async () => {
+      mockOverflow(true);
+      render(
+        <TooltipProvider delay={0}>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryMenuItem href="/a">
+              Protection management console
+            </SidebarPrimaryMenuItem>
+          </SidebarPrimaryMenu>
+        </TooltipProvider>
+      );
+      await userEvent.hover(
+        screen.getByText('Protection management console')
+      );
+      expect(
+        await screen.findAllByText('Protection management console')
+      ).toHaveLength(2);
+    });
+
+    it('does not open the tooltip when hovering the icon or the extras, only the label', async () => {
+      mockOverflow(true);
+      render(
+        <TooltipProvider delay={0}>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryMenuItem
+              href="/a"
+              icon={<svg data-testid="icon" />}
+              extras={
+                <SidebarPrimaryMenuItemExtras
+                  variant="shortcut"
+                  shortcut="⌘H"
+                />
+              }
+            >
+              Protection management console
+            </SidebarPrimaryMenuItem>
+          </SidebarPrimaryMenu>
+        </TooltipProvider>
+      );
+      await userEvent.hover(screen.getByTestId('icon'));
+      await userEvent.hover(screen.getByText('⌘H'));
+      expect(
+        screen.getAllByText('Protection management console')
+      ).toHaveLength(1);
+    });
+
+    it('never opens the tooltip in collapsed/rail mode even if the (sr-only) label would measure as clipped', async () => {
+      mockOverflow(true);
+      render(
+        <TooltipProvider delay={0}>
+          <SidebarPrimary expanded={false}>
+            <SidebarPrimaryMenu>
+              <SidebarPrimaryMenuItem href="/a">
+                Protection management console
+              </SidebarPrimaryMenuItem>
+            </SidebarPrimaryMenu>
+          </SidebarPrimary>
+        </TooltipProvider>
+      );
+      await userEvent.hover(
+        screen.getByText('Protection management console')
+      );
+      expect(
+        screen.getAllByText('Protection management console')
+      ).toHaveLength(1);
+    });
+
+    it('applies the same clipped-only tooltip behavior to the collapse trigger label', async () => {
+      mockOverflow(true);
+      render(
+        <TooltipProvider delay={0}>
+          <SidebarPrimaryMenu>
+            <SidebarPrimaryCollapseTrigger>
+              Collapse this very long navigation menu
+            </SidebarPrimaryCollapseTrigger>
+          </SidebarPrimaryMenu>
+        </TooltipProvider>
+      );
+      await userEvent.hover(
+        screen.getByText('Collapse this very long navigation menu')
+      );
+      expect(
+        await screen.findAllByText('Collapse this very long navigation menu')
+      ).toHaveLength(2);
+    });
+  });
+});
+
+describe('useIsOverflowing', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    FakeResizeObserver.instances = [];
+  });
+
+  it('reports false when the element does not overflow', () => {
+    mockOverflow(false);
+    render(<OverflowProbe enabled />);
+    expect(screen.getByText('not-overflowing')).toBeInTheDocument();
+  });
+
+  it('reports true when the element overflows', () => {
+    mockOverflow(true);
+    render(<OverflowProbe enabled />);
+    expect(screen.getByText('overflowing')).toBeInTheDocument();
+  });
+
+  it('skips measuring while disabled, even if the element would overflow', () => {
+    mockOverflow(true);
+    render(<OverflowProbe enabled={false} />);
+    expect(screen.getByText('not-overflowing')).toBeInTheDocument();
+  });
+
+  it('starts measuring (and can flip to true) once re-enabled', () => {
+    mockOverflow(true);
+    const { rerender } = render(<OverflowProbe enabled={false} />);
+    expect(screen.getByText('not-overflowing')).toBeInTheDocument();
+
+    rerender(<OverflowProbe enabled />);
+    expect(screen.getByText('overflowing')).toBeInTheDocument();
+  });
+
+  it('re-measures via ResizeObserver when the observed element resizes', () => {
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+    mockOverflow(false);
+    render(<OverflowProbe enabled />);
+    expect(screen.getByText('not-overflowing')).toBeInTheDocument();
+
+    mockOverflow(true);
+    act(() => {
+      FakeResizeObserver.instances[0].trigger();
+    });
+    expect(screen.getByText('overflowing')).toBeInTheDocument();
+  });
+
+  it('disconnects the ResizeObserver on unmount', () => {
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+    mockOverflow(false);
+    const { unmount } = render(<OverflowProbe enabled />);
+    const observer = FakeResizeObserver.instances[0];
+
+    unmount();
+    expect(observer.disconnect).toHaveBeenCalledOnce();
   });
 });

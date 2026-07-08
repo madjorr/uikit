@@ -7,6 +7,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 import { ScrollArea } from '../scroll-area';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip';
 
 // Composable SidebarPrimary primitives mirroring the Figma "SidebarPrimary"
 // component set (node 2092:4359, variant expanded|collapsed). Every color and
@@ -70,6 +71,36 @@ function useControllableBoolean(
     [isControlled, onChange]
   );
   return [value, setValue];
+}
+
+/**
+ * Tracks whether `ref`'s element is clipping its own content (`scrollWidth >
+ * clientWidth`) — used to gate a tooltip so it only opens when a truncated
+ * label is actually cut off. Re-measures via `ResizeObserver` (covers the
+ * rail's expand/collapse width transition); `enabled` skips measurement
+ * entirely (e.g. while collapsed, where the label is `sr-only`).
+ */
+function useIsOverflowing<T extends Element>(
+  ref: React.RefObject<T | null>,
+  { enabled }: { enabled: boolean }
+): boolean {
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!enabled || !element) {
+      setIsOverflowing(false);
+      return;
+    }
+    const measure = () =>
+      setIsOverflowing(element.scrollWidth > element.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref, enabled]);
+
+  return isOverflowing;
 }
 
 export interface SidebarPrimaryProps
@@ -179,7 +210,21 @@ const SidebarPrimaryContent = React.forwardRef<
   // The section list scrolls inside a ScrollArea: its overlay scrollbar floats
   // over the content and reserves no gutter, so the full-bleed selected row is
   // never cropped — on every OS, unlike a native `overflow` scrollbar.
-  <ScrollArea ref={ref} className={cn('min-h-0 flex-1', className)} {...props}>
+  //
+  // Base UI's Scroll Area Content sets `min-width: fit-content` inline (it
+  // needs the content's true intrinsic width to detect horizontal overflow),
+  // which forces every row wider than the rail — overriding `min-w-0` +
+  // `truncate` on a long label, since intrinsic-width calculations ignore
+  // `text-overflow`. We only ever scroll vertically here, so cancel it: the
+  // `!` (important) is required to beat the inline style's specificity.
+  <ScrollArea
+    ref={ref}
+    className={cn(
+      'min-h-0 flex-1 [&_[data-slot=scroll-area-content]]:min-w-0!',
+      className
+    )}
+    {...props}
+  >
     <div className="flex flex-col gap-[var(--ui-sidebar-primary-global-section-list-gap)]">
       {children}
     </div>
@@ -291,6 +336,8 @@ const SidebarPrimaryMenuItem = React.forwardRef<
     ref
   ) => {
     const { expanded } = useSidebarPrimaryContext();
+    const labelRef = React.useRef<HTMLSpanElement>(null);
+    const isOverflowing = useIsOverflowing(labelRef, { enabled: expanded });
 
     const inner = useRender({
       render,
@@ -315,15 +362,26 @@ const SidebarPrimaryMenuItem = React.forwardRef<
               {/* Keep the label in the DOM in collapsed/rail mode as `sr-only` so
                   the icon-only row keeps an accessible name (a11y §7) — never
                   `display:none` the text. Extras are visually dropped when
-                  collapsed but stay queryable for the same reason. */}
-              <span
-                className={cn(
-                  'flex-1 truncate text-left',
-                  !expanded && 'sr-only'
-                )}
-              >
-                {children}
-              </span>
+                  collapsed but stay queryable for the same reason. The tooltip
+                  trigger is the label span itself, not the row — it must not
+                  open when hovering the icon or extras, and only ever opens
+                  when the label is actually clipped. */}
+              <Tooltip disabled={!isOverflowing}>
+                <TooltipTrigger
+                  render={
+                    <span
+                      ref={labelRef}
+                      className={cn(
+                        'min-w-0 flex-1 truncate text-left',
+                        !expanded && 'sr-only'
+                      )}
+                    />
+                  }
+                >
+                  {children}
+                </TooltipTrigger>
+                <TooltipContent>{children}</TooltipContent>
+              </Tooltip>
               {extras != null && (
                 <span className={cn(!expanded && 'hidden')}>{extras}</span>
               )}
@@ -414,6 +472,8 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
   SidebarPrimaryCollapseTriggerProps
 >(({ className, icon, children, extras, onClick, ...props }, ref) => {
   const { expanded, toggleExpanded } = useSidebarPrimaryContext();
+  const labelRef = React.useRef<HTMLSpanElement>(null);
+  const isOverflowing = useIsOverflowing(labelRef, { enabled: expanded });
 
   return (
     <li className="contents">
@@ -442,9 +502,22 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
             {icon}
           </span>
         )}
-        <span className={cn('flex-1 truncate', !expanded && 'sr-only')}>
-          {children}
-        </span>
+        <Tooltip disabled={!isOverflowing}>
+          <TooltipTrigger
+            render={
+              <span
+                ref={labelRef}
+                className={cn(
+                  'min-w-0 flex-1 truncate',
+                  !expanded && 'sr-only'
+                )}
+              />
+            }
+          >
+            {children}
+          </TooltipTrigger>
+          <TooltipContent>{children}</TooltipContent>
+        </Tooltip>
         {extras != null && (
           <span className={cn(!expanded && 'hidden')}>{extras}</span>
         )}
@@ -464,5 +537,6 @@ export {
   SidebarPrimaryMenuItem,
   SidebarPrimaryMenuItemExtras,
   SidebarPrimaryCollapseTrigger,
+  useIsOverflowing,
   sidebarPrimaryMenuItemVariants,
 };
