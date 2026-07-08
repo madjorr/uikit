@@ -106,7 +106,7 @@ const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center [&>*:not(:first-child)]:ml-[var(--ui-avatar-global-avatar-group-gap)]',
+        'flex items-center [&>*:not(:first-child)]:ms-[var(--ui-avatar-global-avatar-group-gap)]',
         className
       )}
       {...props}

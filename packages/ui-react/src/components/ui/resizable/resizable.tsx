@@ -44,14 +44,14 @@ function ResizableHandle({ className, ...props }: ResizableHandleProps) {
         'relative flex w-[9px] items-center justify-center',
         'cursor-[var(--ui-resizable-cursor)] outline-none',
         // Centered 1px divider line (idle → semantic border, hover → hover token, drag → active token).
-        'after:absolute after:inset-y-0 after:left-1/2 after:-translate-x-1/2',
+        'after:absolute after:inset-y-0 after:start-1/2 after:-translate-x-1/2',
         'after:w-[var(--ui-resizable-border-width)] after:bg-[var(--ui-border-on-surface-border)]',
         'hover:after:bg-[var(--ui-resizable-border-color-hover)]',
         'active:after:bg-[var(--ui-resizable-border-color-active)]',
         'focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)]',
         // orientation=horizontal = panels stacked → horizontal divider line.
         'aria-[orientation=horizontal]:h-[9px] aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:cursor-[ns-resize]',
-        'aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:inset-y-auto aria-[orientation=horizontal]:after:left-auto aria-[orientation=horizontal]:after:top-1/2 aria-[orientation=horizontal]:after:h-[var(--ui-resizable-border-width)] aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:-translate-y-1/2 aria-[orientation=horizontal]:after:translate-x-0',
+        'aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:inset-y-auto aria-[orientation=horizontal]:after:start-auto aria-[orientation=horizontal]:after:top-1/2 aria-[orientation=horizontal]:after:h-[var(--ui-resizable-border-width)] aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:-translate-y-1/2 aria-[orientation=horizontal]:after:translate-x-0',
         className
       )}
       {...props}

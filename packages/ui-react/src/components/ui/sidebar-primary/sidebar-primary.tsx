@@ -401,7 +401,7 @@ const SidebarPrimaryMenuItem = React.forwardRef<
                     <span
                       ref={labelRef}
                       className={cn(
-                        'min-w-0 flex-1 truncate text-left',
+                        'min-w-0 flex-1 truncate text-start [unicode-bidi:plaintext]',
                         !expanded && 'sr-only'
                       )}
                     />
@@ -512,7 +512,7 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
         aria-expanded={expanded}
         className={cn(
           sidebarPrimaryMenuItemVariants({ variant: 'unselected' }),
-          'text-left',
+          'text-start',
           className
         )}
         onClick={(event) => {
@@ -525,7 +525,7 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
           <span
             className={cn(
               'flex shrink-0 items-center self-start mt-[var(--ui-sidebar-primary-menu-item-global-icon-margin-t)] transition-transform',
-              !expanded && 'rotate-180'
+              expanded ? 'rtl:rotate-180' : 'ltr:rotate-180'
             )}
           >
             {icon}
@@ -537,7 +537,7 @@ const SidebarPrimaryCollapseTrigger = React.forwardRef<
               <span
                 ref={labelRef}
                 className={cn(
-                  'min-w-0 flex-1 truncate',
+                  'min-w-0 flex-1 truncate [unicode-bidi:plaintext]',
                   !expanded && 'sr-only'
                 )}
               />

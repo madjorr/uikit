@@ -122,7 +122,7 @@ const BreadcrumbSeparator = ({
     )}
     {...props}
   >
-    {children ?? <ChevronRightIcon size={16} />}
+    {children ?? <ChevronRightIcon size={16} className="rtl:rotate-180" />}
   </li>
 );
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator';

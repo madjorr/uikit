@@ -97,7 +97,7 @@ describe('AvatarGroup', () => {
     expect(screen.getByText('GA')).toBeInTheDocument();
     const group = container.firstElementChild as HTMLElement;
     expect(group.className).toContain(
-      '[&>*:not(:first-child)]:ml-[var(--ui-avatar-global-avatar-group-gap)]'
+      '[&>*:not(:first-child)]:ms-[var(--ui-avatar-global-avatar-group-gap)]'
     );
   });
 });

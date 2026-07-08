@@ -24,6 +24,36 @@ function useDocDir(): 'ltr' | 'rtl' {
   return dir;
 }
 
+/**
+ * Tracks whether `ref`'s element is clipping its own content (`scrollWidth >
+ * clientWidth`) — used to gate a tooltip so it only opens when a truncated
+ * label is actually cut off. Re-measures via `ResizeObserver` (covers the
+ * rail's expand/collapse width transition); `enabled` skips measurement
+ * entirely (e.g. while collapsed, where the label is `sr-only`).
+ */
+function useIsOverflowing<T extends Element>(
+  ref: React.RefObject<T | null>,
+  { enabled }: { enabled: boolean }
+): boolean {
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
+
+  React.useEffect(() => {
+    const element = ref.current;
+    if (!enabled || !element) {
+      setIsOverflowing(false);
+      return;
+    }
+    const measure = () =>
+      setIsOverflowing(element.scrollWidth > element.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref, enabled]);
+
+  return isOverflowing;
+}
+
 // Resize constraints — mirrors the design-token defaults.
 // CSS still uses `var(--ui-sidebar-secondary-expanded-container-width)` so
 // brands that override the token get the correct visual width; these JS
@@ -362,7 +392,7 @@ function SidebarSecondaryResizeEdge() {
               // 9px hit area matching ResizableHandle, absolutely positioned on inline-end edge.
               'absolute end-0 top-0 h-full w-[9px] ltr:translate-x-1/2 rtl:-translate-x-1/2 cursor-[var(--ui-resizable-cursor,ew-resize)] z-10',
               // 1px centered divider — same idle/hover/active token chain as ResizableHandle.
-              'after:absolute after:inset-y-0 after:left-1/2 after:-translate-x-1/2 after:transition-colors',
+              'after:absolute after:inset-y-0 after:start-1/2 after:-translate-x-1/2 after:transition-colors',
               'after:w-[var(--ui-resizable-border-width,1px)] after:bg-[var(--ui-border-on-surface-border)]',
               'hover:after:bg-[var(--ui-resizable-border-color-hover)]',
               'active:after:bg-[var(--ui-resizable-border-color-active)]',
@@ -546,7 +576,7 @@ const SidebarSecondaryHeader = React.forwardRef<
       )}
       {...props}
     >
-      <h2 className="ui-sidebar-secondary-global-header-label-text-style truncate text-[var(--ui-sidebar-secondary-global-header-label-color)]">
+      <h2 className="ui-sidebar-secondary-global-header-label-text-style truncate [unicode-bidi:plaintext] text-[var(--ui-sidebar-secondary-global-header-label-color)]">
         {resolvedLabel}
       </h2>
     </div>
@@ -753,6 +783,24 @@ const SidebarSecondarySectionLabel = React.forwardRef<
   SidebarSecondarySectionLabelProps
 >(({ className, actions, unreadRollup, children, ...props }, ref) => {
   const { expandable } = React.useContext(SidebarSecondarySectionContext);
+  const labelRef = React.useRef<HTMLSpanElement>(null);
+  const isOverflowing = useIsOverflowing(labelRef, { enabled: true });
+
+  const labelTooltip = (
+    <Tooltip disabled={!isOverflowing}>
+      <TooltipTrigger
+        render={
+          <span
+            ref={labelRef}
+            className="min-w-0 flex-1 truncate [unicode-bidi:plaintext]"
+          />
+        }
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipContent>{children}</TooltipContent>
+    </Tooltip>
+  );
 
   if (!expandable) {
     // Static header: preserve the original markup when there are no actions so
@@ -760,8 +808,15 @@ const SidebarSecondarySectionLabel = React.forwardRef<
     const base = cn(sectionLabelTextClass, sectionHeaderPadClass, className);
     if (actions == null) {
       return (
-        <div ref={ref} className={base} {...props}>
-          {children}
+        <div
+          ref={ref}
+          className={cn(
+            base,
+            'flex items-center'
+          )}
+          {...props}
+        >
+          {labelTooltip}
         </div>
       );
     }
@@ -774,7 +829,7 @@ const SidebarSecondarySectionLabel = React.forwardRef<
         )}
         {...props}
       >
-        <span className="min-w-0 flex-1 truncate">{children}</span>
+        {labelTooltip}
         <span className="flex shrink-0 items-center">{actions}</span>
       </div>
     );
@@ -805,7 +860,7 @@ const SidebarSecondarySectionLabel = React.forwardRef<
           aria-hidden="true"
           className="shrink-0 ltr:-rotate-90 rtl:rotate-90 transition-transform group-data-[panel-open]/section:rotate-0 text-[var(--ui-sidebar-secondary-section-icon-arrow-color)]"
         />
-        <span className="min-w-0 flex-1 truncate">{children}</span>
+        {labelTooltip}
         {unreadRollup != null && (
           <span className="flex shrink-0 items-center group-data-[panel-open]/section:hidden">
             {unreadRollup}
@@ -888,6 +943,8 @@ const SidebarSecondaryMenuItem = React.forwardRef<
   ) => {
     const { expanded, setSelectedLabel } = useSidebarSecondaryContext();
     const { expandable } = React.useContext(SidebarSecondarySectionContext);
+    const labelRef = React.useRef<HTMLSpanElement>(null);
+    const isOverflowing = useIsOverflowing(labelRef, { enabled: expanded });
 
     // Register this item's label when selected so the collapsed breadcrumb
     // auto-displays the current page without manual props.
@@ -921,15 +978,25 @@ const SidebarSecondaryMenuItem = React.forwardRef<
                 </span>
               )}
               {/* Keep the label in the DOM as `sr-only` in collapsed/rail mode so
-                an icon-only row keeps an accessible name (a11y §7). */}
-              <span
-                className={cn(
-                  'flex-1 min-w-[60px] truncate text-start',
-                  !expanded && 'sr-only'
-                )}
-              >
-                {children}
-              </span>
+                an icon-only row keeps an accessible name (a11y §7). The tooltip
+                trigger is the label span itself — it only opens when the label
+                is actually clipped. */}
+              <Tooltip disabled={!isOverflowing}>
+                <TooltipTrigger
+                  render={
+                    <span
+                      ref={labelRef}
+                      className={cn(
+                        'flex-1 min-w-[60px] truncate text-start [unicode-bidi:plaintext]',
+                        !expanded && 'sr-only'
+                      )}
+                    />
+                  }
+                >
+                  {children}
+                </TooltipTrigger>
+                <TooltipContent>{children}</TooltipContent>
+              </Tooltip>
               {extras}
             </>
           ),
@@ -1027,6 +1094,8 @@ const SidebarSecondaryCollapseTrigger = React.forwardRef<
   ) => {
     const { expanded, toggleExpanded } = useSidebarSecondaryContext();
     const dir = useDocDir();
+    const labelRef = React.useRef<HTMLSpanElement>(null);
+    const isOverflowing = useIsOverflowing(labelRef, { enabled: expanded });
 
     const activeIcon = expanded ? icon : (expandIcon ?? icon);
 
@@ -1051,11 +1120,19 @@ const SidebarSecondaryCollapseTrigger = React.forwardRef<
             {activeIcon}
           </span>
         )}
-        <span
-          className={cn('flex-1 min-w-[60px] truncate', !expanded && 'sr-only')}
-        >
-          {children}
-        </span>
+        <Tooltip disabled={!isOverflowing}>
+          <TooltipTrigger
+            render={
+              <span
+                ref={labelRef}
+                className={cn('flex-1 min-w-[60px] truncate [unicode-bidi:plaintext]', !expanded && 'sr-only')}
+              />
+            }
+          >
+            {children}
+          </TooltipTrigger>
+          <TooltipContent>{children}</TooltipContent>
+        </Tooltip>
         {extras}
       </button>
     );

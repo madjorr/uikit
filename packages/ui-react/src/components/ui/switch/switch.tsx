@@ -27,7 +27,7 @@ const trackClasses = cn(
 
 const thumbClasses = cn(
   'block size-3 rounded-full bg-[var(--ui-switch-global-tick-color-idle)] transition-transform',
-  'data-[checked]:translate-x-4',
+  'ltr:data-[checked]:translate-x-4 rtl:data-[checked]:-translate-x-4',
   'group-data-[disabled]:bg-[var(--ui-switch-global-tick-color-disabled)]'
 );
 
