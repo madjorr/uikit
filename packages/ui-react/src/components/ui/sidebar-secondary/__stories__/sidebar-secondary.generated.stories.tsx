@@ -4,8 +4,8 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { userEvent } from 'storybook/test';
-import { SidebarSecondaryHeader, SidebarSecondaryContent, SidebarSecondaryCollapsedBreadcrumb, SidebarSecondaryFooter, SidebarSecondarySection, SidebarSecondarySectionLabel, SidebarSecondaryMenu, SidebarSecondaryMenuItem, SidebarSecondaryMenuSub, SidebarSecondaryMenuSubTrigger, SidebarSecondaryMenuSubContent, SidebarSecondaryMenuSubItem, SidebarSecondaryMenuItemExtras } from '../sidebar-secondary';
-import { LayoutGridIcon, BoxIcon } from '@acronis-platform/icons-react/stroke-mono';
+import { SidebarSecondaryHeader, SidebarSecondaryContent, SidebarSecondaryFooter, SidebarSecondarySection, SidebarSecondarySectionLabel, SidebarSecondaryMenu, SidebarSecondaryMenuItem, SidebarSecondaryMenuItemExtras } from '../sidebar-secondary';
+import { LayoutGridIcon, SquareIcon } from '@acronis-platform/icons-react/stroke-mono';
 import { SidebarSecondary } from '../sidebar-secondary';
 
 const meta = {
@@ -25,27 +25,15 @@ export const States: Story = {
         <SidebarSecondarySection>
           <SidebarSecondarySectionLabel>Overview</SidebarSecondarySectionLabel>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}>
               Dashboard
-              <SidebarSecondaryMenuItemExtras variant="externalLink" />
             </SidebarSecondaryMenuItem>
-            <SidebarSecondaryMenuSub defaultOpen>
-              <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>
-                Policies
-              </SidebarSecondaryMenuSubTrigger>
-              <SidebarSecondaryMenuSubContent>
-                <SidebarSecondaryMenuSubItem href="#" selected>
-                  Backup
-                </SidebarSecondaryMenuSubItem>
-                <SidebarSecondaryMenuSubItem href="#">
-                  Antivirus
-                </SidebarSecondaryMenuSubItem>
-              </SidebarSecondaryMenuSubContent>
-            </SidebarSecondaryMenuSub>
+            <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+              Policies
+            </SidebarSecondaryMenuItem>
           </SidebarSecondaryMenu>
         </SidebarSecondarySection>
       </SidebarSecondaryContent>
-      <SidebarSecondaryCollapsedBreadcrumb parentLabel="Protection" currentLabel="Dashboard" />
       <SidebarSecondaryFooter>
         <SidebarSecondaryMenu>
           <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>
@@ -64,27 +52,15 @@ export const Hover: Story = {
         <SidebarSecondarySection>
           <SidebarSecondarySectionLabel>Overview</SidebarSecondarySectionLabel>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}>
               Dashboard
-              <SidebarSecondaryMenuItemExtras variant="externalLink" />
             </SidebarSecondaryMenuItem>
-            <SidebarSecondaryMenuSub defaultOpen>
-              <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>
-                Policies
-              </SidebarSecondaryMenuSubTrigger>
-              <SidebarSecondaryMenuSubContent>
-                <SidebarSecondaryMenuSubItem href="#" selected>
-                  Backup
-                </SidebarSecondaryMenuSubItem>
-                <SidebarSecondaryMenuSubItem href="#">
-                  Antivirus
-                </SidebarSecondaryMenuSubItem>
-              </SidebarSecondaryMenuSubContent>
-            </SidebarSecondaryMenuSub>
+            <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+              Policies
+            </SidebarSecondaryMenuItem>
           </SidebarSecondaryMenu>
         </SidebarSecondarySection>
       </SidebarSecondaryContent>
-      <SidebarSecondaryCollapsedBreadcrumb parentLabel="Protection" currentLabel="Dashboard" />
       <SidebarSecondaryFooter>
         <SidebarSecondaryMenu>
           <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>
@@ -101,27 +77,15 @@ export const Active: Story = {
         <SidebarSecondarySection>
           <SidebarSecondarySectionLabel>Overview</SidebarSecondarySectionLabel>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}>
               Dashboard
-              <SidebarSecondaryMenuItemExtras variant="externalLink" />
             </SidebarSecondaryMenuItem>
-            <SidebarSecondaryMenuSub defaultOpen>
-              <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>
-                Policies
-              </SidebarSecondaryMenuSubTrigger>
-              <SidebarSecondaryMenuSubContent>
-                <SidebarSecondaryMenuSubItem href="#" selected>
-                  Backup
-                </SidebarSecondaryMenuSubItem>
-                <SidebarSecondaryMenuSubItem href="#">
-                  Antivirus
-                </SidebarSecondaryMenuSubItem>
-              </SidebarSecondaryMenuSubContent>
-            </SidebarSecondaryMenuSub>
+            <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+              Policies
+            </SidebarSecondaryMenuItem>
           </SidebarSecondaryMenu>
         </SidebarSecondarySection>
       </SidebarSecondaryContent>
-      <SidebarSecondaryCollapsedBreadcrumb parentLabel="Protection" currentLabel="Dashboard" />
       <SidebarSecondaryFooter>
         <SidebarSecondaryMenu>
           <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>
@@ -137,27 +101,15 @@ export const FocusVisible: Story = {
         <SidebarSecondarySection>
           <SidebarSecondarySectionLabel>Overview</SidebarSecondarySectionLabel>
           <SidebarSecondaryMenu>
-            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected>
+            <SidebarSecondaryMenuItem href="#" icon={<LayoutGridIcon />} selected extras={<SidebarSecondaryMenuItemExtras variant="externalLink" />}>
               Dashboard
-              <SidebarSecondaryMenuItemExtras variant="externalLink" />
             </SidebarSecondaryMenuItem>
-            <SidebarSecondaryMenuSub defaultOpen>
-              <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>
-                Policies
-              </SidebarSecondaryMenuSubTrigger>
-              <SidebarSecondaryMenuSubContent>
-                <SidebarSecondaryMenuSubItem href="#" selected>
-                  Backup
-                </SidebarSecondaryMenuSubItem>
-                <SidebarSecondaryMenuSubItem href="#">
-                  Antivirus
-                </SidebarSecondaryMenuSubItem>
-              </SidebarSecondaryMenuSubContent>
-            </SidebarSecondaryMenuSub>
+            <SidebarSecondaryMenuItem href="#" icon={<SquareIcon />}>
+              Policies
+            </SidebarSecondaryMenuItem>
           </SidebarSecondaryMenu>
         </SidebarSecondarySection>
       </SidebarSecondaryContent>
-      <SidebarSecondaryCollapsedBreadcrumb parentLabel="Protection" currentLabel="Dashboard" />
       <SidebarSecondaryFooter>
         <SidebarSecondaryMenu>
           <SidebarSecondaryMenuItem href="#">Settings</SidebarSecondaryMenuItem>

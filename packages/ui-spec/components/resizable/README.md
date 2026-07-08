@@ -18,11 +18,11 @@ React adapter wraps [`react-resizable-panels`](https://github.com/bvaughn/react-
 
 ## Parts
 
-| Part                  | Role                                                          |
-| --------------------- | ------------------------------------------------------------- |
-| `ResizablePanelGroup` | Container; sets the axis via `orientation` and tracks sizes.  |
-| `ResizablePanel`      | A resizable region (`defaultSize` / `minSize` / `maxSize`).   |
-| `ResizableHandle`     | The draggable separator; `withHandle` adds the grab-bar grip. |
+| Part                  | Role                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `ResizablePanelGroup` | Container; sets the axis via `orientation` and tracks sizes. |
+| `ResizablePanel`      | A resizable region (`defaultSize` / `minSize` / `maxSize`).  |
+| `ResizableHandle`     | The draggable separator (cursor + border change on hover).   |
 
 ## Examples
 
@@ -33,12 +33,12 @@ import {
   ResizableHandle,
 } from '@acronis-platform/ui-react';
 
-// Horizontal split with a visible grip
+// Horizontal split
 <ResizablePanelGroup orientation="horizontal" className="h-64 rounded border">
   <ResizablePanel defaultSize={30} minSize={20}>
     Sidebar
   </ResizablePanel>
-  <ResizableHandle withHandle />
+  <ResizableHandle />
   <ResizablePanel defaultSize={70}>Content</ResizablePanel>
 </ResizablePanelGroup>;
 

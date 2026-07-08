@@ -2,5 +2,5 @@ export {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-  type ResizableHandleProps,
 } from './resizable';
+export type { ResizableHandleProps } from './resizable';

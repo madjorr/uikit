@@ -87,21 +87,42 @@ contract:
       description: >-
         A rollup badge (e.g. a Tag with an unread count) shown in an expandable
         section's header only while it is collapsed.
-    - name: parentLabel
-      type: ReactNode
-      required: true
-      description: Parent section label on the collapsed-breadcrumb part.
-    - name: currentLabel
-      type: ReactNode
-      required: true
-      description: Current page label on the collapsed-breadcrumb part.
-    - name: separator
+    - name: resizable
+      type: boolean
+      required: false
+      default: true
+      description: >-
+        Enable the draggable resize edge on the right border. When `true`, the
+        sidebar can be resized between the expanded-width token and twice that
+        value.
+    - name: resizeAriaLabel
+      type: string
+      required: false
+      default: "'Resize sidebar'"
+      description: >-
+        Accessible label for the resize edge (`role="separator"`). Consumers
+        should localize this string for i18n.
+    - name: resizeTooltipExpanded
       type: ReactNode
       required: false
-      default: 'ChevronRightIcon'
+      default: '(English tooltip: Resize/Collapse/Reset)'
       description: >-
-        Separator between the breadcrumb labels (collapsed-breadcrumb part).
-        Defaults to a 16px ChevronRight icon.
+        Tooltip content shown when the sidebar is expanded. Pass `null` to hide
+        the tooltip entirely. Consumers should localize for i18n.
+    - name: resizeTooltipCollapsed
+      type: ReactNode
+      required: false
+      default: '(English tooltip: Resize/Expand)'
+      description: >-
+        Tooltip content shown when the sidebar is collapsed. Pass `null` to hide
+        the tooltip entirely. Consumers should localize for i18n.
+    - name: expandTooltip
+      type: ReactNode
+      required: false
+      default: "'Expand'"
+      description: >-
+        Tooltip text shown on the collapse trigger when the sidebar is collapsed.
+        Consumers should localize this string for i18n.
     - name: extras-variant
       type: "'tag' | 'externalLink' | 'shortcut' | 'tag-externalLink'"
       required: true
@@ -136,8 +157,8 @@ contract:
       description: >-
         The composed panel. Author it from the parts: a header, a scrollable
         content region of sections (each with an optional label and a menu of
-        fixed and expandable rows), a collapsed-breadcrumb for rail mode, and a
-        footer.
+        fixed and expandable rows), and a footer. The collapsed-breadcrumb is
+        rendered automatically by the root.
 
   methods: []
 
@@ -147,12 +168,9 @@ adapters:
     status: implemented
     import: >-
       import { SidebarSecondary, SidebarSecondaryHeader, SidebarSecondaryContent,
-      SidebarSecondaryCollapsedBreadcrumb, SidebarSecondaryFooter,
-      SidebarSecondarySection, SidebarSecondarySectionLabel, SidebarSecondaryMenu,
-      SidebarSecondaryMenuItem, SidebarSecondaryMenuSub,
-      SidebarSecondaryMenuSubTrigger, SidebarSecondaryMenuSubContent,
-      SidebarSecondaryMenuSubItem, SidebarSecondaryMenuItemExtras } from
-      '@acronis-platform/ui-react'
+      SidebarSecondaryFooter, SidebarSecondarySection, SidebarSecondarySectionLabel,
+      SidebarSecondaryMenu, SidebarSecondaryMenuItem, SidebarSecondaryMenuItemExtras,
+      SidebarSecondaryCollapseTrigger } from '@acronis-platform/ui-react'
     example: |
       <SidebarSecondary expanded={expanded} onExpandedChange={setExpanded}>
         <SidebarSecondaryHeader label="Protection" />
@@ -163,17 +181,12 @@ adapters:
               <SidebarSecondaryMenuItem render={<Link to="/dashboard" />} selected>
                 Dashboard
               </SidebarSecondaryMenuItem>
-              <SidebarSecondaryMenuSub defaultOpen>
-                <SidebarSecondaryMenuSubTrigger icon={<BoxIcon />}>Policies</SidebarSecondaryMenuSubTrigger>
-                <SidebarSecondaryMenuSubContent>
-                  <SidebarSecondaryMenuSubItem href="/policies/backup" selected>Backup</SidebarSecondaryMenuSubItem>
-                  <SidebarSecondaryMenuSubItem href="/policies/av">Antivirus</SidebarSecondaryMenuSubItem>
-                </SidebarSecondaryMenuSubContent>
-              </SidebarSecondaryMenuSub>
+              <SidebarSecondaryMenuItem render={<Link to="/policies" />}>
+                Policies
+              </SidebarSecondaryMenuItem>
             </SidebarSecondaryMenu>
           </SidebarSecondarySection>
         </SidebarSecondaryContent>
-        <SidebarSecondaryCollapsedBreadcrumb parentLabel="Protection" currentLabel="Dashboard" />
       </SidebarSecondary>
 
   vue:

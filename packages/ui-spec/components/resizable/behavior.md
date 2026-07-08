@@ -23,13 +23,6 @@ Given/When/Then scenarios for the panel group, its panels, and the drag handle.
 - **Then** the adjacent panels resize by a step, and **Home** / **End** jump to the
   handle's min / max extent.
 
-## The grip is an affordance, not a control
-
-- **Given** a handle rendered `withHandle`,
-- **When** the group is displayed,
-- **Then** the grab-bar pill is always visible to signal the handle is draggable;
-  it does not change the resize behaviour.
-
 ## Orientation flips the axis
 
 - **Given** a group with `orientation="vertical"`,

@@ -42,11 +42,6 @@ contract:
         Whether the panel can collapse below its `minSize` to a collapsed size
         (panel part).
     # — handle —
-    - name: withHandle
-      type: boolean
-      required: false
-      default: false
-      description: Render the grab-bar grip pill on the handle (handle part).
     - name: disableResize
       type: boolean
       required: false
@@ -86,7 +81,7 @@ adapters:
     example: |
       <ResizablePanelGroup orientation="horizontal">
         <ResizablePanel defaultSize={50}>One</ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         <ResizablePanel defaultSize={50}>Two</ResizablePanel>
       </ResizablePanelGroup>
 
@@ -99,7 +94,7 @@ adapters:
     example: |
       <AvResizablePanelGroup orientation="horizontal">
         <AvResizablePanel :default-size="50">One</AvResizablePanel>
-        <AvResizableHandle with-handle />
+        <AvResizableHandle />
         <AvResizablePanel :default-size="50">Two</AvResizablePanel>
       </AvResizablePanelGroup>
 
@@ -110,6 +105,6 @@ adapters:
     example: |
       <ui-resizable-group orientation="horizontal">
         <ui-resizable-panel default-size="50">One</ui-resizable-panel>
-        <ui-resizable-handle with-handle></ui-resizable-handle>
+        <ui-resizable-handle></ui-resizable-handle>
         <ui-resizable-panel default-size="50">Two</ui-resizable-panel>
       </ui-resizable-group>
