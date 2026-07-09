@@ -66,9 +66,29 @@ describe('Resizable', () => {
     render(<Group />);
     const handle = screen.getByRole('separator');
     expect(handle).toHaveClass(
-      'hover:after:[border-inline-start-color:var(--ui-resizable-border-color-hover)]',
-      'active:after:[border-inline-start-color:var(--ui-resizable-border-color-active)]',
-      'focus-visible:after:[border-inline-start-color:var(--ui-resizable-border-color-active)]'
+      'hover:after:[border-color:var(--ui-resizable-border-color-hover)]',
+      'active:after:[border-color:var(--ui-resizable-border-color-active)]',
+      'focus-visible:after:[border-color:var(--ui-resizable-border-color-active)]',
+      'focus-visible:after:[box-shadow:0_0_0_3px_var(--ui-focus-primary)]'
+    );
+  });
+
+  it('draws the vertical divider with the inline-start border', () => {
+    render(<Group orientation="horizontal" />);
+    const handle = screen.getByRole('separator');
+    expect(handle).toHaveAttribute('aria-orientation', 'vertical');
+    expect(handle).toHaveClass(
+      'after:[border-inline-start-width:var(--ui-resizable-border-width)]'
+    );
+  });
+
+  it('draws the stacked divider with the block-start (top) border', () => {
+    render(<Group orientation="vertical" />);
+    const handle = screen.getByRole('separator');
+    expect(handle).toHaveAttribute('aria-orientation', 'horizontal');
+    expect(handle).toHaveClass(
+      'aria-[orientation=horizontal]:after:[border-inline-start-width:0]',
+      'aria-[orientation=horizontal]:after:[border-block-start-width:var(--ui-resizable-border-width)]'
     );
   });
 });

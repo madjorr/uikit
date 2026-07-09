@@ -46,16 +46,23 @@ function ResizableHandle({ className, ...props }: ResizableHandleProps) {
         // Centered 1px divider line (idle → semantic border, hover → hover token, drag → active token).
         // Uses a CSS border (not width+background) so the browser pixel-snaps the line
         // and it doesn't blur across device pixels when the handle lands at a fractional position.
+        // The vertical divider is a zero-width box painted by its inline-start
+        // (left) border; the horizontal override below swaps to the block-start
+        // (top) border. Color is set with `border-color` (all sides) so it
+        // applies regardless of which side carries the width.
         'after:absolute after:inset-y-0 after:inset-x-0 after:mx-auto after:w-0',
-        'after:[border-inline-start-width:var(--ui-resizable-border-width)] after:border-solid after:[border-inline-start-color:var(--ui-border-on-surface-border)]',
-        'hover:after:[border-inline-start-color:var(--ui-resizable-border-color-hover)]',
-        'active:after:[border-inline-start-color:var(--ui-resizable-border-color-active)]',
+        'after:[border-inline-start-width:var(--ui-resizable-border-width)] after:border-solid after:[border-color:var(--ui-border-on-surface-border)]',
+        'hover:after:[border-color:var(--ui-resizable-border-color-hover)]',
+        'active:after:[border-color:var(--ui-resizable-border-color-active)]',
         // Focus ring: 3px box-shadow on the line itself so it auto-centers (Figma 4649:6686).
-        'focus-visible:after:[box-shadow:0_0_0_3px_var(--ui-focus-primary)] focus-visible:after:[border-inline-start-color:var(--ui-resizable-border-color-active)]',
+        'focus-visible:after:[box-shadow:0_0_0_3px_var(--ui-focus-primary)] focus-visible:after:[border-color:var(--ui-resizable-border-color-active)]',
         'active:after:shadow-none',
         // orientation=horizontal = panels stacked → horizontal divider line.
+        // Draw it with the block-start (top) border and reset the inline-start
+        // border used for the vertical line, so the full-width line renders.
         'aria-[orientation=horizontal]:h-[9px] aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:cursor-[ns-resize]',
-        'aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:inset-y-auto aria-[orientation=horizontal]:after:start-auto aria-[orientation=horizontal]:after:top-1/2 aria-[orientation=horizontal]:after:h-[var(--ui-resizable-border-width)] aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:-translate-y-1/2 aria-[orientation=horizontal]:after:translate-x-0',
+        'aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:inset-y-auto aria-[orientation=horizontal]:after:start-auto aria-[orientation=horizontal]:after:top-1/2 aria-[orientation=horizontal]:after:h-0 aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:-translate-y-1/2 aria-[orientation=horizontal]:after:translate-x-0',
+        'aria-[orientation=horizontal]:after:[border-inline-start-width:0] aria-[orientation=horizontal]:after:[border-block-start-width:var(--ui-resizable-border-width)]',
         className
       )}
       {...props}
