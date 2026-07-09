@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth status)",
+      "Bash(gh repo view*)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)",
+      "Bash(git fetch origin main)",
+      "Bash(git fetch origin pull/*)",
+      "Bash(git fetch --unshallow origin)",
+      "Bash(git diff origin/main...refs/pr/*)",
+      "Bash(git diff --name-only*origin/main...refs/pr/*)",
+      "Bash(git show refs/pr/*)",
+      "Bash(git show origin/main:*)",
+      "Bash(git ls-tree -r --name-only refs/pr/*)",
+      "Bash(git rev-parse*)",
+      "Bash(.claude/skills/review-ui-react/scripts/pr-audit.sh *)"
+    ]
+  }
+}

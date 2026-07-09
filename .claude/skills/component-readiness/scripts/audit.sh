@@ -6,7 +6,14 @@
 # never edits files. Prints a per-component matrix + verdict.
 #
 # Usage:
-#   bash .claude/skills/component-readiness/scripts/audit.sh [ComponentName | kebab-name | all]
+#   bash .claude/skills/component-readiness/scripts/audit.sh [ComponentName | kebab-name | all] [git-ref]
+#
+# git-ref (optional): audit the component as it exists at that commit/ref
+# instead of the working tree — e.g. a PR head fetched into refs/pr/<n>, for
+# reviewing a component that doesn't exist on disk yet (used by
+# /review-ui-react). Implemented via a throwaway detached `git worktree` so
+# none of the checks below need to know or care whether they're reading the
+# working tree or a ref — same logic, different ROOT.
 #
 # Columns:
 #   TOKENS    every --ui-* ref (.tsx + tests + stories + spec) resolves in tokens-pd
@@ -22,7 +29,22 @@
 # Note: no `set -e` — grep/comm return non-zero on "no match", which is expected here.
 set -uo pipefail
 
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || pwd)"
+SCRIPT_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+REF="${2:-}"
+WORKTREE=""
+if [ -n "$REF" ]; then
+  WORKTREE="$(mktemp -d)"
+  if ! git -C "$SCRIPT_ROOT" worktree add --detach --quiet "$WORKTREE" "$REF" >/dev/null 2>&1; then
+    echo "ERROR: could not create a worktree for ref '$REF'" >&2
+    rm -rf "$WORKTREE"
+    exit 1
+  fi
+  trap 'git -C "$SCRIPT_ROOT" worktree remove --force "$WORKTREE" >/dev/null 2>&1; rm -rf "$WORKTREE" 2>/dev/null' EXIT
+  ROOT="$WORKTREE"
+else
+  ROOT="$SCRIPT_ROOT"
+fi
 cd "$ROOT" || exit 1
 
 UI=packages/ui-react/src/components/ui
