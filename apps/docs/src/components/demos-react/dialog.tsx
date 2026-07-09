@@ -13,14 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 export function DialogDemo() {
-  const mount = useShadowMount();
   return (
     <Dialog>
       <DialogTrigger render={<Button variant="secondary">Open dialog</Button>} />
-      <DialogContent portalContainer={mount}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogCloseButton />

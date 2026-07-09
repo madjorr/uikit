@@ -11,6 +11,7 @@ import {
 } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 import { Spinner } from '../spinner';
 
 // Ported from `@acronis-platform/shadcn-uikit`'s `sonner`
@@ -143,13 +144,16 @@ export interface ToasterProps {
  * stack and renders every queued toast. Trigger toasts with the `toast` API.
  */
 function Toaster({ timeout, limit, portalContainer }: ToasterProps) {
+  const ctxContainer = usePortalContainer();
+  const resolvedContainer = portalContainer ?? ctxContainer;
+
   return (
     <ToastPrimitive.Provider
       toastManager={toastManager}
       timeout={timeout}
       limit={limit}
     >
-      <ToastPrimitive.Portal container={portalContainer}>
+      <ToastPrimitive.Portal container={resolvedContainer}>
         <ToastPrimitive.Viewport className="fixed bottom-4 end-4 z-[100] flex w-[384px] max-w-[calc(100vw-2rem)] flex-col gap-3 outline-none">
           <ToastList />
         </ToastPrimitive.Viewport>

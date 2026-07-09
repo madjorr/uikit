@@ -13,14 +13,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 export function SheetDemo() {
-  const mount = useShadowMount();
   return (
     <Sheet>
       <SheetTrigger render={<Button variant="secondary">Open details</Button>} />
-      <SheetContent side="right" portalContainer={mount}>
+      <SheetContent side="right">
         <SheetHeader>
           <SheetTitle>Workload details</SheetTitle>
           <SheetCloseButton />

@@ -4,6 +4,7 @@
     "architecture",
     "design-to-code",
     "migration",
+    "shadow-dom",
     "tree-shaking",
     "publishing",
     "versioning",

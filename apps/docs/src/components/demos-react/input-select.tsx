@@ -10,7 +10,6 @@ import {
   InputSelectTrigger,
   InputSelectValue,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 const regions = {
   us: 'United States',
@@ -19,7 +18,6 @@ const regions = {
 };
 
 export function InputSelectDemo() {
-  const mount = useShadowMount();
   return (
     <div style={{ width: 260 }}>
       <InputSelect items={regions} defaultValue="eu">
@@ -30,7 +28,7 @@ export function InputSelectDemo() {
           </InputSelectTrigger>
           <InputSelectDescription>Where workloads are stored.</InputSelectDescription>
         </InputSelectField>
-        <InputSelectContent portalContainer={mount}>
+        <InputSelectContent>
           <InputSelectItem value="us">United States</InputSelectItem>
           <InputSelectItem value="eu">Europe</InputSelectItem>
           <InputSelectItem value="apac">Asia Pacific</InputSelectItem>

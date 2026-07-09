@@ -21,7 +21,6 @@ import {
   SheetTitle,
   Spinner,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 type ContentState = 'content' | 'loading' | 'empty';
 
@@ -39,7 +38,6 @@ const STATES: { id: ContentState; label: string }[] = [
 ];
 
 export function SheetDetailPanelDemo() {
-  const mount = useShadowMount();
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<ContentState>('content');
 
@@ -57,7 +55,7 @@ export function SheetDetailPanelDemo() {
       ))}
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" portalContainer={mount}>
+        <SheetContent side="right">
           <SheetHeader>
             <SheetTitle>Workload details</SheetTitle>
             <SheetCloseButton />

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // A contextual hint shown on hover/focus of its trigger. Wraps the Base UI
 // Tooltip primitive; the popup is themed with the `--ui-tooltip-*` token tier
@@ -36,9 +37,13 @@ const TooltipContent = React.forwardRef<
       ...props
     },
     ref
-  ) => (
+  ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
+    return (
     <TooltipPrimitive.Portal
-      container={portalContainer}
+      container={resolvedContainer}
       keepMounted={keepMounted}
     >
       <TooltipPrimitive.Positioner
@@ -57,7 +62,8 @@ const TooltipContent = React.forwardRef<
         />
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
-  )
+    );
+  }
 );
 TooltipContent.displayName = 'TooltipContent';
 

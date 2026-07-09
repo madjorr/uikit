@@ -9,6 +9,7 @@ import {
 } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // A searchable single/multi-select built on Base UI's Combobox primitive. The
 // legacy `combobox` was only a hardcoded Popover + cmdk demo; this is a real,
@@ -98,8 +99,12 @@ const ComboboxContent = React.forwardRef<
   (
     { className, children, sideOffset = 4, align = 'start', side = 'bottom', portalContainer, ...props },
     ref
-  ) => (
-    <ComboboxPrimitive.Portal container={portalContainer}>
+  ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
+    return (
+    <ComboboxPrimitive.Portal container={resolvedContainer}>
       <ComboboxPrimitive.Positioner
         sideOffset={sideOffset}
         align={align}
@@ -118,7 +123,8 @@ const ComboboxContent = React.forwardRef<
         </ComboboxPrimitive.Popup>
       </ComboboxPrimitive.Positioner>
     </ComboboxPrimitive.Portal>
-  )
+    );
+  }
 );
 ComboboxContent.displayName = 'ComboboxContent';
 

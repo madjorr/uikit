@@ -4,6 +4,7 @@ import { TimesIcon } from '@acronis-platform/icons-react/stroke-mono';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // Initial version ported from `@acronis-platform/shadcn-uikit`'s `sheet`
 // (packages/ui-legacy/src/components/ui/sheet.tsx). A modal side panel — the
@@ -102,6 +103,9 @@ const SheetContent = React.forwardRef<
     },
     ref
   ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
     const popup = (
       <>
         <SheetOverlay />
@@ -116,7 +120,7 @@ const SheetContent = React.forwardRef<
     );
 
     return portal ? (
-      <DialogPrimitive.Portal container={portalContainer} keepMounted={keepMounted}>
+      <DialogPrimitive.Portal container={resolvedContainer} keepMounted={keepMounted}>
         {popup}
       </DialogPrimitive.Portal>
     ) : (

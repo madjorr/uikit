@@ -8,7 +8,6 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 type Framework = { value: string; label: string };
 const frameworks: Framework[] = [
@@ -20,12 +19,11 @@ const frameworks: Framework[] = [
 ];
 
 export function ComboboxDemo() {
-  const mount = useShadowMount();
   return (
     <div style={{ width: 260 }}>
       <Combobox items={frameworks}>
         <ComboboxInput placeholder="Search framework…" clearable />
-        <ComboboxContent portalContainer={mount}>
+        <ComboboxContent>
           <ComboboxEmpty>No framework found.</ComboboxEmpty>
           <ComboboxList>
             {(item: Framework) => (

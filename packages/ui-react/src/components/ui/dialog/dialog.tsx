@@ -4,6 +4,7 @@ import { TimesIcon } from '@acronis-platform/icons-react/stroke-mono';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // Initial version ported from `@acronis-platform/shadcn-uikit`'s `dialog`
 // (packages/ui-legacy/src/components/ui/dialog.tsx). A modal overlay built on
@@ -106,6 +107,9 @@ const DialogContent = React.forwardRef<
     },
     ref
   ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
     const popup = (
       <>
         <DialogOverlay />
@@ -120,7 +124,7 @@ const DialogContent = React.forwardRef<
     );
 
     return portal ? (
-      <DialogPrimitive.Portal container={portalContainer} keepMounted={keepMounted}>
+      <DialogPrimitive.Portal container={resolvedContainer} keepMounted={keepMounted}>
         {popup}
       </DialogPrimitive.Portal>
     ) : (

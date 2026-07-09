@@ -1,4 +1,9 @@
 export { cn } from './lib/utils';
+export {
+  PortalContainerProvider,
+  usePortalContainer,
+  type PortalContainerProviderProps,
+} from './lib/portal-container';
 export * from './components/ui/accordion';
 export * from './components/ui/alert';
 export * from './components/ui/app-shell';

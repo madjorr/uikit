@@ -13,20 +13,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 const statuses = { active: 'Active', idle: 'Idle', error: 'Error' };
 const regions = { us: 'United States', eu: 'Europe', apac: 'Asia Pacific' };
 
 export function FilterPopoverDemo() {
-  const mount = useShadowMount();
   return (
     <Popover defaultOpen>
       <PopoverTrigger render={<Button variant="secondary">Filters</Button>} />
       <PopoverContent
         align="start"
         sideOffset={8}
-        portalContainer={mount}
         className="w-80 p-0"
       >
         <form onSubmit={(e) => e.preventDefault()}>
@@ -41,7 +38,7 @@ export function FilterPopoverDemo() {
                   <InputSelectValue placeholder="Any status" />
                 </InputSelectTrigger>
               </InputSelectField>
-              <InputSelectContent portalContainer={mount}>
+              <InputSelectContent>
                 <InputSelectItem value="active">Active</InputSelectItem>
                 <InputSelectItem value="idle">Idle</InputSelectItem>
                 <InputSelectItem value="error">Error</InputSelectItem>
@@ -54,7 +51,7 @@ export function FilterPopoverDemo() {
                   <InputSelectValue placeholder="Any region" />
                 </InputSelectTrigger>
               </InputSelectField>
-              <InputSelectContent portalContainer={mount}>
+              <InputSelectContent>
                 <InputSelectItem value="us">United States</InputSelectItem>
                 <InputSelectItem value="eu">Europe</InputSelectItem>
                 <InputSelectItem value="apac">Asia Pacific</InputSelectItem>

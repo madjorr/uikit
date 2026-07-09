@@ -1,10 +1,8 @@
 'use client';
 
 import { Button, Toaster, toast } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 export function ToastDemo() {
-  const mount = useShadowMount();
   return (
     <div className="flex flex-wrap gap-3">
       <Button
@@ -48,7 +46,7 @@ export function ToastDemo() {
       >
         With action
       </Button>
-      <Toaster portalContainer={mount} />
+      <Toaster />
     </div>
   );
 }

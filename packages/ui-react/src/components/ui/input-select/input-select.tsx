@@ -9,6 +9,7 @@ import {
 } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // The next-gen select, themed by the dedicated `--ui-input-select-*` tier (global /
 // normal / error / dropdown). It composes Base UI `Select` and adds the field
@@ -150,8 +151,12 @@ const InputSelectContent = React.forwardRef<
       ...props
     },
     ref
-  ) => (
-    <SelectPrimitive.Portal container={portalContainer}>
+  ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
+    return (
+    <SelectPrimitive.Portal container={resolvedContainer}>
       <SelectPrimitive.Positioner
         sideOffset={sideOffset}
         align={align}
@@ -171,7 +176,8 @@ const InputSelectContent = React.forwardRef<
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
     </SelectPrimitive.Portal>
-  )
+    );
+  }
 );
 InputSelectContent.displayName = 'InputSelectContent';
 

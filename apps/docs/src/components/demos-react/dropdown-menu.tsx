@@ -10,14 +10,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@acronis-platform/ui-react';
-import { useShadowMount } from '@/components/ShadowDemo';
 
 export function DropdownMenuDemo() {
-  const mount = useShadowMount();
   return (
     <DropdownMenu defaultOpen>
       <DropdownMenuTrigger render={<Button variant="secondary">Open menu</Button>} />
-      <DropdownMenuContent portalContainer={mount} className="w-56">
+      <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>My account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

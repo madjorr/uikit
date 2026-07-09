@@ -3,6 +3,7 @@ import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { CheckIcon, ChevronRightIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
+import { usePortalContainer } from '@/lib/portal-container';
 
 // Ported from `@acronis-platform/shadcn-uikit`'s `dropdown-menu`
 // (packages/ui-legacy/src/components/ui/dropdown-menu.tsx). A menu of actions
@@ -60,6 +61,9 @@ const DropdownMenuContent = React.forwardRef<
     },
     ref
   ) => {
+    const ctxContainer = usePortalContainer();
+    const resolvedContainer = portalContainer ?? ctxContainer;
+
     const positioner = (
       <MenuPrimitive.Positioner
         side={side}
@@ -75,7 +79,7 @@ const DropdownMenuContent = React.forwardRef<
       </MenuPrimitive.Positioner>
     );
     return portal ? (
-      <MenuPrimitive.Portal container={portalContainer} keepMounted={keepMounted}>
+      <MenuPrimitive.Portal container={resolvedContainer} keepMounted={keepMounted}>
         {positioner}
       </MenuPrimitive.Portal>
     ) : (

@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { PortalContainerProvider } from '@acronis-platform/ui-react';
 
 // Lets a demo portal its Base UI overlays (Select dropdown, Tooltip popup) INTO
 // the shadow root instead of document.body, so the popup inherits the shadow's
@@ -134,7 +135,9 @@ export function ShadowDemo({ children, center }: ShadowDemoProps) {
       {mount &&
         createPortal(
           <ShadowMountContext.Provider value={mount}>
-            {children}
+            <PortalContainerProvider container={mount}>
+              {children}
+            </PortalContainerProvider>
           </ShadowMountContext.Provider>,
           mount
         )}
