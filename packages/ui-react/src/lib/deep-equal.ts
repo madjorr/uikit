@@ -20,5 +20,9 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   const aKeys = Object.keys(aRecord);
   const bKeys = Object.keys(bRecord);
   if (aKeys.length !== bKeys.length) return false;
-  return aKeys.every((key) => deepEqual(aRecord[key], bRecord[key]));
+  return aKeys.every(
+    (key) =>
+      Object.prototype.hasOwnProperty.call(bRecord, key) &&
+      deepEqual(aRecord[key], bRecord[key]),
+  );
 }

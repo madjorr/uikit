@@ -32,6 +32,11 @@ describe('deepEqual', () => {
     expect(deepEqual({ a: { b: 1 } }, { a: { b: 2 } })).toBe(false);
   });
 
+  it('treats same-length disjoint-key objects as unequal, even when values are undefined', () => {
+    expect(deepEqual({ a: undefined }, { b: undefined })).toBe(false);
+    expect(deepEqual({ a: 1 }, { b: 1 })).toBe(false);
+  });
+
   it('compares arrays by value and length, order-sensitively', () => {
     expect(deepEqual([1, 2, 3], [1, 2, 3])).toBe(true);
     expect(deepEqual([1, 2, 3], [3, 2, 1])).toBe(false);

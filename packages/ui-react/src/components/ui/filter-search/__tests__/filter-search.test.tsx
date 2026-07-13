@@ -303,6 +303,18 @@ describe('FilterSearchAppliedFilters', () => {
     expect(onValueChange).toHaveBeenCalledWith({});
   });
 
+  it('formats an object filter value as JSON instead of [object Object]', () => {
+    render(
+      <FilterSearchAppliedFilters
+        filters={{ range: { min: 1, max: 10 } }}
+        onValueChange={() => {}}
+      />
+    );
+    expect(
+      screen.getByText('range: {"min":1,"max":10}')
+    ).toBeInTheDocument();
+  });
+
   it('supports a custom chip label formatter', () => {
     render(
       <FilterSearchAppliedFilters

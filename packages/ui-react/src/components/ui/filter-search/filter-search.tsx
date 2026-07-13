@@ -206,7 +206,9 @@ FilterSearchFilters.displayName = 'FilterSearchFilters';
 function defaultFilterChipLabel(key: string, value: unknown): string {
   const text = Array.isArray(value)
     ? value.map((entry) => String(entry)).join(', ')
-    : String(value);
+    : typeof value === 'object' && value !== null
+      ? JSON.stringify(value)
+      : String(value);
   return `${key}: ${text}`;
 }
 
