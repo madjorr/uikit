@@ -141,3 +141,8 @@ states:
     kind: prop
     prop: meta.pin
     affects: [row, column-header]
+  - id: wrapping
+    trigger: a column's meta.wrap is set
+    kind: prop
+    prop: meta.wrap
+    affects: [row, column-header]

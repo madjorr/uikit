@@ -18,8 +18,16 @@ tokens:
   - name: --ui-table-global-row-color-idle
     affects: row
     description: >-
-      Default row background; also the opaque background applied to pinned
-      (sticky) cells so scrolled cells don't show through.
+      Default row background. Transparent by design (an idle row shows the
+      page/card surface through it) — pinned (sticky) idle cells use
+      --ui-background-surface-primary instead, since an opaque background is
+      required there so scrolled cells don't show through.
+  - name: --ui-background-surface-primary
+    affects: row
+    description: >-
+      Opaque background applied to pinned (sticky) header/body cells in the
+      idle state (bridged to bg-background), since
+      --ui-table-global-row-color-idle is transparent by design.
   - name: --ui-table-data-value-color-idle
     affects: expand-trigger
     description: Chevron color of the in-cell DataTableExpandTrigger.

@@ -93,6 +93,12 @@ Scenario: Sticky (pinned) columns
 ```
 
 ```gherkin
+Scenario: Wrapping columns
+  Given a column with meta.wrap = true
+  Then that column's header and cell content wrap onto multiple lines instead of truncating
+```
+
+```gherkin
 Scenario: Select rows
   Given a selection column with checkboxes
   When rows are checked

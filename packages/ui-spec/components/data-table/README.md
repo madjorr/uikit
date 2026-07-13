@@ -44,6 +44,9 @@ TanStack `table` instance you build with `useReactTable` — render them around 
 - **Sticky (pinned) columns** — set `meta.pin: 'left' | 'right'` on a
   `ColumnDef`. DataTable drives TanStack's native column-pinning and renders the
   column as `position: sticky` cells with an opaque row background.
+- **Wrapping columns** — set `meta.wrap: true` on a `ColumnDef` to let that
+  column's header and cell content wrap onto multiple lines instead of
+  truncating, mirroring the `Table` primitives' `wrap` prop.
 - **Expandable column** — put a `DataTableExpandTrigger` in a column's `cell`
   render function so the expand affordance sits in a real column instead of a
   whole-row click. It reads `row.getCanExpand()` / `getIsExpanded()` and calls
