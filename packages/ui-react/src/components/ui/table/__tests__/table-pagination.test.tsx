@@ -27,6 +27,11 @@ describe('TablePagination', () => {
     expect(screen.getByText('Page 3 of 5')).toBeInTheDocument();
   });
 
+  it('shows "No pages" instead of "Page 1 of 0" when pageCount is 0', () => {
+    setup({ pageIndex: 0, pageCount: 0 });
+    expect(screen.getByText('No pages')).toBeInTheDocument();
+  });
+
   it('renders the selection summary when selected + total rows are given', () => {
     setup({ selectedRows: 4 });
     expect(screen.getByText('4 of 48 row(s) selected.')).toBeInTheDocument();

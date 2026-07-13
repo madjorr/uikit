@@ -94,7 +94,7 @@ const TablePagination = React.forwardRef<HTMLDivElement, TablePaginationProps>(
             </Select>
           </div>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {pageIndex + 1} of {pageCount}
+            {pageCount === 0 ? 'No pages' : `Page ${pageIndex + 1} of ${pageCount}`}
           </div>
           <div className="flex items-center gap-2">
             <ButtonIcon
