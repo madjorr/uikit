@@ -789,7 +789,7 @@
           "$type": "color",
           "$value": "{palette.orange.4}"
         },
-        "critical-strong": {
+        "criticalStrong": {
           "$extensions": {
             "com.figma.scopes": [
               "STROKE_COLOR"
@@ -809,7 +809,7 @@
           "$type": "color",
           "$value": "{palette.red.4}"
         },
-        "danger-strong": {
+        "dangerStrong": {
           "$extensions": {
             "com.figma.scopes": [
               "STROKE_COLOR"
@@ -849,7 +849,7 @@
           "$type": "color",
           "$value": "{palette.grayscale.4}"
         },
-        "neutral-strong": {
+        "neutralStrong": {
           "$extensions": {
             "com.figma.scopes": [
               "STROKE_COLOR"
@@ -869,7 +869,7 @@
           "$type": "color",
           "$value": "{palette.green.4}"
         },
-        "success-strong": {
+        "successStrong": {
           "$extensions": {
             "com.figma.scopes": [
               "STROKE_COLOR"
@@ -889,7 +889,7 @@
           "$type": "color",
           "$value": "{palette.yellow.4}"
         },
-        "warning-strong": {
+        "warningStrong": {
           "$extensions": {
             "com.figma.scopes": [
               "STROKE_COLOR"
