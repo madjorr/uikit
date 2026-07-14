@@ -72,6 +72,26 @@ describe('Table', () => {
     expect(onSort).toHaveBeenCalledTimes(1);
   });
 
+  it('puts the pointer cursor on the sort button, not just the header cell', () => {
+    // Native <button> elements get the browser's default (arrow) cursor, not
+    // pointer — setting cursor-pointer on an ancestor <th> doesn't override
+    // that. The clickable target itself must carry the class.
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortable sortDirection={false}>
+              Name
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    expect(screen.getByRole('button', { name: /Name/ })).toHaveClass(
+      'cursor-pointer'
+    );
+  });
+
   it('reflects the sort direction in aria-sort', () => {
     render(
       <Table>

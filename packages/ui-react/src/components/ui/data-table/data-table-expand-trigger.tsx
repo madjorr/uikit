@@ -1,9 +1,6 @@
 import * as React from 'react';
 import type { Row } from '@tanstack/react-table';
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-} from '@acronis-platform/icons-react/stroke-mono';
+import { ChevronDownIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
 
@@ -35,12 +32,17 @@ function DataTableExpandTriggerImpl<TData>(
       aria-label={expanded ? 'Collapse row' : 'Expand row'}
       aria-expanded={expanded}
       className={cn(
-        'inline-flex size-6 items-center justify-center rounded text-[var(--ui-table-data-value-color-idle)] transition-colors hover:bg-[var(--ui-table-header-cell-color-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] [&_svg]:size-4 [&_svg]:shrink-0',
+        'inline-flex size-6 cursor-pointer items-center justify-center rounded text-[var(--ui-table-data-value-color-idle)] transition-colors hover:bg-[var(--ui-table-header-cell-color-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] [&_svg]:size-4 [&_svg]:shrink-0',
         className
       )}
       {...props}
     >
-      {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+      <ChevronDownIcon
+        className={cn(
+          'transition-transform',
+          !expanded && 'ltr:-rotate-90 rtl:rotate-90'
+        )}
+      />
     </button>
   );
 }

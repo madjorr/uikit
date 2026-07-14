@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { useSortState } from '@/hooks';
+
 import { Checkbox } from '../../checkbox';
 import {
   Table,
@@ -79,37 +81,72 @@ export const Default: Story = {
   ),
 };
 
-// Sortable headers render the sort affordance (inactive ⇅ / active ↑ / active ↓)
-// and set `aria-sort`. Wire `onSort` to your own sorting; the direction is fixed
-// here for the snapshot.
-export const SortableHeaders: Story = {
-  render: () => (
+type Archive = {
+  id: string;
+  name: string;
+  created: string;
+  size: number;
+};
+
+const ARCHIVE_ROWS: Archive[] = [
+  { id: 'a1', name: 'Backup archive', created: '26 Jan, 2026', size: 4567890 },
+  { id: 'a2', name: 'Disk image', created: '24 Jan, 2026', size: 1204050 },
+];
+
+// Sortable headers render the sort affordance (inactive ⇅ / active ↑ / active ↓),
+// set `aria-sort`, and are wired to `useSortState` so clicking a header actually
+// re-sorts the rows.
+function SortableHeadersDemo() {
+  const { sortedData, getSortDirection, toggleSort } = useSortState({
+    data: ARCHIVE_ROWS,
+    initialSort: { columnId: 'name', direction: 'asc' },
+  });
+
+  return (
     <Table className="w-[520px]">
       <TableHeader>
         <TableRow>
-          <TableHead sortable sortDirection="asc">
+          <TableHead
+            sortable
+            sortDirection={getSortDirection('name')}
+            onSort={() => toggleSort('name')}
+          >
             Name
           </TableHead>
-          <TableHead sortable>Created</TableHead>
-          <TableHead sortable sortDirection="desc" className="text-end">
+          <TableHead
+            sortable
+            sortDirection={getSortDirection('created')}
+            onSort={() => toggleSort('created')}
+          >
+            Created
+          </TableHead>
+          <TableHead
+            sortable
+            sortDirection={getSortDirection('size')}
+            onSort={() => toggleSort('size')}
+            className="text-end"
+          >
             Size
           </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell>Backup archive</TableCell>
-          <TableCell>26 Jan, 2026</TableCell>
-          <TableCell className="text-end">4 567 890</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Disk image</TableCell>
-          <TableCell>24 Jan, 2026</TableCell>
-          <TableCell className="text-end">1 204 050</TableCell>
-        </TableRow>
+        {sortedData.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell>{row.name}</TableCell>
+            <TableCell>{row.created}</TableCell>
+            <TableCell className="text-end">
+              {row.size.toLocaleString()}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
-  ),
+  );
+}
+
+export const SortableHeaders: Story = {
+  render: () => <SortableHeadersDemo />,
 };
 
 const SELECTION_ROWS = [
@@ -204,10 +241,11 @@ const SCROLL_ROWS: ScrollRow[] = Array.from({ length: TOTAL_ROWS }, (_, i) => ({
 // `<tr>` — browsers don't reliably support `position: sticky` on table rows.
 function ScrollableBodyDemo() {
   const [pageIndex, setPageIndex] = useState(0);
-  const pageCount = Math.ceil(SCROLL_ROWS.length / PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
+  const pageCount = Math.ceil(SCROLL_ROWS.length / pageSize);
   const pageRows = SCROLL_ROWS.slice(
-    pageIndex * PAGE_SIZE,
-    pageIndex * PAGE_SIZE + PAGE_SIZE
+    pageIndex * pageSize,
+    pageIndex * pageSize + pageSize
   );
 
   return (
@@ -237,10 +275,13 @@ function ScrollableBodyDemo() {
       <TablePagination
         pageIndex={pageIndex}
         pageCount={pageCount}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         totalRows={SCROLL_ROWS.length}
         onPageIndexChange={setPageIndex}
-        onPageSizeChange={() => {}}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPageIndex(0);
+        }}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import {
   type CSSProperties,
   Fragment,
+  type KeyboardEvent,
   type ReactNode,
   useEffect,
   useState,
@@ -135,6 +136,29 @@ function getCellStyle<TData>(
   return { ...pin, width };
 }
 
+// Matches TanStack's own `defaultColumnSizing` fallback bounds — the same
+// range `column.getSize()` already clamps to internally when a column
+// doesn't set its own `minSize`/`maxSize`.
+const DEFAULT_MIN_COLUMN_SIZE = 20;
+const DEFAULT_MAX_COLUMN_SIZE = Number.MAX_SAFE_INTEGER;
+
+/**
+ * Computes the next column width for an Arrow-key resize step (Shift = larger
+ * step), clamped to `[min, max]` regardless of which bound `currentSize`
+ * started outside of. Returns `undefined` for any other key, so the caller
+ * knows not to `preventDefault()`/resize.
+ */
+export function getResizeKeyboardStep(
+  key: string,
+  currentSize: number,
+  { shiftKey, min, max }: { shiftKey: boolean; min: number; max: number }
+): number | undefined {
+  const step = shiftKey ? 50 : 10;
+  if (key === 'ArrowLeft') return Math.min(max, Math.max(min, currentSize - step));
+  if (key === 'ArrowRight') return Math.max(min, Math.min(max, currentSize + step));
+  return undefined;
+}
+
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -162,6 +186,15 @@ export interface DataTableProps<TData, TValue> {
   enableColumnResizing?: boolean;
   /** Passthrough for the `columnSizing` state so a consumer can persist widths. */
   onColumnSizingChange?: OnChangeFn<ColumnSizingState>;
+  /**
+   * Controlled column-visibility state — pass this (with
+   * `onColumnVisibilityChange`) to share one visibility state with an
+   * external `useReactTable` instance (e.g. a composed toolbar). Uncontrolled
+   * (internal state) when omitted.
+   */
+  columnVisibility?: VisibilityState;
+  /** Passthrough for the `columnVisibility` state; pairs with `columnVisibility`. */
+  onColumnVisibilityChange?: OnChangeFn<VisibilityState>;
 }
 
 export function DataTable<TData, TValue>({
@@ -176,10 +209,14 @@ export function DataTable<TData, TValue>({
   skeletonRows = 5,
   enableColumnResizing = false,
   onColumnSizingChange,
+  columnVisibility: controlledColumnVisibility,
+  onColumnVisibilityChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [internalColumnVisibility, setInternalColumnVisibility] =
+    useState<VisibilityState>({});
+  const columnVisibility = controlledColumnVisibility ?? internalColumnVisibility;
   const [rowSelection, setRowSelection] = useState({});
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
@@ -188,6 +225,11 @@ export function DataTable<TData, TValue>({
   const handleColumnSizingChange: OnChangeFn<ColumnSizingState> = (updater) => {
     setColumnSizing(updater);
     onColumnSizingChange?.(updater);
+  };
+
+  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (updater) => {
+    setInternalColumnVisibility(updater);
+    onColumnVisibilityChange?.(updater);
   };
 
   const table = useReactTable({
@@ -204,7 +246,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: handleColumnVisibilityChange,
     onRowSelectionChange: setRowSelection,
     onColumnSizingChange: handleColumnSizingChange,
     state: {
@@ -217,11 +259,30 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  // Arrow-key resize on the drag handle (see `canResize` below). Ignores any
+  // modifier besides Shift so it doesn't hijack browser/OS shortcuts bound to
+  // Ctrl/Alt/Cmd+Arrow (e.g. back navigation) while the handle has focus.
+  const handleResizeKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+    header: Header<TData, unknown>
+  ) => {
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    const nextSize = getResizeKeyboardStep(event.key, header.column.getSize(), {
+      shiftKey: event.shiftKey,
+      min: header.column.columnDef.minSize ?? DEFAULT_MIN_COLUMN_SIZE,
+      max: header.column.columnDef.maxSize ?? DEFAULT_MAX_COLUMN_SIZE,
+    });
+    if (nextSize === undefined) return;
+    event.preventDefault();
+    table.setColumnSizing((old) => ({ ...old, [header.column.id]: nextSize }));
+  };
+
   // Read each column's `meta.pin` and drive TanStack's native pinning state.
+  // Always calls `pin()` (rather than only when truthy) so a column whose
+  // `meta.pin` is removed dynamically actually un-pins.
   useEffect(() => {
     table.getAllLeafColumns().forEach((column) => {
-      const pin = column.columnDef.meta?.pin;
-      if (pin) column.pin(pin);
+      column.pin(column.columnDef.meta?.pin ?? false);
     });
   }, [table, columns]);
 
@@ -283,10 +344,19 @@ export function DataTable<TData, TValue>({
                         role="separator"
                         aria-orientation="vertical"
                         aria-label="Resize column"
+                        aria-valuenow={header.column.getSize()}
+                        aria-valuemin={
+                          header.column.columnDef.minSize ?? DEFAULT_MIN_COLUMN_SIZE
+                        }
+                        aria-valuemax={
+                          header.column.columnDef.maxSize ?? DEFAULT_MAX_COLUMN_SIZE
+                        }
+                        tabIndex={0}
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
+                        onKeyDown={(event) => handleResizeKeyDown(event, header)}
                         className={cn(
-                          'absolute end-0 top-0 h-full w-1 cursor-col-resize touch-none select-none bg-[var(--ui-table-global-cell-border-color)] opacity-0 transition-opacity hover:opacity-100',
+                          'absolute end-0 top-0 h-full w-1 cursor-(--ui-resizable-cursor) touch-none select-none bg-[var(--ui-table-global-cell-border-color)] opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-(--ui-focus-primary)',
                           header.column.getIsResizing() && 'opacity-100'
                         )}
                       />

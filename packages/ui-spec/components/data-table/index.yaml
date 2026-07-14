@@ -19,8 +19,8 @@ dependencies:
     - Checkbox
     - DropdownMenu
     - FilterSearch
-    - InputSelect
-    - InputText
+    - InputSearch
+    - Select
     - ChevronDownIcon
     - ChevronRightIcon
     - TimesIcon

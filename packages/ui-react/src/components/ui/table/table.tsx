@@ -151,8 +151,6 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       className={cn(
         'px-[var(--ui-table-header-cell-padding-x)] text-start align-middle text-sm font-semibold text-[var(--ui-table-header-label-color)] [&:has([role=checkbox])]:pe-0',
         wrap ? 'whitespace-normal' : 'h-10',
-        sortable &&
-          'cursor-pointer transition-colors hover:bg-[var(--ui-table-header-cell-color-hover)]',
         className
       )}
       {...props}
@@ -161,7 +159,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
         <button
           type="button"
           onClick={onSort}
-          className="-mx-1 inline-flex items-center gap-[var(--ui-table-header-gap)] rounded-sm px-1 outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)]"
+          className="-mx-1 inline-flex cursor-pointer items-center gap-[var(--ui-table-header-gap)] rounded-sm px-1 outline-none transition-colors hover:bg-[var(--ui-table-header-cell-color-hover)] focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)]"
         >
           {children}
           <SortIcon direction={sortDirection} />

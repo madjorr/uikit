@@ -11,10 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-} from '@acronis-platform/icons-react/stroke-mono';
+import { ChevronDownIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import {
   Table,
@@ -84,9 +81,13 @@ const treeColumns: ColumnDef<TreeRow>[] = [
           <button
             onClick={row.getToggleExpandedHandler()}
             aria-label={row.getIsExpanded() ? 'Collapse' : 'Expand'}
-            className="flex size-4 items-center justify-center text-muted-foreground [&_svg]:size-4"
+            className="flex size-4 cursor-pointer items-center justify-center text-muted-foreground [&_svg]:size-4"
           >
-            {row.getIsExpanded() ? <ChevronDownIcon /> : <ChevronRightIcon />}
+            <ChevronDownIcon
+              className={`transition-transform ${
+                row.getIsExpanded() ? '' : 'ltr:-rotate-90 rtl:rotate-90'
+              }`}
+            />
           </button>
         ) : (
           <span className="size-4" />
@@ -193,13 +194,13 @@ export const RowGroups: Story = {
                   <TableCell colSpan={row.getVisibleCells().length}>
                     <button
                       onClick={row.getToggleExpandedHandler()}
-                      className="flex items-center gap-1 font-semibold [&_svg]:size-4"
+                      className="flex cursor-pointer items-center gap-1 font-semibold [&_svg]:size-4"
                     >
-                      {row.getIsExpanded() ? (
-                        <ChevronDownIcon />
-                      ) : (
-                        <ChevronRightIcon />
-                      )}
+                      <ChevronDownIcon
+                        className={`transition-transform ${
+                          row.getIsExpanded() ? '' : 'ltr:-rotate-90 rtl:rotate-90'
+                        }`}
+                      />
                       {String(row.getValue('status'))}
                       <span className="text-muted-foreground">
                         ({row.subRows.length})
@@ -360,8 +361,14 @@ export const ColumnReorder: Story = {
                   <TableHead
                     key={h.id}
                     draggable
-                    onDragStart={() => setDragged(h.column.id)}
-                    onDragOver={(e) => e.preventDefault()}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                      setDragged(h.column.id);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                    }}
                     onDrop={() => dragged && reorder(dragged, h.column.id)}
                     className="cursor-grab select-none active:cursor-grabbing"
                   >

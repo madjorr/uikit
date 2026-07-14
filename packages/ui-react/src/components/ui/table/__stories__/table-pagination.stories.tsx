@@ -20,8 +20,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function InteractivePagination() {
-  const [pageIndex, setPageIndex] = useState(2);
+function InteractivePagination({
+  initialPageIndex = 2,
+  selectedRows,
+}: {
+  initialPageIndex?: number;
+  selectedRows?: number;
+}) {
+  const [pageIndex, setPageIndex] = useState(initialPageIndex);
   const [pageSize, setPageSize] = useState(10);
   return (
     <div className="w-[720px]">
@@ -30,7 +36,7 @@ function InteractivePagination() {
         pageCount={5}
         pageSize={pageSize}
         totalRows={48}
-        selectedRows={4}
+        selectedRows={selectedRows}
         onPageIndexChange={setPageIndex}
         onPageSizeChange={(size) => {
           setPageSize(size);
@@ -42,21 +48,9 @@ function InteractivePagination() {
 }
 
 export const Default: Story = {
-  render: () => <InteractivePagination />,
+  render: () => <InteractivePagination initialPageIndex={2} selectedRows={4} />,
 };
 
 export const FirstPage: Story = {
-  args: {
-    pageIndex: 0,
-    pageCount: 5,
-    pageSize: 10,
-    totalRows: 48,
-    onPageIndexChange: () => {},
-    onPageSizeChange: () => {},
-  },
-  render: (args) => (
-    <div className="w-[720px]">
-      <TablePagination {...args} />
-    </div>
-  ),
+  render: () => <InteractivePagination initialPageIndex={0} />,
 };

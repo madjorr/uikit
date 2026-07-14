@@ -349,13 +349,18 @@ const filterColumns: ColumnDef<Payment>[] = [
 
 function WithColumnFiltering() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  // Shared with DataTable below via its controlled `columnVisibility` prop, so
+  // the toolbar's "View" menu and the grid agree on one visibility state
+  // instead of each owning an independent `useReactTable` instance's copy.
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     data: payments,
     columns: filterColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
-    state: { columnFilters },
+    onColumnVisibilityChange: setColumnVisibility,
+    state: { columnFilters, columnVisibility },
   });
   // The self-contained DataTable owns its own state, so drive its rows from the
   // toolbar's filtered row model — the toolbar is the source of truth here.
@@ -373,7 +378,12 @@ function WithColumnFiltering() {
       >
         <StatusFilterField />
       </DataTableToolbar>
-      <DataTable columns={filterColumns} data={filteredData} />
+      <DataTable
+        columns={filterColumns}
+        data={filteredData}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+      />
     </div>
   );
 }
@@ -713,11 +723,6 @@ function KitchenSinkDemo() {
   });
 
   const pageRows = table.getRowModel().rows.map((row) => row.original);
-  const visibleColumns = kitchenSinkColumns.filter((column) => {
-    const id =
-      column.id ?? ('accessorKey' in column ? String(column.accessorKey) : '');
-    return columnVisibility[id] !== false;
-  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -732,8 +737,10 @@ function KitchenSinkDemo() {
       </DataTableToolbar>
       <div className="max-w-2xl">
         <DataTable
-          columns={visibleColumns}
+          columns={kitchenSinkColumns}
           data={pageRows}
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
           enableColumnResizing
           getRowCanExpand={() => true}
           renderExpandedRow={(row) => (
@@ -835,6 +842,10 @@ function UrlStateDemo() {
   const { state, setPagination, setColumnFilters } = useTableUrlState({
     defaultPageSize: 5,
   });
+  // Not bookmarked (unlike pagination/filters above) — shared with DataTable
+  // below purely so the toolbar's "View" menu and the grid agree on one
+  // visibility state instead of each owning an independent copy.
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const table = useReactTable({
     data: devices,
@@ -851,9 +862,11 @@ function UrlStateDemo() {
         return next.map((f) => ({ id: f.id, value: String(f.value) }));
       }),
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       pagination: state.pagination,
       columnFilters: state.columnFilters,
+      columnVisibility,
     },
   });
 
@@ -875,6 +888,8 @@ function UrlStateDemo() {
       <DataTable
         columns={urlStateColumns}
         data={table.getRowModel().rows.map((row) => row.original)}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
       />
       <DataTablePagination table={table} />
     </div>

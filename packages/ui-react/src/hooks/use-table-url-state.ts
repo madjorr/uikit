@@ -219,6 +219,12 @@ export function useTableUrlState(
   const stateRef = React.useRef(state);
   stateRef.current = state;
 
+  // Coalesce multiple setters called synchronously in the same handler (e.g. a
+  // filter change that also resets the page) into a single history entry: the
+  // first commit in a tick pushes, later ones in the same tick replace. The
+  // flag clears on a microtask so the next distinct user action pushes again.
+  const hasPushedThisTickRef = React.useRef(false);
+
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     const onPopState = () => {
@@ -241,7 +247,15 @@ export function useTableUrlState(
         paramKeys,
       });
       const url = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`;
-      window.history.pushState(null, '', url);
+      if (hasPushedThisTickRef.current) {
+        window.history.replaceState(null, '', url);
+      } else {
+        window.history.pushState(null, '', url);
+        hasPushedThisTickRef.current = true;
+        queueMicrotask(() => {
+          hasPushedThisTickRef.current = false;
+        });
+      }
     },
     [defaultPageSize, paramKeys]
   );
