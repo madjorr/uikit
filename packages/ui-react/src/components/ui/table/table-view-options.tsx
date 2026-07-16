@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { CogIcon } from '@acronis-platform/icons-react/stroke-mono';
+import { CheckIcon, CogIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import { Button } from '../button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../dropdown-menu';
 
@@ -39,7 +38,6 @@ function TableViewOptions({
   columns,
   onToggle,
   triggerLabel = 'View',
-  menuLabel = 'Toggle columns',
 }: TableViewOptionsProps) {
   return (
     <DropdownMenu>
@@ -50,17 +48,20 @@ function TableViewOptions({
         {triggerLabel}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {columns.map((column) => (
-          <DropdownMenuCheckboxItem
-            key={column.id}
-            checked={!column.hidden}
-            onCheckedChange={() => onToggle(column.id)}
-          >
-            {column.label}
-          </DropdownMenuCheckboxItem>
-        ))}
+        <DropdownMenuGroup>
+          {columns.map((column) => (
+            <DropdownMenuItem
+              key={column.id}
+              role="menuitemcheckbox"
+              aria-checked={!column.hidden}
+              closeOnClick={false}
+              onClick={() => onToggle(column.id)}
+            >
+              {column.label}
+              {!column.hidden && <CheckIcon className="ms-auto" aria-hidden />}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
