@@ -289,9 +289,9 @@ describe('handleResizeKeyDown', () => {
   const baseCtx: ResizeKeyDownContext = {
     minWidth: 48,
     maxWidth: 1024,
-    defaultWidth: 512,
     width: 512,
     setWidth: vi.fn(),
+    resetWidth: vi.fn(),
   };
 
   it('ArrowLeft grows by 16px in LTR, clamped to the dynamic ceiling', () => {
@@ -319,15 +319,20 @@ describe('handleResizeKeyDown', () => {
     expect(setWidth).toHaveBeenCalledWith(528);
   });
 
-  it('Home resets to defaultWidth', () => {
+  it('Home delegates to ctx.resetWidth() instead of computing a value itself', () => {
     const { chat } = buildChatRow();
     const setWidth = vi.fn();
+    const resetWidth = vi.fn();
     handleResizeKeyDown(
       fakeKeyDownEvent(chat, 'Home'),
-      { ...baseCtx, setWidth, width: 900 },
+      { ...baseCtx, setWidth, resetWidth, width: 900 },
       'ltr'
     );
-    expect(setWidth).toHaveBeenCalledWith(512);
+    expect(resetWidth).toHaveBeenCalledOnce();
+    // Home must NOT also call setWidth with some computed number — that
+    // would freeze an override instead of restoring live tracking (the
+    // whole point of resetWidth existing as a separate method).
+    expect(setWidth).not.toHaveBeenCalled();
   });
 
   it('ignores unrelated keys', () => {
@@ -352,9 +357,11 @@ describe('handleResizeKeyDown', () => {
 
   // Regression coverage for the crossover case: when the row is narrow enough
   // that the DYNAMICALLY-MEASURED ceiling (not the `maxWidth` fallback — see
-  // `getResizeMaxWidth`) drops below `minWidth`, grow/shrink/Home must all
-  // converge on that ceiling (the tighter constraint) instead of fighting
-  // each other into a value outside [minWidth, maxWidth].
+  // `getResizeMaxWidth`) drops below `minWidth`, grow/shrink must converge on
+  // that ceiling (the tighter constraint) instead of fighting each other into
+  // a value outside [minWidth, maxWidth]. Home has no equivalent case here —
+  // it delegates to `ctx.resetWidth()` (see above), which doesn't clamp
+  // against this row's geometry at all.
   describe('when the dynamic ceiling is below minWidth (a narrow row)', () => {
     // rowWidth(140) - sidebarWidth(100) = 40, below the 48px floor.
     function buildNarrowChatRow() {
@@ -387,32 +394,20 @@ describe('handleResizeKeyDown', () => {
       // ceiling weren't applied afterward — the fix clamps to 40.
       expect(setWidth).toHaveBeenCalledWith(40);
     });
-
-    it('Home resets to the ceiling instead of overshooting past it', () => {
-      const { chat } = buildNarrowChatRow();
-      const setWidth = vi.fn();
-      handleResizeKeyDown(
-        fakeKeyDownEvent(chat, 'Home'),
-        { ...baseCtx, setWidth, width: 40, minWidth: 48, defaultWidth: 512 },
-        'ltr'
-      );
-      expect(setWidth).toHaveBeenCalledWith(40);
-    });
   });
 });
 
 describe('AppShellChatResizeEdge', () => {
   function renderEdge(ctx: Partial<AppShellChatChatContextValue> = {}) {
     const setWidth = vi.fn();
+    const resetWidth = vi.fn();
     const fullCtx: AppShellChatChatContextValue = {
       compact: false,
       width: 512,
       setWidth,
+      resetWidth,
       minWidth: 48,
       maxWidth: 1024,
-      defaultWidth: 512,
-      label: undefined,
-      setLabel: vi.fn(),
       resizeAriaLabel: 'Resize chat',
       resizeTooltip: 'Drag to resize',
       ...ctx,
@@ -424,7 +419,7 @@ describe('AppShellChatResizeEdge', () => {
         </div>
       </AppShellChatChatContext.Provider>
     );
-    return { setWidth };
+    return { setWidth, resetWidth };
   }
 
   it('renders a labeled separator', () => {
@@ -441,11 +436,12 @@ describe('AppShellChatResizeEdge', () => {
     expect(screen.queryByText('Drag to resize')).not.toBeInTheDocument();
   });
 
-  it('double-click resets the width to defaultWidth', async () => {
-    const { setWidth } = renderEdge({ defaultWidth: 512 });
+  it('double-click delegates to ctx.resetWidth(), not a fixed setWidth call', async () => {
+    const { setWidth, resetWidth } = renderEdge();
     const edge = screen.getByRole('separator');
     await userEvent.dblClick(edge);
-    expect(setWidth).toHaveBeenCalledWith(512);
+    expect(resetWidth).toHaveBeenCalledOnce();
+    expect(setWidth).not.toHaveBeenCalled();
   });
 
   it('ArrowLeft delegates to handleResizeKeyDown and resizes', async () => {

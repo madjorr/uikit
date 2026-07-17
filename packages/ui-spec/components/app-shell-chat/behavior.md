@@ -52,10 +52,12 @@ otherwise bounded by whatever space is actually free
 
 **Given** the resize edge
 **When** the user double-clicks it
-**Then** the width resets to 512px
+**Then** the width resets to the current LIVE breakpoint-driven default
+(512px at 1680px+; see **Responsive layout** below) — NOT a fixed 512px
+regardless of viewport
 **And** ArrowLeft/ArrowRight resize by 16px (inverted in RTL), clamped to
 [48px, the same dynamically-measured ceiling used by drag]
-**And** Home resets the width to 512px
+**And** Home resets the width the same way double-click does
 
 ---
 

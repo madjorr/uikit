@@ -149,7 +149,7 @@ export function useAppShellChatInitialLayout(): AppShellChatInitialLayout {
 
 // ---------------------------------------------------------------------------
 // getLiveChatDefaultWidth / useLiveChatDefaultWidth — Chat's OWN width is
-// rendered by plain responsive Tailwind classes (`w-12 xl:w-112 3xl:w-128`,
+// rendered by plain responsive Tailwind classes (`w-12 xl:w-md 3xl:w-lg`,
 // see `AppShellChatChat` below) — genuinely live, reflowing on every browser
 // resize, no JS involved in the visual result. This hook exists only for the
 // bookkeeping the CSS can't cover by itself: `compact` (the icon-only header)
@@ -277,10 +277,7 @@ AppShellChatContentBody.displayName = 'AppShellChatContentBody';
 
 // ---------------------------------------------------------------------------
 // Chat-panel context — resize state, shared to the Chat parts and the
-// internal resize edge. The `label`/`setLabel` pair is registered by
-// `AppShellChatChatHeader` so a future consumer of the label (e.g. the
-// collapsed-state tooltip) doesn't need a duplicated prop (same trick
-// `sidebar-secondary.tsx` uses for `headerLabel`/`setHeaderLabel`).
+// internal resize edge.
 // ---------------------------------------------------------------------------
 
 export interface AppShellChatChatContextValue {
@@ -288,12 +285,17 @@ export interface AppShellChatChatContextValue {
   compact: boolean;
   width: number;
   setWidth: (width: number) => void;
+  /**
+   * Clears any drag/keyboard override and restores the LIVE, breakpoint-driven
+   * width (see `getLiveChatDefaultWidth` above) — the double-click/Home
+   * target. NOT the same as `setWidth(someFixedNumber)`: that would just
+   * swap one frozen override for another and permanently disable live
+   * viewport tracking, which is the whole point of "reset".
+   */
+  resetWidth: () => void;
   minWidth: number;
   /** Fallback ceiling — see `CHAT_MAX_WIDTH_FALLBACK`. The resize handle prefers a live DOM measurement. */
   maxWidth: number;
-  defaultWidth: number;
-  label: React.ReactNode;
-  setLabel: (label: React.ReactNode) => void;
   resizeAriaLabel: string;
   resizeTooltip: React.ReactNode;
 }
@@ -310,11 +312,9 @@ function useAppShellChatChatContext(): AppShellChatChatContextValue {
       compact: false,
       width: CHAT_DEFAULT_WIDTH,
       setWidth: () => {},
+      resetWidth: () => {},
       minWidth: CHAT_MIN_WIDTH,
       maxWidth: CHAT_MAX_WIDTH_FALLBACK,
-      defaultWidth: CHAT_DEFAULT_WIDTH,
-      label: undefined,
-      setLabel: () => {},
       resizeAriaLabel: 'Resize chat',
       resizeTooltip: defaultResizeTooltip,
     }
@@ -449,31 +449,34 @@ export function handleResizePointerDown(
 /** The subset of context `handleResizeKeyDown` needs to resize via keyboard. */
 export type ResizeKeyDownContext = Pick<
   AppShellChatChatContextValue,
-  'minWidth' | 'maxWidth' | 'defaultWidth' | 'width' | 'setWidth'
+  'minWidth' | 'maxWidth' | 'width' | 'setWidth' | 'resetWidth'
 >;
 
 /**
  * Keydown handler for the Chat resize edge: ArrowLeft/ArrowRight resize by
- * 16px, Home resets to `ctx.defaultWidth` — every outcome is clamped to
- * `[ctx.minWidth, the dynamically-measured ceiling]` (see `getResizeMaxWidth`)
- * via the SAME `Math.min(Math.max(next, minWidth), maxWidth)` order the
- * pointer-drag handler uses. That order matters when the row is narrow enough
- * that the measured ceiling drops below `minWidth` (e.g. both sidebars
- * expanded on a small viewport): clamping the floor first and the ceiling
- * second means the ceiling always wins the degenerate case, so grow/shrink
- * can't fight each other into a value outside the valid range, and Home can't
- * reset past a ceiling narrower than the default width. Growing Chat's width
- * moves the boundary "toward the row's start", so the grow key is the
- * OPPOSITE of `SidebarSecondaryResizeEdge`'s: ArrowLeft in LTR, ArrowRight in
- * RTL. Exported for direct testing; `AppShellChatResizeEdge` is the real
- * caller.
+ * 16px, clamped to `[ctx.minWidth, the dynamically-measured ceiling]` (see
+ * `getResizeMaxWidth`) via the SAME `Math.min(Math.max(next, minWidth),
+ * maxWidth)` order the pointer-drag handler uses. That order matters when the
+ * row is narrow enough that the measured ceiling drops below `minWidth` (e.g.
+ * both sidebars expanded on a small viewport): clamping the floor first and
+ * the ceiling second means the ceiling always wins the degenerate case, so
+ * grow/shrink can't fight each other into a value outside the valid range.
+ * Growing Chat's width moves the boundary "toward the row's start", so the
+ * grow key is the OPPOSITE of `SidebarSecondaryResizeEdge`'s: ArrowLeft in
+ * LTR, ArrowRight in RTL.
+ *
+ * Home delegates to `ctx.resetWidth()` rather than computing a clamped
+ * number itself — `resetWidth` restores the LIVE breakpoint-driven width
+ * (see `AppShellChatChatContextValue.resetWidth`), which is always already
+ * in range, so no clamp is needed here. Exported for direct testing;
+ * `AppShellChatResizeEdge` is the real caller.
  */
 export function handleResizeKeyDown(
   e: React.KeyboardEvent<HTMLDivElement>,
   ctx: ResizeKeyDownContext,
   dir: 'ltr' | 'rtl'
 ): void {
-  const { minWidth, maxWidth: fallbackMax, defaultWidth, width: w, setWidth: sw } = ctx;
+  const { minWidth, maxWidth: fallbackMax, width: w, setWidth: sw, resetWidth } = ctx;
   const step = 16;
   const growKey = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
   const shrinkKey = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
@@ -488,7 +491,7 @@ export function handleResizeKeyDown(
     sw(clamp(w - step));
   } else if (e.key === 'Home') {
     e.preventDefault();
-    sw(clamp(defaultWidth));
+    resetWidth();
   }
 }
 
@@ -519,7 +522,7 @@ export function AppShellChatResizeEdge() {
   };
 
   const handleDoubleClick = () => {
-    ctx.setWidth(ctx.defaultWidth);
+    ctx.resetWidth();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -619,27 +622,30 @@ const AppShellChatChat = React.forwardRef<HTMLElement, AppShellChatChatProps>(
       },
       [isWidthControlled, onWidthChange]
     );
+    // Reset means "go back to the LIVE breakpoint-driven width", not "go
+    // back to a fixed number" — clearing `override` (rather than setting it
+    // to some constant) is what lets viewport tracking resume afterward.
+    // `onWidthChange` still fires (even when controlled) so the consumer's
+    // width — controlled or not — reflects the same live value.
+    const resetWidth = React.useCallback(() => {
+      if (!isWidthControlled) setOverrideState(undefined);
+      onWidthChange?.(liveDefaultWidth);
+    }, [isWidthControlled, onWidthChange, liveDefaultWidth]);
 
     const compact = currentWidth <= CHAT_MIN_WIDTH;
-
-    // The header registers its label so a future collapsed-state consumer
-    // (e.g. a tooltip) can display it without a duplicated prop.
-    const [label, setLabel] = React.useState<React.ReactNode>(undefined);
 
     const context = React.useMemo<AppShellChatChatContextValue>(
       () => ({
         compact,
         width: currentWidth,
         setWidth,
+        resetWidth,
         minWidth: CHAT_MIN_WIDTH,
         maxWidth: CHAT_MAX_WIDTH_FALLBACK,
-        defaultWidth: CHAT_DEFAULT_WIDTH,
-        label,
-        setLabel,
         resizeAriaLabel,
         resizeTooltip,
       }),
-      [compact, currentWidth, setWidth, label, resizeAriaLabel, resizeTooltip]
+      [compact, currentWidth, setWidth, resetWidth, resizeAriaLabel, resizeTooltip]
     );
 
     // Apply inline width ONLY once the user has actually resized (or width
@@ -697,17 +703,9 @@ const AppShellChatChatHeader = React.forwardRef<
   HTMLDivElement,
   AppShellChatChatHeaderProps
 >(({ className, label, actions, children, ...props }, ref) => {
-  const { compact, setLabel } = useAppShellChatChatContext();
+  const { compact } = useAppShellChatChatContext();
   const dir = useDocDir();
   const resolvedLabel = label ?? children;
-  // Only strings can serve as the collapsed icon's accessible name.
-  const labelText = typeof resolvedLabel === 'string' ? resolvedLabel : undefined;
-
-  // Register the header text so a future collapsed-state consumer can
-  // auto-display it.
-  React.useEffect(() => {
-    setLabel(resolvedLabel);
-  }, [resolvedLabel, setLabel]);
 
   return (
     <div
@@ -725,18 +723,21 @@ const AppShellChatChatHeader = React.forwardRef<
         // hover. `size-8` keeps this row exactly as tall as the label row
         // below (a 32px line height) — the icon alone is only 24px, so
         // without an explicit size the header would be a few px shorter than
-        // Content's header.
+        // Content's header. The accessible name comes from the `sr-only`
+        // span's actual DOM content (same pattern as
+        // `SidebarPrimaryMenuItem`'s collapsed rail), not a derived
+        // `aria-label` string — that works for ANY `resolvedLabel`
+        // (a plain string or a rich ReactNode via `children`), whereas a
+        // `typeof resolvedLabel === 'string'` check would silently leave
+        // the icon with no accessible name at all for non-string content.
         <Tooltip>
           <TooltipTrigger
             render={
-              <span
-                className="flex size-8 items-center justify-center"
-                role={labelText ? 'img' : undefined}
-                aria-label={labelText}
-              />
+              <span className="flex size-8 items-center justify-center" />
             }
           >
             <AcronisIcon size={24} aria-hidden="true" />
+            <span className="sr-only">{resolvedLabel}</span>
           </TooltipTrigger>
           <TooltipContent side={dir === 'rtl' ? 'left' : 'right'}>
             {resolvedLabel}

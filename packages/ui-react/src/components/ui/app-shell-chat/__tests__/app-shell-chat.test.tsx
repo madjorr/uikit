@@ -101,7 +101,7 @@ describe('AppShellChat', () => {
     expect(screen.getByText('Acronis AI')).toBeInTheDocument();
   });
 
-  it('shows the icon-only rail (no visible label) at the min width', () => {
+  it('shows the icon-only rail (no visible label) at the min width, but keeps an accessible name', () => {
     const { container } = render(
       <AppShellChatChat width={48}>
         <AppShellChatChatHeader label="Acronis AI" />
@@ -109,12 +109,31 @@ describe('AppShellChat', () => {
     );
     // The Acronis mark renders as an svg…
     expect(container.querySelector('svg')).toBeInTheDocument();
-    // …but the label text is not visible (only exposed via the hover tooltip).
-    expect(screen.queryByText('Acronis AI')).not.toBeInTheDocument();
+    // …the full title is not rendered as visible text (that's the expanded
+    // header's own span, absent here)…
+    expect(
+      container.querySelector('.ui-typography-headings-title')
+    ).not.toBeInTheDocument();
+    // …but the label stays in the DOM as `sr-only` (same pattern
+    // `SidebarPrimaryMenuItem` uses), so the icon-only trigger still has a
+    // real accessible name instead of none at all.
+    expect(screen.getByText('Acronis AI')).toHaveClass('sr-only');
     // The chat panel reflects the collapsed (icon-only) visual state.
     expect(
       container.querySelector('[data-slot="app-shell-chat-chat"]')
     ).toHaveAttribute('data-state', 'collapsed');
+  });
+
+  it('keeps an accessible name at the min width even when the label is a non-string ReactNode', () => {
+    render(
+      <AppShellChatChat width={48}>
+        <AppShellChatChatHeader label={<strong>Acronis AI</strong>} />
+      </AppShellChatChat>
+    );
+    // A `typeof label === 'string'` check would leave this with NO
+    // accessible name at all — the sr-only span renders the real node
+    // (any ReactNode), not a derived string.
+    expect(screen.getByText('Acronis AI').closest('.sr-only')).not.toBeNull();
   });
 
   it('hides the chat body at the min width', () => {
@@ -140,6 +159,7 @@ describe('AppShellChat', () => {
   });
 
   it('double-clicking the resize edge resets the width', async () => {
+    setViewportWidth(1920); // wide tier — the live default is 512px
     const onWidthChange = vi.fn();
     render(
       <AppShellChat>
@@ -287,7 +307,10 @@ describe('AppShellChat — Chat width is live (unlike the sidebars)', () => {
     expect(
       container.querySelector('[data-slot="app-shell-chat-chat"]')
     ).toHaveAttribute('data-state', 'collapsed');
-    expect(screen.queryByText('Acronis AI')).not.toBeInTheDocument();
+    // The full (visible) title is absent — only the `sr-only` variant renders.
+    expect(
+      container.querySelector('.ui-typography-headings-title')
+    ).not.toBeInTheDocument();
   });
 
   it('starts Chat expanded at a 1920px viewport, uncontrolled', () => {
@@ -304,18 +327,20 @@ describe('AppShellChat — Chat width is live (unlike the sidebars)', () => {
 
   it('reflows live when the viewport changes after mount, as long as the user has not manually resized', () => {
     setViewportWidth(1024);
-    render(
+    const { container } = render(
       <AppShellChat>
         <AppShellChatChat>
           <AppShellChatChatHeader label="Acronis AI" />
         </AppShellChatChat>
       </AppShellChat>
     );
-    expect(screen.queryByText('Acronis AI')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('.ui-typography-headings-title')
+    ).not.toBeInTheDocument();
 
     setViewportWidth(1920);
     act(() => window.dispatchEvent(new Event('resize')));
-    expect(screen.getByText('Acronis AI')).toBeInTheDocument();
+    expect(screen.getByText('Acronis AI')).toHaveClass('ui-typography-headings-title');
   });
 
   it('stops reflowing once the user has manually resized it', async () => {
@@ -336,5 +361,27 @@ describe('AppShellChat — Chat width is live (unlike the sidebars)', () => {
     setViewportWidth(1024); // would otherwise live-reflow to the 48px compact tier
     act(() => window.dispatchEvent(new Event('resize')));
     expect(screen.getByText('Acronis AI')).toBeInTheDocument();
+  });
+
+  it('restores live viewport tracking after a double-click/Home reset, instead of freezing at the reset value', async () => {
+    setViewportWidth(1920);
+    const { container } = render(
+      <AppShellChat>
+        <AppShellChatChat>
+          <AppShellChatChatHeader label="Acronis AI" />
+        </AppShellChatChat>
+      </AppShellChat>
+    );
+    const edge = screen.getByRole('separator', { name: /resize chat/i });
+    edge.focus();
+    await userEvent.keyboard('{ArrowLeft}'); // establishes an explicit override
+    expect(screen.getByText('Acronis AI')).toHaveClass('ui-typography-headings-title');
+
+    await userEvent.keyboard('{Home}'); // reset — must clear the override, not just set it to 512
+    setViewportWidth(1024); // if the override were still active, this would have no effect
+    act(() => window.dispatchEvent(new Event('resize')));
+    expect(
+      container.querySelector('.ui-typography-headings-title')
+    ).not.toBeInTheDocument();
   });
 });

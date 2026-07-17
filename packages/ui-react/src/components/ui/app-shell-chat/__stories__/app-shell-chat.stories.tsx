@@ -303,3 +303,42 @@ export const WithoutSecondarySidebar: Story = {
     );
   },
 };
+
+// Chat's icon-only rail (the 48px floor, `data-state="collapsed"`) — a
+// controlled `width={48}` so this baseline is deterministic regardless of
+// the test-runner's viewport (Chat's UNCONTROLLED default is live/responsive
+// — see the "Responsive layout" section of ui-spec's `behavior.md` — so
+// pinning it here isn't testing the live breakpoint behavior, just this
+// visual state).
+export const CollapsedChat: Story = {
+  name: 'Chat — collapsed (icon-only) rail',
+  render: () => {
+    const initialLayout = useAppShellChatInitialLayout();
+    return (
+      <TooltipProvider delay={0}>
+        <AppShellChat className="h-screen">
+          <AppShellChatSidebar>
+            <PrimaryNav defaultExpanded={initialLayout.primaryExpanded} />
+            <SecondaryNav defaultExpanded={initialLayout.secondaryExpanded} />
+          </AppShellChatSidebar>
+          <AppShellChatContent>
+            <AppShellChatContentHeader>
+              <span className="ui-typography-headings-title text-[var(--ui-text-on-surface-primary)]">
+                Page header
+              </span>
+            </AppShellChatContentHeader>
+            <AppShellChatContentBody>
+              <ContentPlaceholder />
+            </AppShellChatContentBody>
+          </AppShellChatContent>
+          <AppShellChatChat width={48}>
+            <AppShellChatChatHeader label="Acronis AI" />
+            <AppShellChatChatBody>
+              <ChatPlaceholder />
+            </AppShellChatChatBody>
+          </AppShellChatChat>
+        </AppShellChat>
+      </TooltipProvider>
+    );
+  },
+};
