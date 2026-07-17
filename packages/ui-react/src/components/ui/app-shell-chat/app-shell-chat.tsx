@@ -4,6 +4,11 @@ import { AcronisIcon } from '@acronis-platform/icons-react/solid-mono';
 import { cn } from '@/lib/utils';
 import { useDocDir } from '@/lib/use-doc-dir';
 import {
+  BREAKPOINT_XL,
+  BREAKPOINT_3XL,
+  getViewportWidth,
+} from '@/lib/breakpoints';
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -20,11 +25,14 @@ import {
 // Sizing model (requirement: sidebar interactions never resize Chat):
 //   • Content is `flex-1 min-w-0` — it absorbs every width change from the
 //     sidebars expanding/collapsing/resizing, and can shrink all the way to 0.
-//   • Chat has an explicit pixel width (a fixed Tailwind width until the user
-//     drags it, then an inline override), so it is unaffected by sidebar
-//     interactions. No percentage sizing anywhere — this is why we do NOT
-//     reuse the `Resizable` component (react-resizable-panels sizes panels as
-//     a percentage of their group, which would break this invariant since the
+//   • Chat has an explicit pixel width — driven LIVE by responsive Tailwind
+//     classes (`w-12 xl:w-md 3xl:w-lg`, reflowing on every browser resize)
+//     until the user drags/keyboard-resizes it, at which point an inline
+//     style override takes over and freezes it until double-click/Home
+//     reset — so it is unaffected by sidebar interactions either way. No
+//     percentage sizing anywhere — this is why we do NOT reuse the
+//     `Resizable` component (react-resizable-panels sizes panels as a
+//     percentage of their group, which would break this invariant since the
 //     sidebars sit outside that group).
 //
 // Chat is resize-ONLY (drag the handle on its START border, the shared
@@ -50,14 +58,131 @@ import {
 // There is no design token for the chat width (this is a pure layout
 // composition — DESIGN: no `--ui-app-shell-chat-*` tokens exist), so these JS
 // constants drive the default/floor and the drag-resize clamping range,
-// mirroring `SIDEBAR_EXPANDED_WIDTH` in `sidebar-secondary.tsx`.
-const CHAT_DEFAULT_WIDTH = 512; // initial width AND the double-click/Home reset target
-const CHAT_MIN_WIDTH = 48; // floor while resizing — matches the sidebars' collapsed rail width; below this the header would have no room for a label, so it shows the icon instead
+// mirroring `SIDEBAR_EXPANDED_WIDTH` in `sidebar-secondary.tsx`. They also
+// double as the pixel values baked into Chat's own responsive width classes
+// below (`w-12` — Tailwind's spacing scale, 3rem = 48px; `xl:w-md` /
+// `3xl:w-lg` — Tailwind's named container-scale width utilities, 28rem/32rem
+// = 448px/512px).
+const CHAT_DEFAULT_WIDTH = 512; // widest tier AND the double-click/Home reset target
+const CHAT_WIDTH_NARROW = 448; // 1280-1679 tier
+const CHAT_MIN_WIDTH = 48; // floor while resizing, and the narrowest tier — matches the sidebars' collapsed rail width; below this the header would have no room for a label, so it shows the icon instead
 // Fallback ceiling used only when the available row width can't be measured
 // from the DOM yet (e.g. before first layout). In practice the resize handle
 // always computes the real ceiling — see `getResizeMaxWidth` — so Chat can
 // reach full width instead of being stranded below whatever this constant is.
 const CHAT_MAX_WIDTH_FALLBACK = CHAT_DEFAULT_WIDTH * 2;
+
+// `BREAKPOINT_XL`/`BREAKPOINT_3XL` (imported above) are the SAME breakpoints
+// Chat's own `xl:`/`3xl:` width classes below use — see `@/lib/breakpoints`
+// for why they're plain JS constants instead of something read live from
+// CSS, and for the "keep both files in sync" note.
+
+// ---------------------------------------------------------------------------
+// useAppShellChatInitialLayout — breakpoint-derived INITIAL `defaultExpanded`
+// for the two sidebars, resolved ONCE from the viewport width at first render
+// and frozen after that — a later browser resize, or the user manually
+// toggling a sidebar, never re-derives it (design requirement: only the very
+// first paint is breakpoint-aware; Chat's own width, further below, is the
+// opposite — genuinely live — since it's a plain CSS width, not a child's
+// one-shot `defaultExpanded` prop).
+//
+// This can't use the "SSR-safe default, then sync in an effect" pattern
+// `useDocDir` (`src/lib/use-doc-dir.ts`) uses elsewhere in this package: that
+// pattern relies on a wrong value for one frame being harmless, corrected by
+// a re-render once an effect fires post-mount. Here the fields seed
+// SidebarPrimary/SidebarSecondary's `defaultExpanded` prop, which — exactly
+// like this hook's own `useState` below — is read ONLY on that component's
+// first render (`useControllableBoolean` in sidebar-primary.tsx); a prop
+// change after mount is silently ignored. So the value has to be right on
+// the very first render, which means reading `window.innerWidth`
+// synchronously via a lazy `useState` initializer — mirroring the same
+// "read the default once, freeze it" idiom `useControllableBoolean` already
+// uses — instead of deferring to an effect.
+// ---------------------------------------------------------------------------
+
+export interface AppShellChatInitialLayout {
+  /** Initial `defaultExpanded` for SidebarPrimary. */
+  primaryExpanded: boolean;
+  /** Initial `defaultExpanded` for SidebarSecondary (when the screen has one). */
+  secondaryExpanded: boolean;
+}
+
+const WIDE_SIDEBAR_LAYOUT: AppShellChatInitialLayout = {
+  primaryExpanded: true,
+  secondaryExpanded: true,
+};
+const NARROW_SIDEBAR_LAYOUT: AppShellChatInitialLayout = {
+  primaryExpanded: false,
+  secondaryExpanded: true,
+};
+
+/**
+ * Pure breakpoint → layout mapping, exported for direct unit testing (the
+ * same convention `getResizeMaxWidth` above uses). `viewportWidth` of
+ * `undefined` (no `window`, e.g. SSR) falls back to `WIDE_SIDEBAR_LAYOUT` —
+ * the same value this component unconditionally hardcoded before this
+ * feature existed. Below `BREAKPOINT_3XL` the output is always
+ * `NARROW_SIDEBAR_LAYOUT` (primary closed), all the way down — the sidebars
+ * have no tier cut at `BREAKPOINT_XL` the way Chat's own width does; there is
+ * no separate floor tier either.
+ */
+export function getAppShellChatInitialLayout(
+  viewportWidth: number | undefined
+): AppShellChatInitialLayout {
+  if (viewportWidth === undefined || viewportWidth >= BREAKPOINT_3XL) {
+    return WIDE_SIDEBAR_LAYOUT;
+  }
+  return NARROW_SIDEBAR_LAYOUT;
+}
+
+/**
+ * Reads the breakpoint-derived initial sidebar layout ONCE, at first render
+ * — see the rationale above. Consumers wire the two fields into
+ * `SidebarPrimary`/`SidebarSecondary`'s existing `defaultExpanded` prop.
+ */
+export function useAppShellChatInitialLayout(): AppShellChatInitialLayout {
+  const [layout] = React.useState(() =>
+    getAppShellChatInitialLayout(getViewportWidth())
+  );
+  return layout;
+}
+
+// ---------------------------------------------------------------------------
+// getLiveChatDefaultWidth / useLiveChatDefaultWidth — Chat's OWN width is
+// rendered by plain responsive Tailwind classes (`w-12 xl:w-112 3xl:w-128`,
+// see `AppShellChatChat` below) — genuinely live, reflowing on every browser
+// resize, no JS involved in the visual result. This hook exists only for the
+// bookkeeping the CSS can't cover by itself: `compact` (the icon-only header)
+// is a structural render decision, not just a visual one, and the keyboard
+// resize handler needs a numeric starting point to nudge from — both need an
+// actual number, not a media query. It mirrors the CSS classes' three tiers
+// as plain numbers (duplicating 512/448/48 is unavoidable — those numbers
+// already exist twice, once in this file's JS constants above and once
+// baked into the Tailwind class names below; there's no single-sourcing
+// that further) but stays live via a `resize` listener, matching the design
+// requirement that Chat — unlike the sidebars above — is NOT frozen at mount.
+// ---------------------------------------------------------------------------
+
+/** Pure viewport → width mapping, exported for direct unit testing. */
+export function getLiveChatDefaultWidth(viewportWidth: number | undefined): number {
+  if (viewportWidth === undefined || viewportWidth >= BREAKPOINT_3XL) {
+    return CHAT_DEFAULT_WIDTH;
+  }
+  if (viewportWidth >= BREAKPOINT_XL) return CHAT_WIDTH_NARROW;
+  return CHAT_MIN_WIDTH;
+}
+
+function useLiveChatDefaultWidth(): number {
+  const [width, setWidth] = React.useState(() =>
+    getLiveChatDefaultWidth(getViewportWidth())
+  );
+  React.useEffect(() => {
+    const onResize = () => setWidth(getLiveChatDefaultWidth(getViewportWidth()));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return width;
+}
 
 const defaultResizeTooltip = (
   <>
@@ -473,12 +598,23 @@ const AppShellChatChat = React.forwardRef<HTMLElement, AppShellChatChatProps>(
     },
     ref
   ) => {
-    const [width, setWidthState] = React.useState(CHAT_DEFAULT_WIDTH);
+    // Uncontrolled width has two layers: `liveDefaultWidth` tracks the
+    // viewport LIVE (via `useLiveChatDefaultWidth`, mirroring the CSS
+    // classes below) until the user actually drags/keyboard-resizes —
+    // `override` captures that explicit choice and, once set, wins
+    // regardless of further viewport changes (matching the existing
+    // drag/double-click/Home mechanics, unchanged).
+    const liveDefaultWidth = useLiveChatDefaultWidth();
+    const [override, setOverrideState] = React.useState<number | undefined>(
+      undefined
+    );
     const isWidthControlled = widthProp !== undefined;
-    const currentWidth = isWidthControlled ? widthProp : width;
+    const currentWidth = isWidthControlled
+      ? widthProp
+      : override ?? liveDefaultWidth;
     const setWidth = React.useCallback(
       (next: number) => {
-        if (!isWidthControlled) setWidthState(next);
+        if (!isWidthControlled) setOverrideState(next);
         onWidthChange?.(next);
       },
       [isWidthControlled, onWidthChange]
@@ -506,13 +642,12 @@ const AppShellChatChat = React.forwardRef<HTMLElement, AppShellChatChatProps>(
       [compact, currentWidth, setWidth, label, resizeAriaLabel, resizeTooltip]
     );
 
-    // Apply inline width ONLY once the user has actually resized (or width is
-    // controlled) — otherwise the fixed Tailwind width class drives it, so
-    // brand overrides / the default paint are unaffected by JS. (There is no
-    // width design token, so the CSS default is the JS constant expressed as
-    // an arbitrary-value class.)
-    const hasWidthOverride =
-      isWidthControlled || currentWidth !== CHAT_DEFAULT_WIDTH;
+    // Apply inline width ONLY once the user has actually resized (or width
+    // is controlled) — otherwise the responsive Tailwind width classes
+    // drive it live, so brand overrides / viewport reflow are unaffected by
+    // JS. (There is no width design token, so the CSS default is the same
+    // JS constants expressed as Tailwind spacing-scale classes.)
+    const hasWidthOverride = isWidthControlled || override !== undefined;
     const inlineStyle: React.CSSProperties | undefined = hasWidthOverride
       ? { width: currentWidth }
       : undefined;
@@ -525,7 +660,13 @@ const AppShellChatChat = React.forwardRef<HTMLElement, AppShellChatChatProps>(
           data-state={compact ? 'collapsed' : 'expanded'}
           style={inlineStyle}
           className={cn(
-            'group/chat relative flex h-full shrink-0 flex-col border-s border-[var(--ui-border-on-surface-divider)] bg-background w-[512px] transition-[width,border-color]',
+            // Live, responsive width — no JS, reflows on every browser
+            // resize until `hasWidthOverride` (above) switches to the
+            // inline style. `w-12` is the spacing scale (3rem = 48px);
+            // `w-md`/`w-lg` are Tailwind's named container-scale width
+            // utilities (28rem/32rem = 448px/512px) — see the `CHAT_*`
+            // constants above for the same numbers.
+            'group/chat relative flex h-full shrink-0 flex-col border-s border-[var(--ui-border-on-surface-divider)] bg-background w-12 xl:w-md 3xl:w-lg transition-[width,border-color]',
             // Resize-edge hover/active/focus recolors the START border line.
             'has-[[role=separator]:hover]:[border-inline-start-color:var(--ui-resizable-border-color-hover)] has-[[role=separator]:active]:[border-inline-start-color:var(--ui-resizable-border-color-active)] has-[[role=separator]:focus-visible]:[border-inline-start-color:var(--ui-resizable-border-color-active)]',
             className

@@ -47,6 +47,7 @@ import {
   AppShellChatContentBody,
   AppShellChatContentHeader,
   AppShellChatSidebar,
+  useAppShellChatInitialLayout,
 } from '../app-shell-chat';
 
 const meta = {
@@ -103,9 +104,9 @@ function LogoMarkCollapsed() {
   );
 }
 
-function PrimaryNav() {
+function PrimaryNav({ defaultExpanded }: { defaultExpanded?: boolean }) {
   return (
-    <SidebarPrimary aria-label="Primary">
+    <SidebarPrimary aria-label="Primary" defaultExpanded={defaultExpanded}>
       <SidebarPrimaryHeader logo={<LogoMark />} collapsedLogo={<LogoMarkCollapsed />} />
       <SidebarPrimaryContent>
         <SidebarPrimarySection>
@@ -161,9 +162,9 @@ function PrimaryNav() {
   );
 }
 
-function SecondaryNav() {
+function SecondaryNav({ defaultExpanded }: { defaultExpanded?: boolean }) {
   return (
-    <SidebarSecondary>
+    <SidebarSecondary defaultExpanded={defaultExpanded}>
       <SidebarSecondaryHeader label="Protection" />
       <SidebarSecondaryContent>
         <SidebarSecondarySection>
@@ -231,34 +232,41 @@ function ChatPlaceholder() {
 // One fully interactive story: both sidebars expand/collapse/resize, and Chat
 // resizes against Content (down to an icon-only rail, up to full width when
 // there's room) — all via real (uncontrolled) component state, so every
-// affordance is draggable.
+// affordance is draggable. Chat's own width is plain responsive CSS (no
+// wiring needed — see `app-shell-chat.tsx`); `useAppShellChatInitialLayout`
+// resolves the sidebars' breakpoint-appropriate INITIAL `defaultExpanded`
+// once at mount, which DOES need wiring explicitly since AppShellChatSidebar
+// is a plain slot, not a fixed pairing AppShellChat owns.
 export const Default: Story = {
-  render: () => (
-    <TooltipProvider delay={0}>
-      <AppShellChat className="h-screen">
-        <AppShellChatSidebar>
-          <PrimaryNav />
-          <SecondaryNav />
-        </AppShellChatSidebar>
-        <AppShellChatContent>
-          <AppShellChatContentHeader>
-            <span className="ui-typography-headings-title text-[var(--ui-text-on-surface-primary)]">
-              Page header
-            </span>
-          </AppShellChatContentHeader>
-          <AppShellChatContentBody>
-            <ContentPlaceholder />
-          </AppShellChatContentBody>
-        </AppShellChatContent>
-        <AppShellChatChat>
-          <AppShellChatChatHeader label="Acronis AI" />
-          <AppShellChatChatBody>
-            <ChatPlaceholder />
-          </AppShellChatChatBody>
-        </AppShellChatChat>
-      </AppShellChat>
-    </TooltipProvider>
-  ),
+  render: () => {
+    const initialLayout = useAppShellChatInitialLayout();
+    return (
+      <TooltipProvider delay={0}>
+        <AppShellChat className="h-screen">
+          <AppShellChatSidebar>
+            <PrimaryNav defaultExpanded={initialLayout.primaryExpanded} />
+            <SecondaryNav defaultExpanded={initialLayout.secondaryExpanded} />
+          </AppShellChatSidebar>
+          <AppShellChatContent>
+            <AppShellChatContentHeader>
+              <span className="ui-typography-headings-title text-[var(--ui-text-on-surface-primary)]">
+                Page header
+              </span>
+            </AppShellChatContentHeader>
+            <AppShellChatContentBody>
+              <ContentPlaceholder />
+            </AppShellChatContentBody>
+          </AppShellChatContent>
+          <AppShellChatChat>
+            <AppShellChatChatHeader label="Acronis AI" />
+            <AppShellChatChatBody>
+              <ChatPlaceholder />
+            </AppShellChatChatBody>
+          </AppShellChatChat>
+        </AppShellChat>
+      </TooltipProvider>
+    );
+  },
 };
 
 // SidebarSecondary is optional — `AppShellChatSidebar` is a plain slot, not a
@@ -266,29 +274,32 @@ export const Default: Story = {
 // second-level navigation just omits it and the rail is SidebarPrimary alone.
 export const WithoutSecondarySidebar: Story = {
   name: 'Without SidebarSecondary',
-  render: () => (
-    <TooltipProvider delay={0}>
-      <AppShellChat className="h-screen">
-        <AppShellChatSidebar>
-          <PrimaryNav />
-        </AppShellChatSidebar>
-        <AppShellChatContent>
-          <AppShellChatContentHeader>
-            <span className="ui-typography-headings-title text-[var(--ui-text-on-surface-primary)]">
-              Page header
-            </span>
-          </AppShellChatContentHeader>
-          <AppShellChatContentBody>
-            <ContentPlaceholder />
-          </AppShellChatContentBody>
-        </AppShellChatContent>
-        <AppShellChatChat>
-          <AppShellChatChatHeader label="Acronis AI" />
-          <AppShellChatChatBody>
-            <ChatPlaceholder />
-          </AppShellChatChatBody>
-        </AppShellChatChat>
-      </AppShellChat>
-    </TooltipProvider>
-  ),
+  render: () => {
+    const initialLayout = useAppShellChatInitialLayout();
+    return (
+      <TooltipProvider delay={0}>
+        <AppShellChat className="h-screen">
+          <AppShellChatSidebar>
+            <PrimaryNav defaultExpanded={initialLayout.primaryExpanded} />
+          </AppShellChatSidebar>
+          <AppShellChatContent>
+            <AppShellChatContentHeader>
+              <span className="ui-typography-headings-title text-[var(--ui-text-on-surface-primary)]">
+                Page header
+              </span>
+            </AppShellChatContentHeader>
+            <AppShellChatContentBody>
+              <ContentPlaceholder />
+            </AppShellChatContentBody>
+          </AppShellChatContent>
+          <AppShellChatChat>
+            <AppShellChatChatHeader label="Acronis AI" />
+            <AppShellChatChatBody>
+              <ChatPlaceholder />
+            </AppShellChatChatBody>
+          </AppShellChatChat>
+        </AppShellChat>
+      </TooltipProvider>
+    );
+  },
 };

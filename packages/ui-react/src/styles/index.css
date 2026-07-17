@@ -61,6 +61,13 @@
      2xl  1440px  range 1441-1680
      3xl  1680px  range 1681-1920
      4xl  1920px  range 1920+
+
+   KEEP IN SYNC with src/lib/breakpoints.ts, which mirrors these same rem
+   values as JS constants (BREAKPOINT_LG/XL/2XL/3XL/4XL) for components/utils
+   that need the breakpoint as a plain number (e.g. reading window.innerWidth).
+   Tailwind v4's `@theme` breakpoints are compile-time-only — there is no
+   runtime `:root` custom property for JS to read instead — so a value
+   changed here must be changed there too, in the same commit.
 */
 @theme {
   --breakpoint-lg: 64rem;

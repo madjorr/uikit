@@ -12,7 +12,11 @@ contract:
       required: false
       default: undefined
       description: >-
-        Controlled Chat width in px. Clamped during drag/keyboard resize to
+        Controlled Chat width in px. When uncontrolled (the default), Chat's
+        width is instead LIVE and breakpoint-responsive — 512px at 1680px+,
+        448px from 1280-1679px, 48px below that — reflowing on every browser
+        resize until the user drags/keyboard-resizes it. Any explicit width
+        (controlled, or a drag/keyboard override) is clamped during resize to
         [48, available] — the ceiling is the actual available row width (so
         Content can shrink to 0 and Chat can reach full width), not a fixed
         constant.
@@ -69,13 +73,20 @@ adapters:
     import: >-
       import { AppShellChat, AppShellChatSidebar, AppShellChatContent,
       AppShellChatContentHeader, AppShellChatContentBody, AppShellChatChat,
-      AppShellChatChatHeader, AppShellChatChatBody }
+      AppShellChatChatHeader, AppShellChatChatBody,
+      useAppShellChatInitialLayout }
       from '@acronis-platform/ui-react'
     example: |
+      // useAppShellChatInitialLayout() resolves ONCE at mount from the
+      // viewport width — wire it into the sidebars' `defaultExpanded`,
+      // since AppShellChatSidebar is a plain slot, not a fixed pairing
+      // AppShellChat owns. Chat's own responsive width needs no wiring.
+      const initialLayout = useAppShellChatInitialLayout();
+
       <AppShellChat>
         <AppShellChatSidebar>
-          <SidebarPrimary>…</SidebarPrimary>
-          <SidebarSecondary>…</SidebarSecondary>
+          <SidebarPrimary defaultExpanded={initialLayout.primaryExpanded}>…</SidebarPrimary>
+          <SidebarSecondary defaultExpanded={initialLayout.secondaryExpanded}>…</SidebarSecondary>
         </AppShellChatSidebar>
         <AppShellChatContent>
           <AppShellChatContentHeader>Page header</AppShellChatContentHeader>

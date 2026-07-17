@@ -1,7 +1,7 @@
 import { createRef } from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SidebarPrimary } from '../../sidebar-primary';
 import {
@@ -13,7 +13,24 @@ import {
   AppShellChatContentBody,
   AppShellChatContentHeader,
   AppShellChatSidebar,
+  getAppShellChatInitialLayout,
+  getLiveChatDefaultWidth,
+  useAppShellChatInitialLayout,
 } from '../app-shell-chat';
+
+// happy-dom's default `window.innerWidth` (1024) sits in the narrowest
+// breakpoint tier, so tests that care about the WIDE (512px, both sidebars
+// open) tier need to stub a wider viewport. Restored after every test so the
+// stub can't leak into an unrelated one.
+const ORIGINAL_INNER_WIDTH = window.innerWidth;
+function setViewportWidth(width: number) {
+  Object.defineProperty(window, 'innerWidth', {
+    value: width,
+    configurable: true,
+    writable: true,
+  });
+}
+afterEach(() => setViewportWidth(ORIGINAL_INNER_WIDTH));
 
 describe('AppShellChat', () => {
   it('renders every part', () => {
@@ -75,6 +92,7 @@ describe('AppShellChat', () => {
   });
 
   it('shows the chat header label at the default width', () => {
+    setViewportWidth(1920); // wide tier — uncontrolled Chat starts at 512px
     render(
       <AppShellChatChat>
         <AppShellChatChatHeader label="Acronis AI" />
@@ -136,6 +154,7 @@ describe('AppShellChat', () => {
   });
 
   it('resizes with the arrow keys and resets with Home', async () => {
+    setViewportWidth(1920); // wide tier — uncontrolled Chat starts at 512px
     const onWidthChange = vi.fn();
     render(
       <AppShellChat>
@@ -175,5 +194,147 @@ describe('AppShellChat', () => {
       </AppShellChat>
     );
     expect(chatRef.current?.tagName).toBe('ASIDE');
+  });
+});
+
+describe('getAppShellChatInitialLayout (sidebars — frozen at mount)', () => {
+  it('returns the wide layout (both sidebars open) at 1680px and up', () => {
+    expect(getAppShellChatInitialLayout(1920)).toEqual({
+      primaryExpanded: true,
+      secondaryExpanded: true,
+    });
+    expect(getAppShellChatInitialLayout(1680)).toEqual({
+      primaryExpanded: true,
+      secondaryExpanded: true,
+    });
+  });
+
+  it('returns the narrow layout (primary closed) below 1680px, all the way down', () => {
+    expect(getAppShellChatInitialLayout(1679)).toEqual({
+      primaryExpanded: false,
+      secondaryExpanded: true,
+    });
+    expect(getAppShellChatInitialLayout(1280)).toEqual({
+      primaryExpanded: false,
+      secondaryExpanded: true,
+    });
+    expect(getAppShellChatInitialLayout(600)).toEqual({
+      primaryExpanded: false,
+      secondaryExpanded: true,
+    });
+  });
+
+  it('falls back to the wide layout when there is no viewport width to measure', () => {
+    expect(getAppShellChatInitialLayout(undefined)).toEqual({
+      primaryExpanded: true,
+      secondaryExpanded: true,
+    });
+  });
+});
+
+describe('useAppShellChatInitialLayout (sidebars — frozen at mount)', () => {
+  it('resolves from the viewport width at first render', () => {
+    setViewportWidth(1440);
+    const { result } = renderHook(() => useAppShellChatInitialLayout());
+    expect(result.current).toEqual({
+      primaryExpanded: false,
+      secondaryExpanded: true,
+    });
+  });
+
+  it('never re-resolves after mount, even if the viewport changes', () => {
+    setViewportWidth(1920);
+    const { result } = renderHook(() => useAppShellChatInitialLayout());
+    expect(result.current.primaryExpanded).toBe(true);
+
+    setViewportWidth(1024);
+    window.dispatchEvent(new Event('resize'));
+    expect(result.current.primaryExpanded).toBe(true);
+  });
+});
+
+describe('getLiveChatDefaultWidth', () => {
+  it('returns 512px at 1680px and up', () => {
+    expect(getLiveChatDefaultWidth(1920)).toBe(512);
+    expect(getLiveChatDefaultWidth(1680)).toBe(512);
+  });
+
+  it('returns 448px from 1280px up to 1680px', () => {
+    expect(getLiveChatDefaultWidth(1679)).toBe(448);
+    expect(getLiveChatDefaultWidth(1280)).toBe(448);
+  });
+
+  it('returns 48px (icon rail) below 1280px', () => {
+    expect(getLiveChatDefaultWidth(1279)).toBe(48);
+    expect(getLiveChatDefaultWidth(600)).toBe(48);
+  });
+
+  it('falls back to 512px when there is no viewport width to measure', () => {
+    expect(getLiveChatDefaultWidth(undefined)).toBe(512);
+  });
+});
+
+describe('AppShellChat — Chat width is live (unlike the sidebars)', () => {
+  it('starts Chat compact (48px, icon-only) at a 1024px viewport, uncontrolled', () => {
+    setViewportWidth(1024);
+    const { container } = render(
+      <AppShellChat>
+        <AppShellChatChat>
+          <AppShellChatChatHeader label="Acronis AI" />
+        </AppShellChatChat>
+      </AppShellChat>
+    );
+    expect(
+      container.querySelector('[data-slot="app-shell-chat-chat"]')
+    ).toHaveAttribute('data-state', 'collapsed');
+    expect(screen.queryByText('Acronis AI')).not.toBeInTheDocument();
+  });
+
+  it('starts Chat expanded at a 1920px viewport, uncontrolled', () => {
+    setViewportWidth(1920);
+    render(
+      <AppShellChat>
+        <AppShellChatChat>
+          <AppShellChatChatHeader label="Acronis AI" />
+        </AppShellChatChat>
+      </AppShellChat>
+    );
+    expect(screen.getByText('Acronis AI')).toBeInTheDocument();
+  });
+
+  it('reflows live when the viewport changes after mount, as long as the user has not manually resized', () => {
+    setViewportWidth(1024);
+    render(
+      <AppShellChat>
+        <AppShellChatChat>
+          <AppShellChatChatHeader label="Acronis AI" />
+        </AppShellChatChat>
+      </AppShellChat>
+    );
+    expect(screen.queryByText('Acronis AI')).not.toBeInTheDocument();
+
+    setViewportWidth(1920);
+    act(() => window.dispatchEvent(new Event('resize')));
+    expect(screen.getByText('Acronis AI')).toBeInTheDocument();
+  });
+
+  it('stops reflowing once the user has manually resized it', async () => {
+    setViewportWidth(1920);
+    render(
+      <AppShellChat>
+        <AppShellChatChat>
+          <AppShellChatChatHeader label="Acronis AI" />
+        </AppShellChatChat>
+      </AppShellChat>
+    );
+    expect(screen.getByText('Acronis AI')).toBeInTheDocument();
+
+    const edge = screen.getByRole('separator', { name: /resize chat/i });
+    edge.focus();
+    await userEvent.keyboard('{ArrowLeft}'); // establishes an explicit override (528px)
+
+    setViewportWidth(1024); // would otherwise live-reflow to the 48px compact tier
+    act(() => window.dispatchEvent(new Event('resize')));
+    expect(screen.getByText('Acronis AI')).toBeInTheDocument();
   });
 });
