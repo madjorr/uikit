@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 // Design/QA aid, not a library component — never exported from `src/index.ts`
-// and outside the `__stories__` glob the lib build scans, so nothing here
-// ships. It exists so design/UX can pick a viewport from the toolbar above
+// and outside the `__stories__` glob the lib build's JS entries scan, so no
+// code from this file ships. (Tailwind's CSS scanning is a separate,
+// unscoped concern — see the color-coding note on `BreakpointIndicator`
+// below.) It exists so design/UX can pick a viewport from the toolbar above
 // and see, live, which of ui-react's pinned breakpoints (`src/styles/index.css`'s
 // `@theme` block) is active at that width — to sign off on the overrides
 // against Tailwind's stock scale before they land in a real component.
@@ -49,9 +51,15 @@ const BREAKPOINT_VIEWPORTS = {
 } as const;
 
 // A single box whose border/background color and label swap at each pinned
-// breakpoint. Colors are plain Tailwind palette utilities, not `--ui-*`
-// tokens — this is diagnostic tooling, not shipped UI, so the "every color
-// resolves to a token" rule doesn't apply here.
+// breakpoint. The color coding is plain CSS (a <style> block below), not
+// Tailwind palette utilities — Tailwind's automatic source scanning isn't
+// scoped to the lib build's __stories__ glob, so any `bg-teal-50`-style
+// utility written here would still be extracted as a candidate and get
+// baked into the published `dist/ui-react.css`. Plain CSS property/selector
+// text isn't a Tailwind candidate, so it can't leak. The label-switching
+// (`sm:hidden`, `md:max-lg:block`, …) below is left on real Tailwind
+// breakpoint-prefixed utilities on purpose — that's the actual thing this
+// story verifies.
 //
 // Font size scales up with each step too — reviewing the large breakpoints
 // (xl/2xl/3xl) usually means zooming the browser out to fit that width on a
@@ -60,20 +68,17 @@ const BREAKPOINT_VIEWPORTS = {
 // instead of shrinking to unreadable.
 function BreakpointIndicator() {
   return (
-    <div
-      className={[
-        'flex min-h-40 w-full items-center justify-center rounded-lg border-4 p-6 text-center',
-        'border-gray-400 bg-gray-100 text-gray-700',
-        'sm:border-blue-400 sm:bg-blue-50 sm:text-blue-700',
-        'md:border-teal-400 md:bg-teal-50 md:text-teal-700',
-        'lg:border-green-500 lg:bg-green-50 lg:text-green-700',
-        'xl:border-yellow-500 xl:bg-yellow-50 xl:text-yellow-800',
-        '2xl:border-orange-500 2xl:bg-orange-50 2xl:text-orange-800',
-        '3xl:border-red-500 3xl:bg-red-50 3xl:text-red-800',
-        '4xl:border-purple-500 4xl:bg-purple-50 4xl:text-purple-800',
-        'font-mono text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl',
-      ].join(' ')}
-    >
+    <div className="bp-indicator flex min-h-40 w-full items-center justify-center rounded-lg border-4 p-6 text-center font-mono text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl">
+      <style>{`
+        .bp-indicator { border-color: #9ca3af; background-color: #f3f4f6; color: #374151; }
+        @media (min-width: 40rem) { .bp-indicator { border-color: #60a5fa; background-color: #eff6ff; color: #1d4ed8; } }
+        @media (min-width: 48rem) { .bp-indicator { border-color: #2dd4bf; background-color: #f0fdfa; color: #0f766e; } }
+        @media (min-width: 64rem) { .bp-indicator { border-color: #22c55e; background-color: #f0fdf4; color: #15803d; } }
+        @media (min-width: 80rem) { .bp-indicator { border-color: #eab308; background-color: #fefce8; color: #854d0e; } }
+        @media (min-width: 90rem) { .bp-indicator { border-color: #f97316; background-color: #fff7ed; color: #9a3412; } }
+        @media (min-width: 105rem) { .bp-indicator { border-color: #ef4444; background-color: #fef2f2; color: #991b1b; } }
+        @media (min-width: 120rem) { .bp-indicator { border-color: #a855f7; background-color: #faf5ff; color: #6b21a8; } }
+      `}</style>
       <span className="block sm:hidden">base — below 640px</span>
       <span className="hidden sm:max-md:block">
         sm — 640-767px (Tailwind default)
@@ -107,6 +112,12 @@ const meta: Meta<typeof BreakpointIndicator> = {
   parameters: {
     layout: 'fullscreen',
     viewport: { options: BREAKPOINT_VIEWPORTS },
+    // Diagnostic/QA aid, not shipped UI — the toolbar-driven named viewports
+    // above are for a human to pick manually, so an automated visual
+    // regression snapshot (always taken at the default viewport) wouldn't
+    // exercise this story's actual purpose. Opt out rather than commit a
+    // baseline that never gets meaningfully re-verified.
+    snapshot: { skip: true },
     docs: {
       description: {
         component:
