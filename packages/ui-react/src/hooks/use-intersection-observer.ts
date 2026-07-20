@@ -1,4 +1,4 @@
-import { type RefObject, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface UseIntersectionObserverOptions extends IntersectionObserverInit {
   /** Called each time the observed element intersects its root. */
@@ -11,24 +11,35 @@ export interface UseIntersectionObserverOptions extends IntersectionObserverInit
 }
 
 /**
- * Wires a single `IntersectionObserver` on `ref`'s element and calls
- * `onIntersect` each time it intersects. Re-creates the observer when `ref`'s
- * element, `disabled`, or any `IntersectionObserverInit` option changes;
+ * Wires a single `IntersectionObserver` on the returned ref callback's element
+ * and calls `onIntersect` each time it intersects. Re-creates the observer when
+ * the element, `disabled`, or any `IntersectionObserverInit` option changes;
  * disconnects on cleanup. `onIntersect` itself doesn't need to be memoized by
  * the caller — the latest version is always used (via a ref) without
  * reconnecting the observer.
+ *
+ * Takes a ref *callback* (not a `RefObject`) rather than accepting one from the
+ * caller — attaching to `element.current` inside a `useEffect` keyed on a
+ * `RefObject` misses conditionally-mounted elements: the `ref` object's
+ * identity never changes when its `.current` is populated, so an effect keyed
+ * on it (rather than on the element itself) never re-runs once the element
+ * actually mounts. Routing the DOM node through `useState` instead makes the
+ * mount itself a dependency.
  */
-export function useIntersectionObserver<T extends Element>(
-  ref: RefObject<T | null>,
-  { onIntersect, disabled = false, root, rootMargin, threshold }: UseIntersectionObserverOptions
-): void {
+export function useIntersectionObserver<T extends Element>({
+  onIntersect,
+  disabled = false,
+  root,
+  rootMargin,
+  threshold,
+}: UseIntersectionObserverOptions): (node: T | null) => void {
   const onIntersectRef = useRef(onIntersect);
   onIntersectRef.current = onIntersect;
 
+  const [element, setElement] = useState<T | null>(null);
+
   useEffect(() => {
-    if (disabled) return;
-    const element = ref.current;
-    if (!element) return;
+    if (disabled || !element) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,5 +51,7 @@ export function useIntersectionObserver<T extends Element>(
     );
     observer.observe(element);
     return () => observer.disconnect();
-  }, [ref, disabled, root, rootMargin, threshold]);
+  }, [element, disabled, root, rootMargin, threshold]);
+
+  return setElement;
 }

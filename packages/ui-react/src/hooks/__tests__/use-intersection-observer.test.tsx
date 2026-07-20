@@ -1,5 +1,5 @@
-import { createRef } from 'react';
-import { render, renderHook } from '@testing-library/react';
+import { useState } from 'react';
+import { fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useIntersectionObserver } from '../use-intersection-observer';
@@ -37,9 +37,21 @@ afterEach(() => {
 });
 
 function Sentinel({ disabled, onIntersect }: { disabled?: boolean; onIntersect: () => void }) {
-  const ref = createRef<HTMLDivElement>();
-  useIntersectionObserver(ref, { onIntersect, disabled });
+  const ref = useIntersectionObserver<HTMLDivElement>({ onIntersect, disabled });
   return <div ref={ref} />;
+}
+
+// Mirrors DataTable's real usage: the sentinel is absent on mount and only
+// rendered once some later condition (e.g. data arriving) flips.
+function ConditionalSentinel({ onIntersect }: { onIntersect: () => void }) {
+  const [mounted, setMounted] = useState(false);
+  const ref = useIntersectionObserver<HTMLDivElement>({ onIntersect });
+  return (
+    <div>
+      <button onClick={() => setMounted(true)}>mount</button>
+      {mounted && <div ref={ref} />}
+    </div>
+  );
 }
 
 describe('useIntersectionObserver', () => {
@@ -77,10 +89,23 @@ describe('useIntersectionObserver', () => {
     expect(observer.disconnect).toHaveBeenCalledTimes(1);
   });
 
-  it('does not observe when the ref has no element', () => {
+  it('does not observe when there is no element yet', () => {
     const onIntersect = vi.fn();
-    const ref = createRef<HTMLDivElement>();
-    renderHook(() => useIntersectionObserver(ref, { onIntersect }));
+    render(<ConditionalSentinel onIntersect={onIntersect} />);
     expect(MockIntersectionObserver.instances).toHaveLength(0);
+  });
+
+  it('starts observing once the element mounts after an initial null render', async () => {
+    const onIntersect = vi.fn();
+    const { getByRole } = render(<ConditionalSentinel onIntersect={onIntersect} />);
+    expect(MockIntersectionObserver.instances).toHaveLength(0);
+
+    fireEvent.click(getByRole('button'));
+
+    const [observer] = MockIntersectionObserver.instances;
+    expect(observer.observe).toHaveBeenCalledTimes(1);
+
+    observer.trigger(true);
+    expect(onIntersect).toHaveBeenCalledTimes(1);
   });
 });

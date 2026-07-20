@@ -4,7 +4,6 @@ import {
   type KeyboardEvent,
   type ReactNode,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -351,9 +350,7 @@ export function DataTable<TData, TValue>({
   // configures its own row models/state, so DataTable just renders from it.
   const table = externalTable ?? internalTable;
   const isInfiniteScroll = !externalTable && paginationMode === 'infinite';
-  const sentinelRef = useRef<HTMLTableRowElement>(null);
-
-  useIntersectionObserver(sentinelRef, {
+  const sentinelRef = useIntersectionObserver<HTMLTableRowElement>({
     onIntersect: () => onLoadMore?.(),
     disabled: !isInfiniteScroll || !hasNextPage || isLoadingMore,
   });
@@ -579,7 +576,13 @@ export function DataTable<TData, TValue>({
           {isInfiniteScroll && !skeleton && rows.length > 0 && isLoadingMore && (
             <TableRow className="hover:bg-transparent">
               <TableCell colSpan={table.getVisibleLeafColumns().length}>
-                <div className="h-4 w-full animate-pulse rounded bg-[var(--ui-background-surface-secondary)]" />
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="h-4 w-full animate-pulse rounded bg-[var(--ui-background-surface-secondary)]"
+                >
+                  <span className="sr-only">Loading more rows…</span>
+                </div>
               </TableCell>
             </TableRow>
           )}
