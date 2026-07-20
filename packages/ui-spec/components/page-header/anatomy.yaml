@@ -3,32 +3,38 @@ component: PageHeader
 
 schematic: |
   page-header: <div role="banner"> vertical block
-    page-header-breadcrumb:  optional breadcrumb nav (muted)
-    page-header-row:         title row
-      page-header-title:       <h1> page title
-      page-header-actions:     buttons (right)
-    page-header-description: optional muted supporting text
+    page-header-row:              title row
+      page-header-title:            <h1> page title
+      (edit ButtonIcon)              optional, consumer-placed sibling
+      page-header-tags:             optional tags slot
+      page-header-actions:          trailing action buttons
+    page-header-description-row:  optional description row (max 512px)
+      page-header-description:      muted supporting text
+      (edit ButtonIcon)              optional, consumer-placed sibling
 
 root:
   element: div
   role: banner
-  description: The page header region; stacks breadcrumb, the title/actions row, and a description.
+  description: The page header region; stacks the title row and an optional description row. A breadcrumb, when used, is a separate sibling rendered above PageHeader — not one of its parts.
 
 parts:
-  - id: page-header-breadcrumb
-    element: nav
-    description: Optional breadcrumb (muted), labelled "Breadcrumb".
   - id: page-header-row
     element: div
-    description: The title + actions row (title left, actions right).
+    description: The title row (title, an optional edit button, a tags slot, and an actions slot).
   - id: page-header-title
     element: h1
     description: The page title.
+  - id: page-header-tags
+    element: div
+    description: Optional tags slot (typically `Tag` chips); shares the row's remaining width with the actions slot.
   - id: page-header-actions
     element: div
-    description: Trailing action buttons.
+    description: Trailing action buttons; right-aligned within its share of the row.
+  - id: page-header-description-row
+    element: div
+    description: Optional description row, capped at 512px, holding the description text and its optional edit button.
   - id: page-header-description
     element: p
-    description: Optional muted supporting text under the title.
+    description: Muted supporting text under the title.
 
 states: []
