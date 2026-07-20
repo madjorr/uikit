@@ -14,10 +14,11 @@ import {
 } from '../page-header';
 
 // Design/QA aid mirroring `src/stories/breakpoints-demo.stories.tsx` — verifies
-// PageHeader's own responsive behavior (title stays on one line; tags and
-// actions squeeze via `flex-1 min-w-0` before wrapping) at the breakpoint
-// scale pinned in `src/styles/index.css`, rather than adding any
-// breakpoint-specific CSS to the component itself (it's already fluid).
+// PageHeader's own responsive behavior (title never wraps; tags collapse to
+// the first tag + a "+#" tag, and secondary buttons collapse under a "More"
+// ButtonIcon, per the Figma "Breakpoints" page's two hard requirements) at
+// the breakpoint scale pinned in `src/styles/index.css`, rather than adding
+// any breakpoint-specific CSS to the component itself (it's already fluid).
 // Named viewports scoped to this story only, matching the Figma "Breakpoints"
 // page for PageHeader (1024 / 1280 / 1440 / 1680 / 1920).
 const BREAKPOINT_VIEWPORTS = {
@@ -66,8 +67,8 @@ const meta = {
         component:
           'Live demo of PageHeader at each pinned breakpoint (lg/xl/2xl/3xl/4xl from ' +
           '`src/styles/index.css`). Pick a named viewport from the toolbar above to see ' +
-          "tags and actions reflow — the title never wraps, and the tags/actions slots " +
-          'squeeze evenly before either would.',
+          'tags and actions collapse — the title never wraps; tags fold into a "+#" tag ' +
+          'and secondary buttons fold under a "More" ButtonIcon before either would.',
       },
     },
   },

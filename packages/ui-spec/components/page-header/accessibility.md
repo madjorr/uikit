@@ -9,6 +9,12 @@
 - The edit affordance next to the title or description is a plain `ButtonIcon`;
   give it a descriptive `aria-label` (e.g. "Edit title", "Edit description") since
   the pencil icon alone has no accessible name.
+- The tags overflow indicator is a `Tag` wrapped in a `Tooltip` — its hidden-label
+  list opens on hover _and_ keyboard focus (Tooltip's Base UI primitive handles
+  both), so the hidden tags' labels aren't hover-only information.
+- The actions overflow control is a `ButtonIcon` with `aria-label="More actions"`,
+  opening a `DropdownMenu` (Base UI `Menu`) of the hidden secondary actions — full
+  keyboard nav (arrow keys, typeahead, Esc) comes from the primitive.
 
 ## Contrast
 

@@ -172,3 +172,31 @@ export const WithDescriptionEditable: Story = {
     </PageHeader>
   ),
 };
+
+// Forces overflow at a fixed width (rather than a viewport size, so it's a
+// deterministic VR case) — matches the Figma "Breakpoints" page's two hard
+// requirements: tags collapse to the first tag + a "+#" tag (labels on
+// hover), and secondary buttons collapse under a single "More" ButtonIcon.
+// Primary buttons (`Add user`) are never hidden.
+export const TagsAndActionsOverflow: Story = {
+  name: 'Tags + Actions overflow (narrow width)',
+  render: () => (
+    <div className="w-115">
+      <PageHeader>
+        <PageHeaderRow>
+          <PageHeaderTitle>Page header</PageHeaderTitle>
+          <PageHeaderTags>
+            <Tag variant="info">Customer</Tag>
+            <Tag variant="success">Active</Tag>
+            <Tag variant="warning">Warning</Tag>
+          </PageHeaderTags>
+          <PageHeaderActions>
+            <Button variant="secondary">Quick access</Button>
+            <ButtonMenu variant="secondary">Export data</ButtonMenu>
+            <ButtonMenu>Add user</ButtonMenu>
+          </PageHeaderActions>
+        </PageHeaderRow>
+      </PageHeader>
+    </div>
+  ),
+};

@@ -32,3 +32,33 @@ Scenario: Breadcrumb above PageHeader
   Given a page that also shows a breadcrumb trail
   Then render a Breadcrumb as a separate sibling above PageHeader, not nested inside it
 ```
+
+```gherkin
+Scenario: Tags overflow
+  Given a PageHeaderTags slot with more than one tag
+  And the full set of tags doesn't fit the width available to the slot
+  Then show only the first tag and fold the rest under a single "+#" tag
+  And hovering or focusing the "+#" tag shows a tooltip listing the hidden tags' labels
+```
+
+```gherkin
+Scenario: Tags fit
+  Given a PageHeaderTags slot
+  When the full set of tags fits the width available to the slot
+  Then render every tag directly, with no overflow tag
+```
+
+```gherkin
+Scenario: Actions overflow
+  Given a PageHeaderActions slot with at least one secondary-variant action
+  And the full set of actions doesn't fit the width available to the slot
+  Then fold every secondary-variant action under a single "More" ButtonIcon that opens a dropdown menu of them, in their original order
+  And leave every primary-variant action visible — it is never folded into the menu
+```
+
+```gherkin
+Scenario: Actions fit
+  Given a PageHeaderActions slot
+  When the full set of actions fits the width available to the slot
+  Then render every action directly, with no "More" ButtonIcon
+```

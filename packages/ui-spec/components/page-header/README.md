@@ -17,15 +17,15 @@ a tags slot, an actions slot) and an optional description row, capped at
 
 ## Parts
 
-| Export                     | Element | Purpose                                                |
-| -------------------------- | ------- | ------------------------------------------------------ |
-| `PageHeader`               | `div`   | The banner region.                                     |
-| `PageHeaderRow`            | `div`   | Title row: title, optional edit button, tags, actions. |
-| `PageHeaderTitle`          | `h1`    | The page title.                                        |
-| `PageHeaderTags`           | `div`   | Optional tags slot (e.g. `Tag` chips).                 |
-| `PageHeaderActions`        | `div`   | Trailing action buttons.                               |
-| `PageHeaderDescriptionRow` | `div`   | Optional description row (max 512px).                  |
-| `PageHeaderDescription`    | `p`     | Muted supporting text.                                 |
+| Export                     | Element | Purpose                                                                                                                                                         |
+| -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PageHeader`               | `div`   | The banner region.                                                                                                                                              |
+| `PageHeaderRow`            | `div`   | Title row: title, optional edit button, tags, actions.                                                                                                          |
+| `PageHeaderTitle`          | `h1`    | The page title.                                                                                                                                                 |
+| `PageHeaderTags`           | `div`   | Optional tags slot (e.g. `Tag` chips). Collapses to the first tag + a "+#" tag (hover tooltip lists the hidden labels) when the full set doesn't fit.           |
+| `PageHeaderActions`        | `div`   | Trailing action buttons. Secondary-variant buttons collapse under a "More" `ButtonIcon` dropdown when the full set doesn't fit; primary buttons never collapse. |
+| `PageHeaderDescriptionRow` | `div`   | Optional description row (max 512px).                                                                                                                           |
+| `PageHeaderDescription`    | `p`     | Muted supporting text.                                                                                                                                          |
 
 ## Example
 
