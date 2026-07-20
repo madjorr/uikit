@@ -282,4 +282,42 @@ describe('ToolbarActionList', () => {
     );
     expect(screen.getByRole('button', { name: 'First action' })).toBeDisabled();
   });
+
+  it('moves focus between visible actions with arrow keys', async () => {
+    const user = userEvent.setup();
+    mockGeometry({ itemWidth: 100, clientWidth: 400 });
+    render(
+      <Toolbar>
+        <ToolbarActionList actions={THREE_ACTIONS} />
+      </Toolbar>
+    );
+    const first = screen.getByRole('button', { name: 'First action' });
+    const second = screen.getByRole('button', { name: 'Second action' });
+    const third = screen.getByRole('button', { name: 'Third action' });
+
+    await user.click(first);
+    expect(first).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+    expect(second).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+    expect(third).toHaveFocus();
+  });
+
+  it('moves focus into the overflow trigger with arrow keys', async () => {
+    const user = userEvent.setup();
+    mockGeometry({ itemWidth: 100, clientWidth: 250 });
+    render(
+      <Toolbar>
+        <ToolbarActionList actions={THREE_ACTIONS} />
+      </Toolbar>
+    );
+    const first = screen.getByRole('button', { name: 'First action' });
+    const trigger = screen.getByRole('button', { name: 'More actions' });
+
+    await user.click(first);
+    await user.keyboard('{ArrowRight}');
+    expect(trigger).toHaveFocus();
+  });
 });

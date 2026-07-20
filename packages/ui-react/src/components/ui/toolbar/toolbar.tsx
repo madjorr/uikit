@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Toolbar as ToolbarPrimitive } from '@base-ui/react/toolbar';
 
 import { cn } from '@/lib/utils';
 import { Button } from '../button';
@@ -128,6 +129,31 @@ export interface ToolbarActionListProps
 // (same trigger Figma's `hasMoreActions` variant shows). An invisible clone
 // of every action + the trigger is kept mounted purely to measure natural
 // widths, since a hidden item can't report its own size.
+//
+// The root and each visible action/trigger are Base UI's `Toolbar.Root`/
+// `Toolbar.Button` (`@base-ui/react/toolbar`), giving the row the WAI-ARIA
+// toolbar pattern for free: one Tab stop, arrow-key/Home/End roving-tabindex
+// between actions and into the overflow trigger. `Toolbar.Button` composes
+// via `render` the same way `DropdownMenuTrigger`/`ButtonMenu` already do
+// below — it merges its own composite/keydown/disabled props onto whatever
+// element you pass. `focusableWhenDisabled={!action.disabled}` opts a
+// disabled action out of Base UI's default APG toolbar treatment (disabled
+// items normally stay focusable via `aria-disabled`, skippable with Tab) so
+// it matches every other disabled `Button` in this library: a real native
+// `disabled` button, unreachable via Tab or arrow keys. This MUST stay
+// conditional on `action.disabled` — `Toolbar.Root` builds its
+// `disabledIndices` list from `focusableWhenDisabled` alone, regardless of
+// the item's actual disabled state, so passing a bare `false` here disables
+// every index and silently breaks arrow-key navigation for the whole row.
+//
+// The invisible measurement clones stay plain `Button`/`ButtonMenu` (not
+// `Toolbar.Button`): registering them too would double-count hidden items in
+// the roving-tabindex list. This is scoped to the action list only —
+// `Toolbar`'s own `<fieldset>` disabled-cascade (see above) is
+// intentionally untouched; Base UI's `Fieldset.Root` strips the native
+// `disabled` attribute in favor of a context other Base UI Field-aware
+// components consume, which `Button`/`ButtonMenu` don't, so it would silently
+// break the "disabling the toolbar disables every nested control" guarantee.
 const ToolbarActionList = React.forwardRef<
   HTMLDivElement,
   ToolbarActionListProps
@@ -181,7 +207,7 @@ const ToolbarActionList = React.forwardRef<
     const hiddenActions = actions.slice(visibleCount);
 
     return (
-      <div
+      <ToolbarPrimitive.Root
         ref={mergeRefs(containerRef, forwardedRef)}
         className={cn(
           'relative flex min-w-0 flex-nowrap items-center gap-4',
@@ -190,20 +216,25 @@ const ToolbarActionList = React.forwardRef<
         {...props}
       >
         {visibleActions.map((action) => (
-          <Button
+          <ToolbarPrimitive.Button
             key={action.key}
-            variant="ghost"
             disabled={action.disabled}
+            focusableWhenDisabled={!action.disabled}
             onClick={action.onSelect}
-          >
-            {action.label}
-          </Button>
+            render={<Button variant="ghost">{action.label}</Button>}
+          />
         ))}
         {hiddenActions.length > 0 && (
           <DropdownMenu>
-            <DropdownMenuTrigger
+            <ToolbarPrimitive.Button
               render={
-                <ButtonMenu variant="secondary">{moreActionsLabel}</ButtonMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <ButtonMenu variant="secondary">
+                      {moreActionsLabel}
+                    </ButtonMenu>
+                  }
+                />
               }
             />
             <DropdownMenuContent align="start">
@@ -239,7 +270,7 @@ const ToolbarActionList = React.forwardRef<
             {moreActionsLabel}
           </ButtonMenu>
         </div>
-      </div>
+      </ToolbarPrimitive.Root>
     );
   }
 );
