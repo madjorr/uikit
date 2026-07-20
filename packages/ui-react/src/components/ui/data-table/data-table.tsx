@@ -178,9 +178,9 @@ export interface DataTableProps<TData, TValue = unknown> {
    * instead): `columnVisibility`, `onColumnVisibilityChange`,
    * `onColumnSizingChange`, `enableColumnResizing`, `getRowCanExpand`,
    * `manualSorting`, `sorting`, `onSortingChange`, `paginationMode`,
-   * `onLoadMore`, `hasNextPage`, `isLoadingMore`. `meta.pin`-driven column
-   * pinning is also skipped — pin/unpin the caller's own instance via
-   * TanStack's `column.pin()` directly.
+   * `onLoadMore`, `loadMoreRootMargin`, `hasNextPage`, `isLoadingMore`.
+   * `meta.pin`-driven column pinning is also skipped — pin/unpin the
+   * caller's own instance via TanStack's `column.pin()` directly.
    */
   table?: TanstackTable<TData>;
   /** Enables row expansion for rows that return true. Pair with `renderExpandedRow`. */

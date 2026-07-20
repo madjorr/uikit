@@ -366,6 +366,27 @@ describe('DataTable infinite scroll (paginationMode="infinite")', () => {
     expect(MockIntersectionObserver.instances).toHaveLength(0);
   });
 
+  it('cannot drive the very first fetch — no sentinel/observer when data is empty', () => {
+    // The sentinel only renders once rows.length > 0 (data-table.tsx), so a
+    // consumer mounting empty with hasNextPage=true (expecting the sentinel
+    // to trigger the first fetch) gets the default "No results." row instead
+    // — onLoadMore never fires. Documented as intentional in api.yaml/
+    // behavior.md; this guards that the underlying condition doesn't drift.
+    const onLoadMore = vi.fn();
+    render(
+      <DataTable
+        columns={columns}
+        data={[]}
+        paginationMode="infinite"
+        hasNextPage
+        onLoadMore={onLoadMore}
+      />
+    );
+    expect(MockIntersectionObserver.instances).toHaveLength(0);
+    expect(screen.getByText('No results.')).toBeInTheDocument();
+    expect(onLoadMore).not.toHaveBeenCalled();
+  });
+
   it('passes loadMoreRootMargin through to the observer', () => {
     render(
       <DataTable
