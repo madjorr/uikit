@@ -7,7 +7,10 @@ export {
   AppShellChatChat,
   AppShellChatChatHeader,
   AppShellChatChatBody,
+  useAppShellChatInitialLayout,
+  getAppShellChatInitialLayout,
   type AppShellChatProps,
   type AppShellChatChatProps,
   type AppShellChatChatHeaderProps,
+  type AppShellChatInitialLayout,
 } from './app-shell-chat';
