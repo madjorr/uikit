@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -7,6 +7,7 @@ import {
   ToolbarActions,
   ToolbarActionList,
   computeVisibleActionCount,
+  measureNaturalWidth,
   type ToolbarActionListItem,
 } from '../toolbar';
 import { Button } from '../../button';
@@ -35,6 +36,26 @@ function mockGeometry({
   vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(
     clientWidth
   );
+}
+
+// A controllable stand-in for `ResizeObserver` — happy-dom's real
+// implementation never fires without genuine layout changes, so this lets
+// tests trigger a "resize" deterministically via `trigger()`.
+class FakeResizeObserver {
+  static instances: FakeResizeObserver[] = [];
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  private callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    FakeResizeObserver.instances.push(this);
+  }
+
+  trigger() {
+    this.callback([], this as unknown as ResizeObserver);
+  }
 }
 
 const THREE_ACTIONS: ToolbarActionListItem[] = [
@@ -150,9 +171,60 @@ describe('computeVisibleActionCount', () => {
   });
 });
 
+describe('measureNaturalWidth', () => {
+  function stubWidth(el: Element, width: number) {
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      width,
+      height: 32,
+      top: 0,
+      left: 0,
+      right: width,
+      bottom: 32,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+  }
+
+  it('falls back to the element itself when it has no children', () => {
+    const el = document.createElement('div');
+    stubWidth(el, 42);
+    expect(measureNaturalWidth(el)).toBe(42);
+  });
+
+  it('sums a single child with no gap term', () => {
+    const el = document.createElement('div');
+    const child = document.createElement('span');
+    el.appendChild(child);
+    stubWidth(child, 60);
+    expect(measureNaturalWidth(el)).toBe(60);
+  });
+
+  it('sums multiple children plus the inter-child gap, ignoring its own grown box', () => {
+    const el = document.createElement('div');
+    el.style.columnGap = '8px';
+    stubWidth(el, 999); // the element's own (flex-grown) box must be ignored
+    const a = document.createElement('span');
+    const b = document.createElement('button');
+    el.append(a, b);
+    stubWidth(a, 60);
+    stubWidth(b, 90);
+    // getComputedStyle only resolves inline style once the element is
+    // connected to the document.
+    document.body.appendChild(el);
+    try {
+      expect(measureNaturalWidth(el)).toBe(60 + 90 + 8);
+    } finally {
+      el.remove();
+    }
+  });
+});
+
 describe('ToolbarActionList', () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    FakeResizeObserver.instances = [];
   });
 
   it('renders every action inline when they all fit', () => {
@@ -203,6 +275,58 @@ describe('ToolbarActionList', () => {
       screen.queryByRole('button', { name: 'First action' })
     ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument();
+  });
+
+  it('re-expands hidden actions once the row widens again, with a sibling ToolbarActions present', () => {
+    // Regression: ToolbarActions is `grow shrink-0`, so once the row narrows
+    // and the action list collapses, the sibling grows to absorb the freed
+    // space. Measuring the sibling's own (grown) rect would make "available
+    // width" self-referential — it'd always equal the list's own current
+    // width — so the row would never re-measure enough space to re-expand.
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+    let clientWidth = 250;
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      () =>
+        ({
+          width: 100,
+          height: 32,
+          top: 0,
+          left: 0,
+          right: 100,
+          bottom: 32,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        }) as DOMRect
+    );
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(
+      () => clientWidth
+    );
+
+    render(
+      <Toolbar>
+        <ToolbarActionList actions={THREE_ACTIONS} />
+        <ToolbarActions>
+          <span>Status</span>
+        </ToolbarActions>
+      </Toolbar>
+    );
+    expect(
+      screen.queryByRole('button', { name: 'First action' })
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument();
+
+    clientWidth = 460;
+    act(() => {
+      FakeResizeObserver.instances[0].trigger();
+    });
+
+    expect(screen.getByRole('button', { name: 'First action' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Second action' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Third action' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'More actions' })
+    ).not.toBeInTheDocument();
   });
 
   it('opens the overflow menu and fires onSelect for a hidden action', async () => {

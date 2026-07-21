@@ -115,6 +115,26 @@ export function computeVisibleActionCount(
   return count;
 }
 
+// A grown sibling's own `getBoundingClientRect()` reflects its flex-grown
+// box, not the space its content actually needs — reading that would make
+// `measure()`'s "available space" calculation self-referential (see below),
+// so this reads the sibling's *children* instead: normal (non-growing) flex
+// children report their natural width regardless of how large the parent's
+// box has grown to fill leftover row space.
+//
+// Exported (like `computeVisibleActionCount`) so this is unit-testable
+// without mocking layout/ResizeObserver.
+export function measureNaturalWidth(el: Element): number {
+  const children = Array.from(el.children);
+  if (children.length === 0) return el.getBoundingClientRect().width;
+
+  const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+  return (
+    children.reduce((sum, child) => sum + child.getBoundingClientRect().width, 0) +
+    gap * (children.length - 1)
+  );
+}
+
 function mergeRefs<T>(
   ...refs: Array<React.Ref<T> | undefined>
 ): React.RefCallback<T> {
@@ -198,7 +218,7 @@ const ToolbarActionList = React.forwardRef<
 
       const siblingsWidth = Array.from(parent.children)
         .filter((child) => child !== container)
-        .reduce((sum, el) => sum + el.getBoundingClientRect().width, 0);
+        .reduce((sum, el) => sum + measureNaturalWidth(el), 0);
       const gapCount = Math.max(parent.children.length - 1, 0);
       const available =
         parent.clientWidth - siblingsWidth - ACTION_LIST_GAP_PX * gapCount;
