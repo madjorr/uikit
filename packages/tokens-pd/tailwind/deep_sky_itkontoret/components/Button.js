@@ -31,7 +31,7 @@ export default {
         "button-ghost-label-active": "light-dark(rgb(48 50 54), rgb(228 229 231))",
         "button-ghost-label-disabled": "light-dark(rgb(215 217 219), rgb(61 63 67))",
         "button-ghost-label-hover": "light-dark(rgb(61 63 67), rgb(215 217 219))",
-        "button-ghost-label-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "button-ghost-label-idle": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "button-primary-label-active": "light-dark(rgb(255 255 255), rgb(255 255 255))",
         "button-primary-label-disabled": "light-dark(rgb(255 255 255 / 0.302), rgb(255 255 255 / 0.302))",
         "button-primary-label-hover": "light-dark(rgb(255 255 255), rgb(255 255 255))",
@@ -39,7 +39,7 @@ export default {
         "button-secondary-label-active": "light-dark(rgb(48 50 54), rgb(228 229 231))",
         "button-secondary-label-disabled": "light-dark(rgb(215 217 219), rgb(61 63 67))",
         "button-secondary-label-hover": "light-dark(rgb(61 63 67), rgb(215 217 219))",
-        "button-secondary-label-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "button-secondary-label-idle": "light-dark(rgb(73 76 80), rgb(201 204 207))"
       },
       "borderColor": {
         "button-secondary-container-border-color-active": "light-dark(transparent, transparent)",

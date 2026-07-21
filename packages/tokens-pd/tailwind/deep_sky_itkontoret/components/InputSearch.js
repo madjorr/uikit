@@ -11,11 +11,11 @@ export default {
         "input-search-box-idle": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
-        "input-search-placeholder-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
+        "input-search-placeholder-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "input-search-placeholder-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-search-placeholder-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-search-required": "light-dark(rgb(226 54 54), rgb(229 77 77))",
-        "input-search-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
+        "input-search-value-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "input-search-value-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-search-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },

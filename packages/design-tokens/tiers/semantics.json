@@ -2079,14 +2079,7 @@
             "PD"
           ],
           "values": {
-            "deep_sky_itkontoret": {
-              "colorSpace": "hsl",
-              "components": [
-                205.71,
-                14.58,
-                18.82
-              ]
-            },
+            "deep_sky_itkontoret": "{palette.grayscale.5}",
             "default": "{palette.grayscale.5}"
           }
         },
@@ -2101,14 +2094,7 @@
             "PD"
           ],
           "values": {
-            "deep_sky_itkontoret": {
-              "colorSpace": "hsl",
-              "components": [
-                208.8,
-                15.53,
-                31.57
-              ]
-            },
+            "deep_sky_itkontoret": "{palette.grayscale.10}",
             "default": "{palette.blue.7}"
           }
         },

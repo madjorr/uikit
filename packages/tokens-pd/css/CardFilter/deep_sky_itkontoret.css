@@ -2,7 +2,7 @@
 /* Source: @acronis-platform/design-tokens • brand: deep_sky_itkontoret • tier: CardFilter • overrides only */
 
 :root, :host {
-  --ui-card-filter-clickable-value-color: light-dark(rgb(68 81 93), rgb(68 81 93));
+  --ui-card-filter-clickable-value-color: light-dark(rgb(73 76 80), rgb(201 204 207));
   --ui-card-filter-global-border-color-active: light-dark(rgb(109 114 120), rgb(109 114 120));
   --ui-card-filter-global-border-color-focused: light-dark(rgb(215 217 219), rgb(61 63 67));
   --ui-card-filter-global-border-color-hover: light-dark(rgb(109 114 120), rgb(109 114 120));

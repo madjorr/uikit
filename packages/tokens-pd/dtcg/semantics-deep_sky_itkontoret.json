@@ -1518,14 +1518,7 @@
             "com.figma.variableId": "VariableID:52:1357"
           },
           "$type": "color",
-          "$value": {
-            "colorSpace": "hsl",
-            "components": [
-              205.71,
-              14.58,
-              18.82
-            ]
-          }
+          "$value": "{palette.grayscale.5}"
         },
         "link": {
           "$extensions": {
@@ -1535,14 +1528,7 @@
             "com.figma.variableId": "VariableID:139:155"
           },
           "$type": "color",
-          "$value": {
-            "colorSpace": "hsl",
-            "components": [
-              208.8,
-              15.53,
-              31.57
-            ]
-          }
+          "$value": "{palette.grayscale.10}"
         },
         "link-disabled": {
           "$extensions": {

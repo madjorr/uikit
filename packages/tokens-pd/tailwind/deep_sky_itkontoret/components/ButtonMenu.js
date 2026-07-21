@@ -21,12 +21,12 @@ export default {
       },
       "textColor": {
         "button-menu-dropdown-extras-shortcut-label": "light-dark(rgb(109 114 120), rgb(109 114 120))",
-        "button-menu-dropdown-item-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "button-menu-dropdown-item-label": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "button-menu-primary-label": "light-dark(rgb(255 255 255), rgb(255 255 255))",
-        "button-menu-secondary-label-active": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "button-menu-secondary-label-active": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "button-menu-secondary-label-disabled": "light-dark(rgb(215 217 219), rgb(61 63 67))",
-        "button-menu-secondary-label-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "button-menu-secondary-label-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "button-menu-secondary-label-hover": "light-dark(rgb(73 76 80), rgb(201 204 207))",
+        "button-menu-secondary-label-idle": "light-dark(rgb(73 76 80), rgb(201 204 207))"
       },
       "borderColor": {
         "button-menu-dropdown-container-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))",

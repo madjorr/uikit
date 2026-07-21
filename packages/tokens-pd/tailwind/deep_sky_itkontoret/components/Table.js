@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       "textColor": {
-        "table-data-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
+        "table-data-value-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "table-data-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "table-header-label": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },

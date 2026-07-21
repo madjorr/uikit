@@ -2,7 +2,6 @@
 /* Source: @acronis-platform/design-tokens • brand: deep_sky_itkontoret • tier: Table • overrides only */
 
 :root, :host {
-  --ui-table-data-value-color-disabled: light-dark(rgb(41 49 55), rgb(41 49 55));
   --ui-table-global-cell-border-color: light-dark(rgb(215 217 219), rgb(61 63 67));
   --ui-table-global-row-color-active: light-dark(rgb(228 229 231), rgb(48 50 54));
   --ui-table-global-row-color-hover: light-dark(rgb(236 237 238), rgb(37 38 40));

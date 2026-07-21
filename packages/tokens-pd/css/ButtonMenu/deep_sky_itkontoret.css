@@ -8,7 +8,7 @@
   --ui-button-menu-dropdown-item-container-color-hover: light-dark(rgb(228 229 231), rgb(48 50 54));
   --ui-button-menu-dropdown-item-container-color-idle: light-dark(rgb(228 229 231), rgb(48 50 54));
   --ui-button-menu-dropdown-item-icon-color: light-dark(rgb(73 76 80), rgb(201 204 207));
-  --ui-button-menu-dropdown-item-label-color: light-dark(rgb(68 81 93), rgb(68 81 93));
+  --ui-button-menu-dropdown-item-label-color: light-dark(rgb(73 76 80), rgb(201 204 207));
   --ui-button-menu-dropdown-section-container-border-color: light-dark(rgb(215 217 219), rgb(61 63 67));
   --ui-button-menu-primary-container-color-active: light-dark(rgb(48 50 54), rgb(18 77 161));
   --ui-button-menu-primary-container-color-disabled: light-dark(rgb(215 217 219), rgb(48 50 54));
@@ -22,10 +22,10 @@
   --ui-button-menu-secondary-icon-color-disabled: light-dark(rgb(175 178 182), rgb(85 89 94));
   --ui-button-menu-secondary-icon-color-hover: light-dark(rgb(73 76 80), rgb(201 204 207));
   --ui-button-menu-secondary-icon-color-idle: light-dark(rgb(73 76 80), rgb(201 204 207));
-  --ui-button-menu-secondary-label-color-active: light-dark(rgb(68 81 93), rgb(68 81 93));
+  --ui-button-menu-secondary-label-color-active: light-dark(rgb(73 76 80), rgb(201 204 207));
   --ui-button-menu-secondary-label-color-disabled: light-dark(rgb(215 217 219), rgb(61 63 67));
-  --ui-button-menu-secondary-label-color-hover: light-dark(rgb(68 81 93), rgb(68 81 93));
-  --ui-button-menu-secondary-label-color-idle: light-dark(rgb(68 81 93), rgb(68 81 93));
+  --ui-button-menu-secondary-label-color-hover: light-dark(rgb(73 76 80), rgb(201 204 207));
+  --ui-button-menu-secondary-label-color-idle: light-dark(rgb(73 76 80), rgb(201 204 207));
 }
 
 .ui-button-menu-dropdown-item-label-text-style {

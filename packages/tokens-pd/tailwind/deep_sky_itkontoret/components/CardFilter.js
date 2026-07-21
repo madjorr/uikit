@@ -12,7 +12,7 @@ export default {
       },
       "textColor": {
         "card-filter-global-label": "light-dark(rgb(109 114 120), rgb(109 114 120))",
-        "card-filter-clickable-value": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "card-filter-clickable-value": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "card-filter-static-value-disabled": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "card-filter-static-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
