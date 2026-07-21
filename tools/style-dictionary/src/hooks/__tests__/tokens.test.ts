@@ -1,15 +1,22 @@
 // Token-domain unit tests: the two pure pieces stage 1 (dtcg) and stage 2 (css)
 // are built from — the DTCG normalization preprocessor and the `light-dark()`
-// zipping CSS format. These run without Style Dictionary or disk I/O, against a
-// small in-memory fixture token tree, so the normalization rules and the
-// light/dark zip stay pinned independently of a full `build`.
+// zipping CSS format — plus `composeBundle`, the pure concatenation the bundled
+// brand entry is built from. Most of these run without Style Dictionary or disk
+// I/O, against a small in-memory fixture token tree, so the normalization rules
+// and the light/dark zip stay pinned independently of a full `build`. The
+// `composeBundle` disk-comparison cases read the already-generated, committed
+// `tokens-pd` output (no I/O side effects) to pin the bundle against drift.
+
+import { readdirSync, readFileSync } from 'node:fs';
 
 import type { TransformedToken } from 'style-dictionary/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { collectDecls, serializeCss } from '../formats/css-light-dark';
 import { normalizeTree } from '../preprocessors/acronis-dtcg';
+import { bundleFile, componentFile, cssDir, semanticsFile } from '../../platforms';
 import { buildThemeExtend, routeColor } from '../../tailwind';
+import { composeBundle } from '../../tokens';
 
 // ── normalizeTree (stage 1) ──────────────────────────────────────────────────
 
@@ -434,4 +441,31 @@ describe('buildThemeExtend', () => {
       )
     ).toThrow(/Invalid characters in color value for light-dark\(\)/);
   });
+});
+
+// ── composeBundle (bundled brand entry) ──────────────────────────────────────
+
+describe('composeBundle', () => {
+  it('joins ordered sections with a blank-line separator', () => {
+    expect(composeBundle(['a\n', 'b\n'])).toBe('a\n\nb\n');
+  });
+
+  it('returns a single section unchanged', () => {
+    expect(composeBundle(['only\n'])).toBe('only\n');
+  });
+
+  it.each(['default', 'deep_sky_itkontoret'])(
+    "matches the concatenation of the '%s' brand's semantic + component slice files on disk",
+    (brand) => {
+      const componentNames = readdirSync(cssDir(), { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+        .sort();
+      const expected = composeBundle([
+        readFileSync(semanticsFile(brand), 'utf8'),
+        ...componentNames.map((name) => readFileSync(componentFile(name, brand), 'utf8')),
+      ]);
+      expect(readFileSync(bundleFile(brand), 'utf8')).toBe(expected);
+    }
+  );
 });

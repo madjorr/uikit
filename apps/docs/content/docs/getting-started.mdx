@@ -70,15 +70,18 @@ active scheme with the `data-theme` attribute on a root element:
 
 ## Brands
 
-`default` is the default brand. Layer another brand by importing its override
-stylesheet after the base styles (last import wins):
+`default` is the default brand. Layer another brand by importing its
+**bundled** override stylesheet (`<brand>.all.css`) after the base styles
+(last import wins) — it covers the semantic tier and every component's
+token tier in one file:
 
 ```tsx
 import '@acronis-platform/ui-react/styles';
-import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css';
+import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.all.css';
 ```
 
-See [Theming](/theming) for the full model.
+See [Theming](/theming) for the full model, including partial (semantic-only
+or single-component) overrides.
 
 ## TypeScript
 

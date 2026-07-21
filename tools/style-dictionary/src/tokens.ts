@@ -27,6 +27,7 @@ import { collectDecls, type Decls, serializeCss } from './hooks/formats/css-ligh
 import { normalizeTree } from './hooks/preprocessors/acronis-dtcg';
 import { ACRONIS_CSS_GROUP } from './hooks/transforms';
 import {
+  bundleFile,
   componentFile,
   cssDir,
   dtcgDir,
@@ -315,6 +316,16 @@ function cleanCssOutputs(): void {
   rmSync(cssDir(), { recursive: true, force: true });
 }
 
+/**
+ * Concatenate a brand's already-rendered slice files (semantic tier first, then
+ * component tiers) into one full-theming bundle. Pure string join — callers
+ * decide the ordering; kept separate from `buildCss` so it can be unit-tested
+ * without disk I/O.
+ */
+export function composeBundle(sections: string[]): string {
+  return sections.join('\n');
+}
+
 export async function buildCss(filter: Filter): Promise<void> {
   cleanCssOutputs();
 
@@ -343,14 +354,24 @@ export async function buildCss(filter: Filter): Promise<void> {
     console.log(`✓ ${rel(dest)}`);
   };
 
+  // brand → slice → the CSS actually written for that slice, reused for the bundle.
+  const contentByBrand = new Map<string, Map<string, string>>();
+
   // Default brand: full files.
   const baseDecls = perBrand.get(DEFAULT_BRAND) ?? new Map<string, Decls>();
+  const baseContent = new Map<string, string>();
   for (const [slice, d] of baseDecls) {
-    write(
-      sliceFile(slice, DEFAULT_BRAND),
-      serializeCss({ brand: DEFAULT_BRAND, tier: slice, isOverride: false, vars: d.vars, classes: d.classes })
-    );
+    const content = serializeCss({
+      brand: DEFAULT_BRAND,
+      tier: slice,
+      isOverride: false,
+      vars: d.vars,
+      classes: d.classes,
+    });
+    write(sliceFile(slice, DEFAULT_BRAND), content);
+    baseContent.set(slice, content);
   }
+  contentByBrand.set(DEFAULT_BRAND, baseContent);
 
   // Other brands: override-only files for every slice (default's slices + any
   // brand-only slice), so every brand exposes the same stable set of imports.
@@ -358,15 +379,26 @@ export async function buildCss(filter: Filter): Promise<void> {
     if (brand.name === DEFAULT_BRAND) continue;
     const decls = perBrand.get(brand.name) ?? new Map<string, Decls>();
     const slices = new Set([...baseDecls.keys(), ...decls.keys()]);
+    const brandContent = new Map<string, string>();
     for (const slice of slices) {
       const { vars, classes } = diffDecls(
         baseDecls.get(slice) ?? emptyDecls(),
         decls.get(slice) ?? emptyDecls()
       );
-      write(
-        sliceFile(slice, brand.name),
-        serializeCss({ brand: brand.name, tier: slice, isOverride: true, vars, classes })
-      );
+      const content = serializeCss({ brand: brand.name, tier: slice, isOverride: true, vars, classes });
+      write(sliceFile(slice, brand.name), content);
+      brandContent.set(slice, content);
     }
+    contentByBrand.set(brand.name, brandContent);
+  }
+
+  // Bundled brand entry: semantic slice first, then component slices alphabetical.
+  for (const [brandName, content] of contentByBrand) {
+    const componentSlices = [...content.keys()].filter((slice) => slice !== 'semantics').sort();
+    const ordered = [
+      ...(content.has('semantics') ? [content.get('semantics')!] : []),
+      ...componentSlices.map((slice) => content.get(slice)!),
+    ];
+    write(bundleFile(brandName), composeBundle(ordered));
   }
 }

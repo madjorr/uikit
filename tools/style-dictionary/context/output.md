@@ -11,6 +11,11 @@ not gitignored), grouped into `css/`, `tailwind/`, and `dtcg/` dirs. The CSS
 - `css/<component>/default.css` — component tier, default brand (full), one dir per
   component (`button/`, `breadcrumb/`, …).
 - `css/<component>/brand-b.css` — component tier, non-default brand: override-only.
+- `css/<brand>.all.css` — bundled brand entry: that brand's semantic-tier file
+  concatenated with all of its component-tier files, semantic first then
+  components alphabetical (`composeBundle` in `tokens.ts`). A single import
+  fully re-themes a brand instead of importing the semantic file plus every
+  component override by hand.
 
 Tokens partition into files by `token.path[0]`: the semantic-tier roots —
 `colors`, `gradients`, and `typography` — are the semantic tier (root file);

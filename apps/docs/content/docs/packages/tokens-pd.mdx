@@ -51,6 +51,23 @@ toggle:
 The base (`default`) files carry the `color-scheme` shell; override files are
 bare `:root {}` blocks layered over it.
 
+### Bundled brand entry
+
+Overriding a brand fully means loading its semantic override **and** every
+per-component override file it ships — easy to under-import by hand.
+`css/<brand>.all.css` is a generated bundle that concatenates a brand's
+semantic-tier file with all of its component-tier files (semantic first, then
+components alphabetically), so one import fully re-themes everything ui-react
+ships:
+
+```css
+@import '@acronis-platform/tokens-pd/css/default.css';
+@import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.all.css'; /* semantic + every component tier */
+```
+
+Reach for the individual semantic-only or per-component files instead when you
+only need to override part of a brand (see [Theming](/theming#partial-theming)).
+
 ## Dark mode
 
 Colors are zipped into `light-dark()` and the active scheme switches via the

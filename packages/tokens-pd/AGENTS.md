@@ -33,6 +33,10 @@ Three top-level dirs — `css/`, `tailwind/`, `dtcg/`:
 - `css/brand-b.css` — semantic tier, non-default brand: **override-only**.
 - `css/<component>/<brand>.css` — component tier, one dir per component
   (`button/`, `breadcrumb/`, …); default brand full, others override-only.
+- `css/<brand>.all.css` — bundled brand entry: that brand's semantic-tier file
+  concatenated with all of its component-tier files (semantic first, then
+  components alphabetically). One import fully re-themes a brand; the
+  slice-partitioned files above stay opt-in for partial theming.
 - `tailwind/<brand>/tokens.js` (+ `.d.ts`) — Tailwind preset of the shared
   semantic vocabulary, **baked** values, consumed via `@config`.
 - `tailwind/<brand>/components/<component>.js` (+ `.d.ts`) — one preset per

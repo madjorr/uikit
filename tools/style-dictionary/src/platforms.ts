@@ -64,6 +64,9 @@ export const componentDir = (component: string): string => path.join(cssDir(), c
 export const componentFile = (component: string, brand: string): string =>
   path.join(componentDir(component), `${brand}.css`);
 
+/** Bundled brand entry — every slice concatenated: `tokens-pd/css/<brand>.all.css`. */
+export const bundleFile = (brand: string): string => path.join(cssDir(), `${brand}.all.css`);
+
 /** Tailwind presets live under `tokens-pd/tailwind/`, partitioned per brand. */
 export const tailwindDir = (): string => path.join(TOKENS_PD, 'tailwind');
 

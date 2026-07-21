@@ -11,11 +11,26 @@ theme values — they are generated from the design system and resolved at paint
 time, so brand and light/dark switches need no rebuild.
 
 Load the default base, then (optionally) layer another brand override
-on top:
+on top. For full theming, import that brand's **bundled** entry
+(`<brand>.all.css`) — it concatenates the semantic tier and every
+component's token tier into one file, so a single import re-themes
+every component ui-react ships:
 
 ```tsx
 import '@acronis-platform/ui-react/styles'; // includes tokens-pd/css/default.css
-import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css'; // optional brand override
+import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.all.css'; // full brand override
+```
+
+### Partial theming
+
+If you only want to override the shared semantic tier (colors most
+components pull from) without touching per-component overrides, import
+the semantic-only file instead — or reach for an individual
+`<component>/<brand>.css` file to override just one component's tier:
+
+```tsx
+import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css'; // semantic tier only
+import '@acronis-platform/tokens-pd/css/Button/deep_sky_itkontoret.css'; // one component's tier only
 ```
 
 ## Dark mode
@@ -33,7 +48,7 @@ Brand switching is import-order based (last import wins), not a class toggle:
 
 ```css
 @import '@acronis-platform/tokens-pd/css/default.css';
-@import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css';
+@import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.all.css';
 ```
 
 ## Design tokens
