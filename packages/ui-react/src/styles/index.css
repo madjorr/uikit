@@ -33,6 +33,12 @@
 @import '@acronis-platform/tokens-pd/css/Table/default.css';
 
 @layer base {
+  :host,
+  :root,
+  body {
+    font-family: Inter, system-ui, sans-serif;
+  }
+
   *,
   *::before,
   *::after {
