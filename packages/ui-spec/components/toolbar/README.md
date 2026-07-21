@@ -40,7 +40,8 @@ rows are selected or bulk actions are available.
 ## Behavior at a glance
 
 - Children render in source order; `ToolbarActions`, if present, is pushed to
-  the trailing edge via `flex-1`.
+  the trailing edge via `grow shrink-0` (not `flex-1`, which also shrinks —
+  the actions area must never shrink below its own content's natural width).
 - `disabled` cascades to every nested Button/ButtonMenu via the native
   `<fieldset disabled>` behavior — no prop-drilling required.
 - No dedicated token tier: every action brings its own tokens, and the

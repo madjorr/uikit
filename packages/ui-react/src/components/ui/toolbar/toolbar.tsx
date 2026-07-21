@@ -207,7 +207,9 @@ const ToolbarActionList = React.forwardRef<
     forwardedRef
   ) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
-    const itemRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+    const itemRefs = React.useRef<Map<string, HTMLButtonElement | null>>(
+      new Map()
+    );
     const moreRef = React.useRef<HTMLButtonElement>(null);
     const [visibleCount, setVisibleCount] = React.useState(actions.length);
 
@@ -223,8 +225,12 @@ const ToolbarActionList = React.forwardRef<
       const available =
         parent.clientWidth - siblingsWidth - ACTION_LIST_GAP_PX * gapCount;
 
-      const itemWidths = itemRefs.current.map(
-        (el) => el?.getBoundingClientRect().width ?? 0
+      // Keyed by `action.key`, not index — an index-keyed array would keep
+      // stale entries (and a stale length) when `actions` shrinks, since
+      // React only nulls out the removed clones' refs without truncating it.
+      const itemWidths = actions.map(
+        (action) =>
+          itemRefs.current.get(action.key)?.getBoundingClientRect().width ?? 0
       );
       const moreWidth = moreRef.current?.getBoundingClientRect().width ?? 0;
 
@@ -236,7 +242,7 @@ const ToolbarActionList = React.forwardRef<
           available
         )
       );
-    }, []);
+    }, [actions]);
 
     React.useLayoutEffect(() => {
       measure();
@@ -298,11 +304,11 @@ const ToolbarActionList = React.forwardRef<
           aria-hidden
           className="pointer-events-none invisible absolute left-0 top-0 flex items-center gap-4"
         >
-          {actions.map((action, index) => (
+          {actions.map((action) => (
             <Button
               key={action.key}
               ref={(el) => {
-                itemRefs.current[index] = el;
+                itemRefs.current.set(action.key, el);
               }}
               variant="ghost"
               tabIndex={-1}

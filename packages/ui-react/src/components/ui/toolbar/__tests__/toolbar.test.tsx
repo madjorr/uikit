@@ -200,6 +200,24 @@ describe('measureNaturalWidth', () => {
     expect(measureNaturalWidth(el)).toBe(60);
   });
 
+  it('falls back to a 0 gap when columnGap is unresolvable (e.g. "normal")', () => {
+    // getComputedStyle().columnGap on an element with no explicit gap set
+    // resolves to the keyword "normal", not a length — parseFloat('normal')
+    // is NaN, so the `|| 0` fallback is what keeps the sum from becoming NaN.
+    const el = document.createElement('div');
+    const a = document.createElement('span');
+    const b = document.createElement('button');
+    el.append(a, b);
+    stubWidth(a, 60);
+    stubWidth(b, 90);
+    document.body.appendChild(el);
+    try {
+      expect(measureNaturalWidth(el)).toBe(60 + 90);
+    } finally {
+      el.remove();
+    }
+  });
+
   it('sums multiple children plus the inter-child gap, ignoring its own grown box', () => {
     const el = document.createElement('div');
     el.style.columnGap = '8px';
@@ -320,6 +338,38 @@ describe('ToolbarActionList', () => {
     act(() => {
       FakeResizeObserver.instances[0].trigger();
     });
+
+    expect(screen.getByRole('button', { name: 'First action' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Second action' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Third action' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'More actions' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('re-measures correctly when actions shrinks, without stale phantom widths', () => {
+    // Regression for a bug where the invisible clones' width refs (keyed by
+    // array index) kept stale trailing entries once `actions` shrank, adding
+    // phantom width+gap to the collapse math. 3×100 + 2×16 gaps = 332 ≤ 350,
+    // so all three should fit; the stale-array bug inflated this to 364,
+    // spuriously hiding the third action.
+    mockGeometry({ itemWidth: 100, clientWidth: 350 });
+    const FIVE_ACTIONS: ToolbarActionListItem[] = [
+      ...THREE_ACTIONS,
+      { key: 'd', label: 'Fourth action' },
+      { key: 'e', label: 'Fifth action' },
+    ];
+    const { rerender } = render(
+      <Toolbar>
+        <ToolbarActionList actions={FIVE_ACTIONS} />
+      </Toolbar>
+    );
+
+    rerender(
+      <Toolbar>
+        <ToolbarActionList actions={THREE_ACTIONS} />
+      </Toolbar>
+    );
 
     expect(screen.getByRole('button', { name: 'First action' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Second action' })).toBeInTheDocument();

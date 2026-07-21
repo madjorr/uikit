@@ -48,7 +48,8 @@ ButtonMenu children (including inside a ToolbarActions child)
 
 **Given** a Toolbar with a ToolbarActions containing a status text
 **When** it renders
-**Then** the actions area takes remaining space (`flex-1`)
+**Then** the actions area grows to take remaining space but never shrinks
+below its own content's natural width (`grow shrink-0`, not `flex-1`)
 **And** its content is right-aligned
 
 ### Renders a selection counter with an action
@@ -108,6 +109,28 @@ visible/hidden split updates accordingly
 DropdownMenuItem), depending on available width
 **Then** `onSelect` fires from either rendering, and `disabled` is honored
 in either rendering
+
+### Moves roving focus between visible actions with arrow keys
+
+**Given** a mounted ToolbarActionList with focus on a visible action
+**When** ArrowLeft/ArrowRight is pressed
+**Then** focus moves to the previous/next visible action, and tabindex rolls
+from that action to the newly-focused one (one Tab stop into the row overall)
+
+### Moves roving focus into the overflow trigger with arrow keys
+
+**Given** a mounted ToolbarActionList with hidden actions and focus on the
+last visible action
+**When** ArrowRight is pressed
+**Then** focus moves into the "More actions" overflow trigger
+
+### Skips a disabled action during roving-tabindex navigation
+
+**Given** a mounted ToolbarActionList with a `disabled` action among its
+visible actions
+**When** arrow keys move roving focus through the row
+**Then** the disabled action is unreachable — it is skipped, not merely
+focusable-but-inert
 
 ---
 

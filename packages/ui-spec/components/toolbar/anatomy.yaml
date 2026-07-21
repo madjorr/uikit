@@ -9,7 +9,7 @@ schematic: |
   +-----------------------------------------------------------+
     root         -> flex container, 16px gap, center-aligned, native disabled cascade
     list-actions -> ToolbarActionList; self-measures, collapses trailing items into more-actions
-    actions      -> flex-1, content pushed to trailing edge, 8px inter-child gap
+    actions      -> grow shrink-0, content pushed to trailing edge, 8px inter-child gap
 
 root:
   element: fieldset
@@ -45,8 +45,10 @@ parts:
   - id: actions
     description: >-
       Right-aligned trailing area (a status text, or a selection counter +
-      action, e.g. "6 items selected: Deselect"). Uses `flex-1` to push its
-      content to the trailing edge, with an 8px gap between its own children.
+      action, e.g. "6 items selected: Deselect"). Uses `grow shrink-0` (not
+      `flex-1`, which also shrinks) to push its content to the trailing edge
+      without ever shrinking below its own content's natural width, with an
+      8px gap between its own children.
     element: div
     optional: true
     visible_when: the consumer adds a ToolbarActions child
