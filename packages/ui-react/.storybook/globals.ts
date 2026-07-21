@@ -11,62 +11,17 @@
  *   stylesheet layered on top by injecting it into a managed `<style>` element.
  */
 
-// deep_sky_itkontoret override-only `:root` stylesheets (semantic + every
-// per-component tier that `src/styles/index.css` loads for the default brand),
-// imported as raw text and concatenated. Keep this list in sync with the
-// component tiers imported there.
-import semanticDeepSky from '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css?raw';
-import avatarDeepSky from '@acronis-platform/tokens-pd/css/Avatar/deep_sky_itkontoret.css?raw';
-import buttonDeepSky from '@acronis-platform/tokens-pd/css/Button/deep_sky_itkontoret.css?raw';
-import buttonMenuDeepSky from '@acronis-platform/tokens-pd/css/ButtonMenu/deep_sky_itkontoret.css?raw';
-import buttonIconDeepSky from '@acronis-platform/tokens-pd/css/ButtonIcon/deep_sky_itkontoret.css?raw';
-import cardFilterDeepSky from '@acronis-platform/tokens-pd/css/CardFilter/deep_sky_itkontoret.css?raw';
-import switchDeepSky from '@acronis-platform/tokens-pd/css/Switch/deep_sky_itkontoret.css?raw';
-import checkboxDeepSky from '@acronis-platform/tokens-pd/css/Checkbox/deep_sky_itkontoret.css?raw';
-import inputTextDeepSky from '@acronis-platform/tokens-pd/css/InputText/deep_sky_itkontoret.css?raw';
-import inputTextAreaDeepSky from '@acronis-platform/tokens-pd/css/InputTextArea/deep_sky_itkontoret.css?raw';
-import inputSearchDeepSky from '@acronis-platform/tokens-pd/css/InputSearch/deep_sky_itkontoret.css?raw';
-import inputSelectDeepSky from '@acronis-platform/tokens-pd/css/InputSelect/deep_sky_itkontoret.css?raw';
-import inputDatePickerDeepSky from '@acronis-platform/tokens-pd/css/InputDatePicker/deep_sky_itkontoret.css?raw';
-import linkDeepSky from '@acronis-platform/tokens-pd/css/Link/deep_sky_itkontoret.css?raw';
-import searchGlobalDeepSky from '@acronis-platform/tokens-pd/css/SearchGlobal/deep_sky_itkontoret.css?raw';
-import radioDeepSky from '@acronis-platform/tokens-pd/css/Radio/deep_sky_itkontoret.css?raw';
-import breadcrumbDeepSky from '@acronis-platform/tokens-pd/css/Breadcrumb/deep_sky_itkontoret.css?raw';
-import resizableDeepSky from '@acronis-platform/tokens-pd/css/Resizable/deep_sky_itkontoret.css?raw';
-import tagDeepSky from '@acronis-platform/tokens-pd/css/Tag/deep_sky_itkontoret.css?raw';
-import tooltipDeepSky from '@acronis-platform/tokens-pd/css/Tooltip/deep_sky_itkontoret.css?raw';
-import sidebarPrimaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarPrimary/deep_sky_itkontoret.css?raw';
-import sidebarSecondaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarSecondary/deep_sky_itkontoret.css?raw';
+// deep_sky_itkontoret's bundled brand entry — the semantic tier + every
+// component tier's override, pre-concatenated by tokens-pd (see
+// css/<brand>.all.css and tools/style-dictionary's `composeBundle`). One
+// import stays in sync with whatever component tiers ui-react ships, instead
+// of a hand-maintained per-component import list.
+import DEEP_SKY_OVERRIDES from '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.all.css?raw';
 
 export type Brand = 'default' | 'deep_sky_itkontoret';
 export type ColorMode = 'light' | 'dark';
 export type Direction = 'auto' | 'ltr' | 'rtl';
 export type Locale = 'en' | 'de' | 'fr' | 'ja' | 'ar' | 'he';
-
-const DEEP_SKY_OVERRIDES = [
-  semanticDeepSky,
-  avatarDeepSky,
-  buttonDeepSky,
-  buttonMenuDeepSky,
-  buttonIconDeepSky,
-  cardFilterDeepSky,
-  switchDeepSky,
-  checkboxDeepSky,
-  inputTextDeepSky,
-  inputTextAreaDeepSky,
-  inputSearchDeepSky,
-  inputSelectDeepSky,
-  inputDatePickerDeepSky,
-  linkDeepSky,
-  searchGlobalDeepSky,
-  radioDeepSky,
-  breadcrumbDeepSky,
-  resizableDeepSky,
-  tagDeepSky,
-  tooltipDeepSky,
-  sidebarPrimaryDeepSky,
-  sidebarSecondaryDeepSky,
-].join('\n');
 
 // Locales that read right-to-left, used when `direction` is left on 'auto'.
 const RTL_LOCALES = new Set<Locale>(['ar', 'he']);
