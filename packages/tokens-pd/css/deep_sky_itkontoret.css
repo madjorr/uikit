@@ -26,6 +26,4 @@
   --ui-text-on-surface-link-disabled: light-dark(rgb(215 217 219), rgb(61 63 67));
   --ui-text-on-surface-link-hover: light-dark(rgb(61 63 67), rgb(215 217 219));
   --ui-text-on-surface-link-pressed: light-dark(rgb(48 50 54), rgb(228 229 231));
-  --ui-text-on-surface-primary: light-dark(rgb(68 81 93), rgb(68 81 93));
-  --ui-text-on-surface-secondary: light-dark(rgb(54 65 74), rgb(54 65 74));
 }

@@ -113,8 +113,8 @@ export default {
         "on-surface-link-disabled": "light-dark(rgb(215 217 219), rgb(61 63 67))",
         "on-surface-link-hover": "light-dark(rgb(61 63 67), rgb(215 217 219))",
         "on-surface-link-pressed": "light-dark(rgb(48 50 54), rgb(228 229 231))",
-        "on-surface-primary": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "on-surface-secondary": "light-dark(rgb(54 65 74), rgb(54 65 74))"
+        "on-surface-primary": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "on-surface-secondary": "light-dark(rgb(109 114 120), rgb(109 114 120))"
       },
       "borderColor": {
         "border-on-brand": "light-dark(rgb(255 255 255 / 0.102), rgb(255 255 255 / 0.102))",

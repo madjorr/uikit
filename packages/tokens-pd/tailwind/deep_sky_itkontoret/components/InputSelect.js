@@ -18,26 +18,26 @@ export default {
         "input-select-global-box-idle": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
-        "input-select-dropdown-dropdown-search-label-placeholder": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-select-dropdown-dropdown-search-label-value": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "input-select-dropdown-item-global-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "input-select-dropdown-dropdown-search-label-placeholder": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-select-dropdown-dropdown-search-label-value": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-select-dropdown-item-global-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-global-label-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-select-global-label-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "input-select-global-label-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "input-select-global-label-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-select-global-label-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-global-placeholder-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-select-global-placeholder-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-select-global-placeholder-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))",
+        "input-select-global-placeholder-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-select-global-placeholder-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-select-global-required": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-select-global-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-select-global-value-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "input-select-global-value-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))",
+        "input-select-global-value-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-select-global-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-error-error-msg": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-select-error-icon-expand-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "input-select-error-icon-expand-hover": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "input-select-error-icon-expand-idle": "light-dark(rgb(73 76 80), rgb(201 204 207))",
         "input-select-normal-description-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-select-normal-description-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-select-normal-description-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))"
+        "input-select-normal-description-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-select-normal-description-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))"
       },
       "borderColor": {
         "input-select-dropdown-container-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))",
@@ -49,11 +49,11 @@ export default {
         "input-select-normal-box-border-color-idle": "light-dark(rgb(215 217 219), rgb(61 63 67))"
       },
       "fill": {
-        "input-select-error-icon-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-select-error-icon-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))",
+        "input-select-error-icon-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-select-error-icon-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-select-normal-icon-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-select-normal-icon-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-select-normal-icon-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))"
+        "input-select-normal-icon-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-select-normal-icon-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))"
       },
       "fontFamily": {
         "input-select-dropdown-dropdown-search-label-text-style": "Inter, system-ui, sans-serif",

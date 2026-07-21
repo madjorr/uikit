@@ -4,7 +4,6 @@
 :root, :host {
   --ui-button-menu-dropdown-container-border-color: light-dark(rgb(215 217 219), rgb(61 63 67));
   --ui-button-menu-dropdown-extras-cascade-icon-color: light-dark(rgb(73 76 80), rgb(201 204 207));
-  --ui-button-menu-dropdown-extras-shortcut-label-color: light-dark(rgb(54 65 74), rgb(54 65 74));
   --ui-button-menu-dropdown-item-container-color-active: light-dark(rgb(244 245 245), rgb(24 25 27));
   --ui-button-menu-dropdown-item-container-color-hover: light-dark(rgb(228 229 231), rgb(48 50 54));
   --ui-button-menu-dropdown-item-container-color-idle: light-dark(rgb(228 229 231), rgb(48 50 54));

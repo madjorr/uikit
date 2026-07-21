@@ -15,12 +15,12 @@ export default {
         "sidebar-secondary-global-container": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
-        "sidebar-secondary-menu-item-global-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "sidebar-secondary-menu-item-extras-global-shortcut": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "sidebar-secondary-section-label-section": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "sidebar-secondary-global-header-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "sidebar-secondary-collapsed-breadcrumb-label": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "sidebar-secondary-collapsed-label-current-page": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "sidebar-secondary-menu-item-global-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "sidebar-secondary-menu-item-extras-global-shortcut": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "sidebar-secondary-section-label-section": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "sidebar-secondary-global-header-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "sidebar-secondary-collapsed-breadcrumb-label": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "sidebar-secondary-collapsed-label-current-page": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "sidebar-secondary-global-container-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))",

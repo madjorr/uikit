@@ -7,8 +7,8 @@ export default {
     extend: {
       "textColor": {
         "table-data-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "table-data-value-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "table-header-label": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "table-data-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "table-header-label": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "table-global-cell-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))"

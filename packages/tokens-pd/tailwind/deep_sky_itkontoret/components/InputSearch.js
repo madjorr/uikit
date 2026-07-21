@@ -12,12 +12,12 @@ export default {
       },
       "textColor": {
         "input-search-placeholder-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-search-placeholder-hover": "light-dark(rgb(54 65 74), rgb(54 65 74))",
-        "input-search-placeholder-idle": "light-dark(rgb(54 65 74), rgb(54 65 74))",
+        "input-search-placeholder-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
+        "input-search-placeholder-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-search-required": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-search-value-disabled": "light-dark(rgb(41 49 55), rgb(41 49 55))",
-        "input-search-value-hover": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "input-search-value-idle": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "input-search-value-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-search-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "input-search-border-color-disabled": "light-dark(rgb(215 217 219), rgb(61 63 67))",

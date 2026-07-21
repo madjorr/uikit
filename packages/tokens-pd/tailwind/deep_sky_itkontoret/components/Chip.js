@@ -12,8 +12,8 @@ export default {
       },
       "textColor": {
         "chip-operational-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "chip-removable-label": "light-dark(rgb(68 81 93), rgb(68 81 93))",
-        "chip-selectable-label": "light-dark(rgb(68 81 93), rgb(68 81 93))"
+        "chip-removable-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "chip-selectable-label": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "chip-global-border-active": "light-dark(rgb(109 114 120), rgb(109 114 120))",

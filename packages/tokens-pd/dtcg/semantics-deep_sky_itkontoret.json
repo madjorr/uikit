@@ -1582,14 +1582,7 @@
             "com.figma.variableId": "VariableID:50:1425"
           },
           "$type": "color",
-          "$value": {
-            "colorSpace": "hsl",
-            "components": [
-              208.8,
-              15.53,
-              31.57
-            ]
-          }
+          "$value": "{palette.grayscale.14}"
         },
         "secondary": {
           "$extensions": {
@@ -1599,14 +1592,7 @@
             "com.figma.variableId": "VariableID:50:1434"
           },
           "$type": "color",
-          "$value": {
-            "colorSpace": "hsl",
-            "components": [
-              207,
-              15.63,
-              25.1
-            ]
-          }
+          "$value": "{palette.grayscale.7}"
         }
       }
     }
