@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { Button } from '../../button';
+import { ButtonMenu } from '../../button-menu';
 import { Tag } from '../../tag';
 import {
   PageHeader,
@@ -302,6 +303,50 @@ describe('PageHeader', () => {
       expect(
         await screen.findByRole('menuitem', { name: 'Quick access' })
       ).toHaveAttribute('data-disabled');
+    });
+
+    it('forwards onClick from a folded secondary action to its "More" menu item', async () => {
+      mockOverflow(true);
+      const onClick = vi.fn();
+      render(
+        <PageHeaderActions>
+          <Button variant="secondary" onClick={onClick}>
+            Quick access
+          </Button>
+          <Button>Add user</Button>
+        </PageHeaderActions>
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: 'More actions' })
+      );
+      await userEvent.click(
+        await screen.findByRole('menuitem', { name: 'Quick access' })
+      );
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('never folds a non-Button action, even with variant="secondary"', async () => {
+      mockOverflow(true);
+      render(
+        <PageHeaderActions>
+          <Button variant="secondary">Quick access</Button>
+          <ButtonMenu variant="secondary">Export data</ButtonMenu>
+          <Button>Add user</Button>
+        </PageHeaderActions>
+      );
+      expect(queryVisible('Quick access')).toHaveLength(0);
+      expect(queryVisible('Export data')).toHaveLength(1);
+      expect(queryVisible('Add user')).toHaveLength(1);
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'More actions' })
+      );
+      expect(
+        await screen.findByRole('menuitem', { name: 'Quick access' })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('menuitem', { name: 'Export data' })
+      ).not.toBeInTheDocument();
     });
 
     it('re-measures and collapses when children change after mount', () => {

@@ -50,10 +50,11 @@ Scenario: Tags fit
 
 ```gherkin
 Scenario: Actions overflow
-  Given a PageHeaderActions slot with at least one secondary-variant action
+  Given a PageHeaderActions slot with at least one secondary-variant Button action
   And the full set of actions doesn't fit the width available to the slot
-  Then fold every secondary-variant action under a single "More" ButtonIcon that opens a dropdown menu of them, in their original order
+  Then fold every secondary-variant Button action under a single "More" ButtonIcon that opens a dropdown menu of them, in their original order
   And leave every primary-variant action visible — it is never folded into the menu
+  And leave any non-Button action (e.g. a ButtonMenu trigger) visible and unfolded, even with variant="secondary" — folding only covers a plain button with a single click action
 ```
 
 ```gherkin

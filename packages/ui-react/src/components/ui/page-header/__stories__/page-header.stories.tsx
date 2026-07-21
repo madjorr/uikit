@@ -78,7 +78,7 @@ export const WithTagsAndActions: Story = {
         </PageHeaderTags>
         <PageHeaderActions>
           <Button variant="secondary">Quick access</Button>
-          <ButtonMenu variant="secondary">Export data</ButtonMenu>
+          <Button variant="secondary">Export data</Button>
           <ButtonMenu>Add user</ButtonMenu>
         </PageHeaderActions>
       </PageHeaderRow>
@@ -192,7 +192,7 @@ export const TagsAndActionsOverflow: Story = {
           </PageHeaderTags>
           <PageHeaderActions>
             <Button variant="secondary">Quick access</Button>
-            <ButtonMenu variant="secondary">Export data</ButtonMenu>
+            <Button variant="secondary">Export data</Button>
             <ButtonMenu>Add user</ButtonMenu>
           </PageHeaderActions>
         </PageHeaderRow>

@@ -4,6 +4,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { CircleInfoIcon, EllipsisIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
+import { Button } from '../button';
 import { ButtonIcon } from '../button-icon';
 import {
   DropdownMenu,
@@ -32,7 +33,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip';
 // page requires an all-or-nothing collapse (fit everything, or collapse), not
 // a partial "show however many fit" reflow. Re-measures on resize and after
 // every render (children content, e.g. tag count, isn't in a dependency array).
-// Same shape as `useIsOverflowing` in sidebar-primary.tsx.
+// Unlike `useIsOverflowing` in sidebar-primary.tsx (which measures one element
+// against itself and returns a bare boolean), this compares a hidden
+// full-size clone against the live container and returns the refs alongside
+// the collapsed flag.
 function useRowOverflow() {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const measureRef = React.useRef<HTMLDivElement>(null);
@@ -175,8 +179,13 @@ type ActionElement = React.ReactElement<{
   children?: React.ReactNode;
 }>;
 
+// Fold only reduces a secondary action to a generic "Menu Item" label — the
+// Figma "Breakpoints" page annotation and its "More" menu mockup only cover a
+// plain button with a single click action. A trigger-style component (e.g.
+// ButtonMenu, which opens its own menu rather than firing one action) has no
+// single action to reduce to, so it's excluded even if given `variant="secondary"`.
 const isSecondaryAction = (item: ActionElement) =>
-  item.props?.variant === 'secondary';
+  item.type === Button && item.props?.variant === 'secondary';
 
 // The actions slot: grows to share the row's remaining width with the tags
 // slot. Per the Figma "Breakpoints" page annotation: if all buttons don't
