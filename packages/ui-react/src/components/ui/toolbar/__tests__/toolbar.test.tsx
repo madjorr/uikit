@@ -236,6 +236,34 @@ describe('measureNaturalWidth', () => {
       el.remove();
     }
   });
+
+  it('measures a bare text child via a Range instead of falling back to the self-referential box', () => {
+    // `<ToolbarActions>25 selected</ToolbarActions>` with no wrapping
+    // element renders as a Text node, not an Element — `el.children` alone
+    // would miss it and read the grown box instead.
+    const el = document.createElement('div');
+    el.textContent = '25 selected';
+    stubWidth(el, 999); // the element's own (flex-grown) box must be ignored
+    vi.spyOn(Range.prototype, 'getBoundingClientRect').mockReturnValue({
+      width: 70,
+      height: 16,
+      top: 0,
+      left: 0,
+      right: 70,
+      bottom: 16,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    } as DOMRect);
+    expect(measureNaturalWidth(el)).toBe(70);
+  });
+
+  it('falls back to the element itself when it only has whitespace text', () => {
+    const el = document.createElement('div');
+    el.textContent = '   ';
+    stubWidth(el, 42);
+    expect(measureNaturalWidth(el)).toBe(42);
+  });
 });
 
 describe('ToolbarActionList', () => {

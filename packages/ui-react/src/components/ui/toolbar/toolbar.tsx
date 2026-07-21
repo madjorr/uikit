@@ -118,21 +118,36 @@ export function computeVisibleActionCount(
 // A grown sibling's own `getBoundingClientRect()` reflects its flex-grown
 // box, not the space its content actually needs — reading that would make
 // `measure()`'s "available space" calculation self-referential (see below),
-// so this reads the sibling's *children* instead: normal (non-growing) flex
-// children report their natural width regardless of how large the parent's
-// box has grown to fill leftover row space.
+// so this reads the sibling's *content nodes* instead: normal (non-growing)
+// flex children report their natural width regardless of how large the
+// parent's box has grown to fill leftover row space. Bare text (e.g.
+// `<ToolbarActions>25 selected</ToolbarActions>` with no wrapping element)
+// renders as a `Text` node rather than an `Element`, so `children` alone
+// would miss it and fall through to the self-referential branch this
+// function exists to avoid — a `Range` measures that text's own rendered
+// width the same way `getBoundingClientRect()` does for an element.
 //
 // Exported (like `computeVisibleActionCount`) so this is unit-testable
 // without mocking layout/ResizeObserver.
 export function measureNaturalWidth(el: Element): number {
-  const children = Array.from(el.children);
-  if (children.length === 0) return el.getBoundingClientRect().width;
+  const nodes = Array.from(el.childNodes).filter(
+    (node): node is ChildNode =>
+      node.nodeType === Node.ELEMENT_NODE ||
+      (node.nodeType === Node.TEXT_NODE && !!node.textContent?.trim())
+  );
+  if (nodes.length === 0) return el.getBoundingClientRect().width;
 
   const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
-  return (
-    children.reduce((sum, child) => sum + child.getBoundingClientRect().width, 0) +
-    gap * (children.length - 1)
-  );
+  const widths = nodes.map((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return range.getBoundingClientRect().width;
+    }
+    return (node as Element).getBoundingClientRect().width;
+  });
+
+  return widths.reduce((sum, width) => sum + width, 0) + gap * (nodes.length - 1);
 }
 
 function mergeRefs<T>(

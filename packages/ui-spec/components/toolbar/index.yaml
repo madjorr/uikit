@@ -16,6 +16,7 @@ dependencies:
   components:
     - Button
     - ButtonMenu
+    - DropdownMenu
 figma:
   node: '3897-7199'
   codeConnect: packages/ui-react/src/components/ui/toolbar/toolbar.figma.tsx
