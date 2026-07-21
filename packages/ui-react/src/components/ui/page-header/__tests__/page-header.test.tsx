@@ -343,6 +343,23 @@ describe('PageHeader', () => {
       ).toHaveAttribute('href', '/export.csv');
     });
 
+    it('forwards native attributes like aria-label from a folded secondary action to its "More" menu item', async () => {
+      mockOverflow(true);
+      render(
+        <PageHeaderActions>
+          <Button variant="secondary" aria-label="Refresh" data-testid="refresh">
+            <span aria-hidden>↻</span>
+          </Button>
+          <Button>Add user</Button>
+        </PageHeaderActions>
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: 'More actions' })
+      );
+      const menuItem = await screen.findByRole('menuitem', { name: 'Refresh' });
+      expect(menuItem).toHaveAttribute('data-testid', 'refresh');
+    });
+
     it('never folds a non-Button action, even with variant="secondary"', async () => {
       mockOverflow(true);
       render(

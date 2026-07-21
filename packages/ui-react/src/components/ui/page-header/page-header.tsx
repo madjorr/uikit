@@ -4,7 +4,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { CircleInfoIcon, EllipsisIcon } from '@acronis-platform/icons-react/stroke-mono';
 
 import { cn } from '@/lib/utils';
-import { Button } from '../button';
+import { Button, type ButtonProps } from '../button';
 import { ButtonIcon } from '../button-icon';
 import {
   DropdownMenu,
@@ -172,15 +172,13 @@ const PageHeaderTags = React.forwardRef<
 });
 PageHeaderTags.displayName = 'PageHeaderTags';
 
-type ActionElement = React.ReactElement<{
-  variant?: string;
-  disabled?: boolean;
-  onClick?: React.MouseEventHandler;
-  // Only the element form is meaningful once folded — a function-form
-  // render receives Button's own state shape, not the "More" menu item's.
-  render?: React.ReactElement;
-  children?: React.ReactNode;
-}>;
+type ActionElement = React.ReactElement<
+  Omit<ButtonProps, 'render'> & {
+    // Only the element form is meaningful once folded — a function-form
+    // render receives Button's own state shape, not the "More" menu item's.
+    render?: React.ReactElement;
+  }
+>;
 
 // Fold only reduces a secondary action to a generic "Menu Item" label — the
 // Figma "Breakpoints" page annotation and its "More" menu mockup only cover a
@@ -216,16 +214,17 @@ const PageHeaderActions = React.forwardRef<
         }
       />
       <DropdownMenuContent align="end">
-        {secondaryItems.map((secondaryItem, index) => (
-          <DropdownMenuItem
-            key={index}
-            disabled={secondaryItem.props?.disabled}
-            onClick={secondaryItem.props?.onClick}
-            render={secondaryItem.props?.render}
-          >
-            {secondaryItem.props?.children}
-          </DropdownMenuItem>
-        ))}
+        {secondaryItems.map((secondaryItem, index) => {
+          const { variant, children, ...rest } = secondaryItem.props;
+          return (
+            <DropdownMenuItem
+              key={index}
+              {...(rest as React.ComponentPropsWithoutRef<typeof DropdownMenuItem>)}
+            >
+              {children}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
