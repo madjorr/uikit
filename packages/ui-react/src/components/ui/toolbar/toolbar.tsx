@@ -127,6 +127,11 @@ export function computeVisibleActionCount(
 // function exists to avoid — a `Range` measures that text's own rendered
 // width the same way `getBoundingClientRect()` does for an element.
 //
+// The sibling's own padding/border don't grow with flex-grow (only the free
+// space between content and box edge does), so they're safe to add back on
+// top of the content sum — unlike the box's own `getBoundingClientRect()`,
+// which is self-referential.
+//
 // Exported (like `computeVisibleActionCount`) so this is unit-testable
 // without mocking layout/ResizeObserver.
 export function measureNaturalWidth(el: Element): number {
@@ -137,7 +142,13 @@ export function measureNaturalWidth(el: Element): number {
   );
   if (nodes.length === 0) return el.getBoundingClientRect().width;
 
-  const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+  const style = getComputedStyle(el);
+  const gap = parseFloat(style.columnGap) || 0;
+  const ownPaddingAndBorder =
+    (parseFloat(style.paddingLeft) || 0) +
+    (parseFloat(style.paddingRight) || 0) +
+    (parseFloat(style.borderLeftWidth) || 0) +
+    (parseFloat(style.borderRightWidth) || 0);
   const widths = nodes.map((node) => {
     if (node.nodeType === Node.TEXT_NODE) {
       const range = document.createRange();
@@ -147,7 +158,11 @@ export function measureNaturalWidth(el: Element): number {
     return (node as Element).getBoundingClientRect().width;
   });
 
-  return widths.reduce((sum, width) => sum + width, 0) + gap * (nodes.length - 1);
+  return (
+    widths.reduce((sum, width) => sum + width, 0) +
+    gap * (nodes.length - 1) +
+    ownPaddingAndBorder
+  );
 }
 
 function mergeRefs<T>(
@@ -191,8 +206,11 @@ export interface ToolbarActionListProps
 //
 // The root and each visible action/trigger are Base UI's `Toolbar.Root`/
 // `Toolbar.Button` (`@base-ui/react/toolbar`), giving the row the WAI-ARIA
-// toolbar pattern for free: one Tab stop, arrow-key/Home/End roving-tabindex
-// between actions and into the overflow trigger. `Toolbar.Button` composes
+// toolbar pattern for free: one Tab stop, arrow-key roving-tabindex between
+// actions and into the overflow trigger. Base UI's `Toolbar.Root` does not
+// forward `enableHomeAndEndKeys` to its underlying composite, so Home/End
+// are not supported here — this is a Base UI limitation, not a choice made
+// in this component. `Toolbar.Button` composes
 // via `render` the same way `DropdownMenuTrigger`/`ButtonMenu` already do
 // below — it merges its own composite/keydown/disabled props onto whatever
 // element you pass. `focusableWhenDisabled={!action.disabled}` opts a

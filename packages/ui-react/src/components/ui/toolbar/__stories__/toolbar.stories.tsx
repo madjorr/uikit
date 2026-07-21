@@ -99,6 +99,59 @@ export const StatusRow: Story = {
   ),
 };
 
+export const StatusRowDisabled: Story = {
+  render: () => (
+    <Toolbar disabled>
+      <Button variant="ghost">First action</Button>
+      <ToolbarActions>
+        <span className="text-sm text-[var(--ui-text-on-surface-secondary)]">
+          25 of 1250 items loaded
+        </span>
+      </ToolbarActions>
+    </Toolbar>
+  ),
+};
+
+export const MoreActionsDisabled: Story = {
+  render: () => (
+    <Toolbar disabled>
+      <Button variant="ghost">First action</Button>
+      <Button variant="ghost">Second action</Button>
+      <ButtonMenu variant="secondary">More actions</ButtonMenu>
+    </Toolbar>
+  ),
+};
+
+export const WithSelectionCounterNoMoreActions: Story = {
+  render: () => (
+    <Toolbar>
+      <Button variant="ghost">First action</Button>
+      <Button variant="ghost">Second action</Button>
+      <ToolbarActions>
+        <span className="text-sm text-[var(--ui-text-on-surface-primary)]">
+          6 items selected:
+        </span>
+        <Button variant="ghost">Deselect</Button>
+      </ToolbarActions>
+    </Toolbar>
+  ),
+};
+
+export const WithSelectionCounterNoMoreActionsDisabled: Story = {
+  render: () => (
+    <Toolbar disabled>
+      <Button variant="ghost">First action</Button>
+      <Button variant="ghost">Second action</Button>
+      <ToolbarActions>
+        <span className="text-sm text-[var(--ui-text-on-surface-primary)]">
+          6 items selected:
+        </span>
+        <Button variant="ghost">Deselect</Button>
+      </ToolbarActions>
+    </Toolbar>
+  ),
+};
+
 export const AutoCollapseFits: Story = {
   name: 'Auto-Collapse (Fits)',
   render: () => (

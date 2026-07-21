@@ -264,6 +264,30 @@ describe('measureNaturalWidth', () => {
     stubWidth(el, 42);
     expect(measureNaturalWidth(el)).toBe(42);
   });
+
+  it("adds the element's own padding and border on top of its children's widths", () => {
+    // Padding/border are a fixed part of the box that flex-grow doesn't
+    // touch (only the free space between content and box edge grows), so —
+    // unlike the box's own `getBoundingClientRect()` — they're safe to add
+    // back on top of the content sum without becoming self-referential.
+    const el = document.createElement('div');
+    el.style.columnGap = '8px';
+    el.style.paddingLeft = '4px';
+    el.style.paddingRight = '6px';
+    el.style.borderLeft = '1px solid black';
+    el.style.borderRight = '2px solid black';
+    const a = document.createElement('span');
+    const b = document.createElement('button');
+    el.append(a, b);
+    stubWidth(a, 60);
+    stubWidth(b, 90);
+    document.body.appendChild(el);
+    try {
+      expect(measureNaturalWidth(el)).toBe(60 + 90 + 8 + 4 + 6 + 1 + 2);
+    } finally {
+      el.remove();
+    }
+  });
 });
 
 describe('ToolbarActionList', () => {
@@ -606,4 +630,5 @@ describe('ToolbarActionList', () => {
     await user.keyboard('{ArrowRight}');
     expect(trigger).toHaveFocus();
   });
+
 });
