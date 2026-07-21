@@ -1,5 +1,11 @@
 # @acronis-platform/ui-react
 
+## 0.57.1
+
+### Patch Changes
+
+- Republish — `0.57.0` was published to npm without its `dist/` build output. No functional changes.
+
 ## 0.57.0
 
 ### Minor Changes
