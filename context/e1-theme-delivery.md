@@ -39,7 +39,9 @@ roadmap and in issues #172/#173:
   `values.<brand>` key → a generated `<brand>.css`, no code change (PR #258).
 - **Consumption:** `ui-react/src/styles/index.css` imports `tokens-pd`'s
   `default.css` + opt-in per-component tiers, and bridges `--ui-*` onto Tailwind
-  names via `@theme inline`.
+  names via `@theme inline`. For a non-default brand, the recommended full-theming
+  import is now `tokens-pd/css/<brand>.all.css` — a bundled entry that concatenates
+  the brand's semantic tier with every component tier in one file.
 
 So #172 ("generate per-brand CSS") and #173 ("data-driven generation") are
 **mechanically already true** for the pipeline. The remaining E1 work is: the
