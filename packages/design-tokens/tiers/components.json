@@ -10715,6 +10715,138 @@
       }
     }
   },
+  "Popover": {
+    "body": {
+      "gap": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["GAP"],
+          "com.figma.variableId": "VariableID:6364:17910"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.gap.12}",
+          "default": "{units.gap.12}",
+          "virtuozzo": "{units.gap.12}"
+        }
+      },
+      "paddingY": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["GAP"],
+          "com.figma.variableId": "VariableID:6364:17909"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.gap.16}",
+          "default": "{units.gap.16}",
+          "virtuozzo": "{units.gap.16}"
+        }
+      }
+    },
+    "container": {
+      "borderColor": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["STROKE_COLOR"],
+          "com.figma.variableId": "VariableID:6364:17889"
+        },
+        "$type": "color",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{colors.border.onSurface.border-active}",
+          "default": "{colors.border.onSurface.border-active}",
+          "virtuozzo": "{colors.border.onSurface.border-active}"
+        }
+      },
+      "borderRadius": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["CORNER_RADIUS"],
+          "com.figma.variableId": "VariableID:6364:17890"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.radius.4}",
+          "default": "{units.radius.4}",
+          "virtuozzo": "{units.radius.4}"
+        }
+      },
+      "borderStyle": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.variableId": "VariableID:6364:17892"
+        },
+        "$type": "string",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "solid",
+          "default": "solid",
+          "virtuozzo": "solid"
+        }
+      },
+      "borderWidth": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["STROKE_FLOAT"],
+          "com.figma.variableId": "VariableID:6364:17891"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.stroke.1}",
+          "default": "{units.stroke.1}",
+          "virtuozzo": "{units.stroke.1}"
+        }
+      },
+      "color": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["FRAME_FILL"],
+          "com.figma.variableId": "VariableID:6364:17888"
+        },
+        "$type": "color",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{colors.background.surface.primary}",
+          "default": "{colors.background.surface.primary}",
+          "virtuozzo": "{colors.background.surface.primary}"
+        }
+      },
+      "maxWidth": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["WIDTH_HEIGHT"],
+          "com.figma.variableId": "VariableID:6364:17893"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.size.512}",
+          "default": "{units.size.512}",
+          "virtuozzo": "{units.size.512}"
+        }
+      },
+      "minWidth": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["WIDTH_HEIGHT"],
+          "com.figma.variableId": "VariableID:6364:17887"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.size.320}",
+          "default": "{units.size.320}",
+          "virtuozzo": "{units.size.320}"
+        }
+      }
+    }
+  },
   "Radio": {
     "_global": {
       "box": {
