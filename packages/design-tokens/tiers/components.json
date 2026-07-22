@@ -3759,6 +3759,26 @@
       }
     }
   },
+  "Carousel": {
+    "dialog": {
+      "listIndicator": {
+        "gap": {
+          "$extensions": {
+            "com.figma.hiddenFromPublishing": true,
+            "com.figma.scopes": ["GAP"],
+            "com.figma.variableId": "VariableID:6353:4717"
+          },
+          "$type": "dimension",
+          "platforms": ["PD"],
+          "values": {
+            "deep_sky_itkontoret": "{units.gap.6}",
+            "default": "{units.gap.6}",
+            "virtuozzo": "{units.gap.6}"
+          }
+        }
+      }
+    }
+  },
   "Checkbox": {
     "_global": {
       "box": {
