@@ -15,14 +15,14 @@ import { cn } from '@/lib/utils';
 // `removable` (`active:`) and the selected state for `selectable`
 // (`data-[selected]`, driven by the `selected` prop).
 const chipVariants = cva(
-  "inline-flex h-[var(--ui-chip-global-box-height)] min-w-[var(--ui-chip-global-box-width-min)] items-center justify-center gap-[var(--ui-chip-global-box-gap)] rounded-[var(--ui-chip-global-border-radius)] border-[length:var(--ui-chip-global-border-width)] border-solid border-[var(--ui-chip-global-border-color-idle)] bg-[var(--ui-chip-global-box-color-idle)] px-[var(--ui-chip-global-box-padding-x)] text-sm leading-6 hover:border-[var(--ui-chip-global-border-color-hover)] hover:bg-[var(--ui-chip-global-box-color-hover)] [&_svg]:size-[var(--ui-chip-global-icon-size)] [&_svg]:shrink-0 [&_svg]:text-[var(--ui-chip-global-icon-color)]",
+  "inline-flex h-[var(--ui-chip-global-box-height)] min-w-[var(--ui-chip-global-box-width-min)] cursor-pointer items-center justify-center gap-[var(--ui-chip-global-box-gap)] rounded-[var(--ui-chip-global-border-radius)] border-[length:var(--ui-chip-global-border-width)] border-solid border-[var(--ui-chip-global-border-color-idle)] bg-[var(--ui-chip-global-box-color-idle)] px-[var(--ui-chip-global-box-padding-x)] text-sm leading-6 hover:border-[var(--ui-chip-global-border-color-hover)] hover:bg-[var(--ui-chip-global-box-color-hover)] [&_svg]:size-[var(--ui-chip-global-icon-size)] [&_svg]:shrink-0 [&_svg]:pointer-events-none [&_svg]:text-[var(--ui-chip-global-icon-color)]",
   {
     variants: {
       variant: {
         removable:
           'text-[var(--ui-chip-removable-label-color)] focus-within:outline-none focus-within:ring-[3px] focus-within:ring-[var(--ui-focus-primary)] active:border-[var(--ui-chip-global-border-color-active)] active:bg-[var(--ui-chip-global-box-color-active)]',
         selectable:
-          'cursor-pointer text-[var(--ui-chip-selectable-label-color)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)] data-[selected=true]:border-[var(--ui-chip-global-border-color-active)] data-[selected=true]:bg-[var(--ui-chip-global-box-color-active)]',
+          'text-[var(--ui-chip-selectable-label-color)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)] data-[selected=true]:border-[var(--ui-chip-global-border-color-active)] data-[selected=true]:bg-[var(--ui-chip-global-box-color-active)]',
       },
     },
     defaultVariants: {
@@ -94,7 +94,7 @@ const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
             type="button"
             aria-label={removeLabel}
             onClick={onRemove}
-            className="-me-1 flex shrink-0 items-center justify-center rounded-full outline-none focus-visible:outline-none"
+            className="-me-1 flex shrink-0 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:outline-none"
           >
             <TimesIcon />
           </button>
