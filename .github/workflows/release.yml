@@ -71,15 +71,13 @@ jobs:
       - name: Validate design packages
         run: pnpm --filter "./packages/design-*" test
 
-      - name: Create release PR or publish to npm
+      - name: Create release PR
         id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm run version
-          publish: pnpm run release
           commit: 'chore(release): version packages'
           title: 'chore(release): version packages'
-          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.ACV_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
