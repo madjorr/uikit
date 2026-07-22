@@ -103,7 +103,7 @@ const CardFilter = React.forwardRef<HTMLElement, CardFilterProps>(
           ...(isClickable && !render
             ? {
                 type: 'button' as const,
-                'aria-pressed': Boolean(selected),
+                ...(selected !== undefined ? { 'aria-pressed': selected } : {}),
               }
             : {}),
           ...(isClickable ? { 'data-selected': selected ? 'true' : undefined } : {}),

@@ -69,8 +69,17 @@ describe('CardFilter', () => {
     expect(button).toHaveAttribute('data-selected', 'true');
   });
 
-  it('defaults to unselected when selected is omitted', () => {
+  it('omits aria-pressed and data-selected when selected is omitted', () => {
     render(<CardFilter variant="clickable" label="Filters" value="3" />);
+    const button = screen.getByRole('button');
+    expect(button).not.toHaveAttribute('aria-pressed');
+    expect(button).not.toHaveAttribute('data-selected');
+  });
+
+  it('reflects an explicit false selected value via aria-pressed', () => {
+    render(
+      <CardFilter variant="clickable" label="Filters" value="3" selected={false} />
+    );
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-pressed', 'false');
     expect(button).not.toHaveAttribute('data-selected');

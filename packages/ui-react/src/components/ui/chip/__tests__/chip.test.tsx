@@ -18,6 +18,16 @@ describe('Chip', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows a pointer cursor on both variants', () => {
+    const { container: removableContainer } = render(<Chip>Label</Chip>);
+    expect(removableContainer.firstElementChild).toHaveClass('cursor-pointer');
+
+    const { container: selectableContainer } = render(
+      <Chip variant="selectable">Label</Chip>
+    );
+    expect(selectableContainer.firstElementChild).toHaveClass('cursor-pointer');
+  });
+
   it('calls onRemove when the remove button is pressed', async () => {
     const onRemove = vi.fn();
     const user = userEvent.setup();

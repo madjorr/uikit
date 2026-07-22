@@ -51,7 +51,12 @@ card shows its idle/hover/active treatments only.
 **When** it renders
 **Then** `aria-pressed="true"` and `data-selected="true"` are set, and the
 container fill/border switch to the active tokens even without pointer hover or
-press — including on hover, where the selected styling still wins.
+press. The `hover:` and `data-[selected=true]:` utilities are equal-specificity
+Tailwind selectors; the selected styling wins on hover only because
+`data-[selected=true]:*` is declared after `hover:*` in the `clickable` variant
+string, not because of any inherent precedence — reordering that string would
+flip the result. No story or test currently exercises the selected+hover
+combination; treat this as source-order-dependent until one does.
 
 **Constraint:** `aria-pressed` (and `type="button"`) apply only to the default
 `<button>` root. When composed via `render` onto a non-button element (e.g.
