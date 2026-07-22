@@ -5403,6 +5403,126 @@
       }
     }
   },
+  "Footer": {
+    "_global": {
+      "gap": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["GAP"],
+          "com.figma.variableId": "VariableID:6364:18157"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.gap.16}",
+          "default": "{units.gap.16}",
+          "virtuozzo": "{units.gap.16}"
+        }
+      },
+      "height": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["WIDTH_HEIGHT"],
+          "com.figma.variableId": "VariableID:6364:18152"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.size.64}",
+          "default": "{units.size.64}",
+          "virtuozzo": "{units.size.64}"
+        }
+      },
+      "paddingX": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["GAP"],
+          "com.figma.variableId": "VariableID:6364:18153"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.gap.16}",
+          "default": "{units.gap.16}",
+          "virtuozzo": "{units.gap.16}"
+        }
+      }
+    },
+    "carousel": {
+      "color": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.variableId": "VariableID:6364:18160"
+        },
+        "$type": "color",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "transparent",
+          "default": "transparent",
+          "virtuozzo": "transparent"
+        }
+      }
+    },
+    "default": {
+      "borderColor": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["STROKE_COLOR"],
+          "com.figma.variableId": "VariableID:6364:18155"
+        },
+        "$type": "color",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{colors.border.onSurface.divider}",
+          "default": "{colors.border.onSurface.divider}",
+          "virtuozzo": "{colors.border.onSurface.divider}"
+        }
+      },
+      "borderStyle": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.variableId": "VariableID:6364:18159"
+        },
+        "$type": "string",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "solid",
+          "default": "solid",
+          "virtuozzo": "solid"
+        }
+      },
+      "borderWidth": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["STROKE_FLOAT"],
+          "com.figma.variableId": "VariableID:6364:18156"
+        },
+        "$type": "dimension",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{units.stroke.1}",
+          "default": "{units.stroke.1}",
+          "virtuozzo": "{units.stroke.1}"
+        }
+      },
+      "color": {
+        "$extensions": {
+          "com.figma.hiddenFromPublishing": true,
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.variableId": "VariableID:6364:18151"
+        },
+        "$type": "color",
+        "platforms": ["PD"],
+        "values": {
+          "deep_sky_itkontoret": "{colors.background.surface.primary}",
+          "default": "{colors.background.surface.primary}",
+          "virtuozzo": "{colors.background.surface.primary}"
+        }
+      }
+    }
+  },
   "InputDatePicker": {
     "_global": {
       "box": {
