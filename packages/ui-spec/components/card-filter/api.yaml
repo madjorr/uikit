@@ -14,6 +14,15 @@ contract:
         link-colored value and hover / active / focus states. Per the design,
         only `clickable` has states beyond idle.
 
+    - name: selected
+      type: boolean
+      required: false
+      description: >-
+        `clickable` only. Controlled — applies the selected (active) styling and
+        exposes the card as a pressed toggle (`aria-pressed`/`data-selected`).
+        The consumer owns the state and flips it in the `click` handler; there is
+        no internal state and no uncontrolled default.
+
   events:
     - name: click
       payload: MouseEvent
@@ -41,8 +50,14 @@ adapters:
     example: |
       <CardFilter variant="static" label="Total assets" value="125" icon={<CircleInfoIcon />} />
 
-      {/* Clickable filter */}
-      <CardFilter variant="clickable" label="Active filters" value="3" onClick={apply} />
+      {/* Clickable filter, selected is controlled */}
+      <CardFilter
+        variant="clickable"
+        label="Active filters"
+        value="3"
+        selected={selected}
+        onClick={() => setSelected((prev) => !prev)}
+      />
 
       {/* Polymorphic: render as a link */}
       <CardFilter variant="clickable" label="Alerts" value="12" render={<a href="/alerts" />} />

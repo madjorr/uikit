@@ -60,6 +60,22 @@ describe('CardFilter', () => {
     expect(onClick).toHaveBeenCalledOnce();
   });
 
+  it('reflects the selected state via aria-pressed and data-selected', () => {
+    render(
+      <CardFilter variant="clickable" label="Filters" value="3" selected />
+    );
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(button).toHaveAttribute('data-selected', 'true');
+  });
+
+  it('defaults to unselected when selected is omitted', () => {
+    render(<CardFilter variant="clickable" label="Filters" value="3" />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    expect(button).not.toHaveAttribute('data-selected');
+  });
+
   it('merges a custom className with the base classes', () => {
     render(<CardFilter label="Total" value="1" className="custom-class" />);
     expect(screen.getByText('Total').parentElement).toHaveClass('custom-class');

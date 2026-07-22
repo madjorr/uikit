@@ -10,6 +10,9 @@
   the static variants are not focusable.
 - **Focus visible:** keyboard focus shows a 3px ring in `--ui-focus-primary` flush
   to the card edge (no offset), via `:focus-visible`; suppressed for pointer focus.
+- **Pressed state (clickable):** `aria-pressed` reflects the controlled `selected`
+  prop (`"true"`/`"false"`), exposing the card as a toggle button; `data-selected`
+  mirrors it for styling.
 - **Static content:** `static` / `static-empty` are presentational; they convey a
   value but are not interactive and are not in the tab order.
 - **Contrast:** label / value / surface pairs come from the design tokens, authored

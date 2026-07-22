@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleInfoIcon } from '@acronis-platform/icons-react/stroke-mono';
 
@@ -42,6 +43,12 @@ const meta = {
         'Base UI render prop — replace the underlying element (e.g. render a clickable card as an `<a>`).',
       table: { type: { summary: 'RenderProp' }, category: 'Composition' },
     },
+    selected: {
+      control: 'boolean',
+      description:
+        '`clickable` only — applies the selected (active) styling and sets `aria-pressed`. Controlled only.',
+      table: { type: { summary: 'boolean' }, category: 'State' },
+    },
   },
   args: {
     label: 'Active filters',
@@ -57,6 +64,17 @@ export const Default: Story = {};
 
 export const Clickable: Story = {
   args: { variant: 'clickable' },
+  render: (args) => {
+    const [selected, setSelected] = React.useState(false);
+    return (
+      <CardFilter
+        {...args}
+        variant="clickable"
+        selected={selected}
+        onClick={() => setSelected((prev) => !prev)}
+      />
+    );
+  },
 };
 
 export const Empty: Story = {
