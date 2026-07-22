@@ -53,6 +53,12 @@ card shows its idle/hover/active treatments only.
 container fill/border switch to the active tokens even without pointer hover or
 press — including on hover, where the selected styling still wins.
 
+**Constraint:** `aria-pressed` (and `type="button"`) apply only to the default
+`<button>` root. When composed via `render` onto a non-button element (e.g.
+`render={<a href="/alerts" />}`), they are omitted — that ARIA/HTML pairing
+would be invalid on a link or other element. `data-selected` is a pure styling
+hook and is still set regardless of the rendered element.
+
 **Given** a clickable CardFilter
 **When** the user activates it
 **Then** the card only fires `click` — `selected` does not change on its own. The

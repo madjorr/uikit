@@ -100,13 +100,13 @@ const CardFilter = React.forwardRef<HTMLElement, CardFilterProps>(
       props: mergeProps<'button'>(
         {
           className: cn(cardFilterVariants({ variant }), className),
-          ...(isClickable
+          ...(isClickable && !render
             ? {
                 type: 'button' as const,
                 'aria-pressed': Boolean(selected),
-                'data-selected': selected ? 'true' : undefined,
               }
             : {}),
+          ...(isClickable ? { 'data-selected': selected ? 'true' : undefined } : {}),
           children: (
             <>
               <span className="text-xs font-normal leading-4 text-[var(--ui-card-filter-global-label-color)]">

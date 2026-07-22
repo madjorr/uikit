@@ -100,4 +100,20 @@ describe('CardFilter', () => {
     expect(link).toHaveAttribute('href', '/alerts');
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
+
+  it('omits aria-pressed and type on a non-button render composition, even when selected', () => {
+    render(
+      <CardFilter
+        variant="clickable"
+        label="Alerts"
+        value="12"
+        selected
+        render={<a href="/alerts" />}
+      />
+    );
+    const link = screen.getByRole('link');
+    expect(link).not.toHaveAttribute('aria-pressed');
+    expect(link).not.toHaveAttribute('type');
+    expect(link).toHaveAttribute('data-selected', 'true');
+  });
 });
