@@ -40,6 +40,36 @@ border takes its focused token; the ring is suppressed for pointer focus.
 **Constraint:** `static` and `static-empty` are non-interactive — they have no
 state other than idle (mirrors the Figma constraint).
 
+## Selection (clickable only)
+
+**Given** a clickable CardFilter with `selected={false}`
+**When** it renders
+**Then** `aria-pressed="false"` and no `data-selected` attribute is present; the
+card shows its idle/hover/active treatments only.
+
+**Given** a clickable CardFilter with `selected={true}`
+**When** it renders
+**Then** `aria-pressed="true"` and `data-selected="true"` are set, and the
+container fill/border switch to the active tokens even without pointer hover or
+press. The `hover:` and `data-[selected=true]:` utilities are equal-specificity
+Tailwind selectors; the selected styling wins on hover only because
+`data-[selected=true]:*` is declared after `hover:*` in the `clickable` variant
+string, not because of any inherent precedence — reordering that string would
+flip the result. No story or test currently exercises the selected+hover
+combination; treat this as source-order-dependent until one does.
+
+**Constraint:** `aria-pressed` (and `type="button"`) apply only to the default
+`<button>` root. When composed via `render` onto a non-button element (e.g.
+`render={<a href="/alerts" />}`), they are omitted — that ARIA/HTML pairing
+would be invalid on a link or other element. `data-selected` is a pure styling
+hook and is still set regardless of the rendered element.
+
+**Given** a clickable CardFilter
+**When** the user activates it
+**Then** the card only fires `click` — `selected` does not change on its own. The
+consumer flips `selected` in its `onClick` handler (the component is controlled
+only; there is no internal selected state).
+
 ## Composition
 
 **Given** a `render` prop (e.g. `<a href>`)

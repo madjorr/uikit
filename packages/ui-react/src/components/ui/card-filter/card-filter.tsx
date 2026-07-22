@@ -28,7 +28,7 @@ const cardFilterVariants = cva(
         static: '',
         'static-empty': '',
         clickable:
-          'cursor-pointer outline-none hover:border-[color:var(--ui-card-filter-global-border-color-hover)] hover:bg-[var(--ui-card-filter-global-container-color-hover)] active:border-[color:var(--ui-card-filter-global-border-color-active)] active:bg-[var(--ui-card-filter-global-container-color-active)] focus-visible:border-[color:var(--ui-card-filter-global-border-color-focused)] focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)]',
+          'cursor-pointer outline-none hover:border-[color:var(--ui-card-filter-global-border-color-hover)] hover:bg-[var(--ui-card-filter-global-container-color-hover)] active:border-[color:var(--ui-card-filter-global-border-color-active)] active:bg-[var(--ui-card-filter-global-container-color-active)] focus-visible:border-[color:var(--ui-card-filter-global-border-color-focused)] focus-visible:ring-[3px] focus-visible:ring-[var(--ui-focus-primary)] data-[selected=true]:border-[color:var(--ui-card-filter-global-border-color-active)] data-[selected=true]:bg-[var(--ui-card-filter-global-container-color-active)]',
       },
     },
     defaultVariants: {
@@ -58,6 +58,11 @@ export interface CardFilterProps
   /** Optional leading icon (16px) rendered before the value. Hidden for `static-empty`. */
   icon?: React.ReactNode;
   /**
+   * `clickable` only — applies the selected (active) styling and exposes the
+   * card as a pressed toggle (`aria-pressed`). Controlled only.
+   */
+  selected?: boolean;
+  /**
    * Replace the rendered element (`<button>` for `clickable`, otherwise `<div>`)
    * with another element or component (Base UI composition) — e.g. a router link
    * for a clickable filter. The component's props and class names are merged onto it.
@@ -72,7 +77,16 @@ export interface CardFilterProps
  */
 const CardFilter = React.forwardRef<HTMLElement, CardFilterProps>(
   (
-    { className, variant = 'static', label, value, icon, render, ...props },
+    {
+      className,
+      variant = 'static',
+      label,
+      value,
+      icon,
+      selected,
+      render,
+      ...props
+    },
     ref
   ) => {
     const isEmpty = variant === 'static-empty';
@@ -86,7 +100,13 @@ const CardFilter = React.forwardRef<HTMLElement, CardFilterProps>(
       props: mergeProps<'button'>(
         {
           className: cn(cardFilterVariants({ variant }), className),
-          ...(isClickable ? { type: 'button' as const } : {}),
+          ...(isClickable && !render
+            ? {
+                type: 'button' as const,
+                ...(selected !== undefined ? { 'aria-pressed': selected } : {}),
+              }
+            : {}),
+          ...(isClickable ? { 'data-selected': selected ? 'true' : undefined } : {}),
           children: (
             <>
               <span className="text-xs font-normal leading-4 text-[var(--ui-card-filter-global-label-color)]">

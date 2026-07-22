@@ -60,6 +60,31 @@ describe('CardFilter', () => {
     expect(onClick).toHaveBeenCalledOnce();
   });
 
+  it('reflects the selected state via aria-pressed and data-selected', () => {
+    render(
+      <CardFilter variant="clickable" label="Filters" value="3" selected />
+    );
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(button).toHaveAttribute('data-selected', 'true');
+  });
+
+  it('omits aria-pressed and data-selected when selected is omitted', () => {
+    render(<CardFilter variant="clickable" label="Filters" value="3" />);
+    const button = screen.getByRole('button');
+    expect(button).not.toHaveAttribute('aria-pressed');
+    expect(button).not.toHaveAttribute('data-selected');
+  });
+
+  it('reflects an explicit false selected value via aria-pressed', () => {
+    render(
+      <CardFilter variant="clickable" label="Filters" value="3" selected={false} />
+    );
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    expect(button).not.toHaveAttribute('data-selected');
+  });
+
   it('merges a custom className with the base classes', () => {
     render(<CardFilter label="Total" value="1" className="custom-class" />);
     expect(screen.getByText('Total').parentElement).toHaveClass('custom-class');
@@ -83,5 +108,21 @@ describe('CardFilter', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/alerts');
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('omits aria-pressed and type on a non-button render composition, even when selected', () => {
+    render(
+      <CardFilter
+        variant="clickable"
+        label="Alerts"
+        value="12"
+        selected
+        render={<a href="/alerts" />}
+      />
+    );
+    const link = screen.getByRole('link');
+    expect(link).not.toHaveAttribute('aria-pressed');
+    expect(link).not.toHaveAttribute('type');
+    expect(link).toHaveAttribute('data-selected', 'true');
   });
 });

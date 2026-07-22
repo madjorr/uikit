@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleInfoIcon } from '@acronis-platform/icons-react/stroke-mono';
 
@@ -69,10 +70,17 @@ export const Removable: Story = {
 
 export const Selectable: Story = {
   args: { variant: 'selectable' },
-};
-
-export const SelectableSelected: Story = {
-  args: { variant: 'selectable', selected: true },
+  render: (args) => {
+    const [selected, setSelected] = React.useState(false);
+    return (
+      <Chip
+        {...args}
+        variant="selectable"
+        selected={selected}
+        onClick={() => setSelected((prev) => !prev)}
+      />
+    );
+  },
 };
 
 export const WithIcon: Story = {

@@ -86,4 +86,12 @@ describe('SearchBox', () => {
     render(<SearchBox aria-label="Search" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
+
+  it('shows hover/active backgrounds on the clear button', async () => {
+    render(<SearchBox aria-label="Search" defaultValue="hi" />);
+    expect(screen.getByRole('button', { name: 'Clear search' })).toHaveClass(
+      'hover:bg-[var(--ui-button-icon-global-container-color-hover)]',
+      'active:bg-[var(--ui-button-icon-global-container-color-active)]'
+    );
+  });
 });

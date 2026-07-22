@@ -31,17 +31,22 @@ A static stat card:
 <CardFilter label="Active devices" value="1,284" />
 ```
 
-A clickable filter (renders a button) with an icon:
+A clickable filter (renders a button) with an icon. `selected` is
+controlled — flip it in `onClick` to toggle the active styling:
 
 ```tsx
+import { useState } from 'react';
 import { ShieldIcon } from '@acronis-platform/icons-react/stroke-mono';
+
+const [selected, setSelected] = useState(false);
 
 <CardFilter
   variant="clickable"
   label="Protected"
   value="982"
   icon={<ShieldIcon />}
-  onClick={() => applyFilter('protected')}
+  selected={selected}
+  onClick={() => setSelected((prev) => !prev)}
 />
 ```
 

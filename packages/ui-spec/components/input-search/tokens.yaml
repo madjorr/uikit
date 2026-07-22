@@ -52,6 +52,8 @@ tokens:
 
   # ── Clear button ──
   - { name: --ui-button-icon-global-icon-color-idle, affects: clear }
+  - { name: --ui-button-icon-global-container-color-hover, affects: clear }
+  - { name: --ui-button-icon-global-container-color-active, affects: clear }
 
   # ── Focus ring ──
   - {
