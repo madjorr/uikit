@@ -5,6 +5,13 @@
 export default {
   theme: {
     extend: {
+      "backgroundColor": {
+        "avatar-orange": "light-dark(rgb(255 222 194), rgb(128 58 0))",
+        "avatar-red": "light-dark(rgb(251 218 218), rgb(130 23 23))",
+        "avatar-teal": "light-dark(rgb(209 240 237), rgb(4 73 67))",
+        "avatar-violet": "light-dark(rgb(236 222 242), rgb(108 19 108))",
+        "avatar-yellow": "light-dark(rgb(255 238 178), rgb(138 99 0))"
+      },
       "textColor": {
         "avatar-global-text": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "avatar-label-orange": "light-dark(rgb(153 69 0), rgb(255 222 194))",

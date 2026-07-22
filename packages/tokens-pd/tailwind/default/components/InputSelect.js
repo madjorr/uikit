@@ -21,6 +21,7 @@ export default {
         "input-select-dropdown-dropdown-search-label-placeholder": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-select-dropdown-dropdown-search-label-value": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-dropdown-item-global-label": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-select-dropdown-section-label-group": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-global-label-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "input-select-global-label-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-select-global-label-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
@@ -49,11 +50,17 @@ export default {
         "input-select-normal-box-border-color-idle": "light-dark(rgb(214 228 245), rgb(48 50 54))"
       },
       "fill": {
+        "input-select-dropdown-item-global-icon-checked": "light-dark(rgb(23 99 207), rgb(81 157 246))",
+        "input-select-dropdown-item-global-icon-collapse": "light-dark(rgb(23 99 207), rgb(81 157 246))",
+        "input-select-dropdown-item-global-icon-tenant": "light-dark(rgb(23 99 207), rgb(81 157 246))",
         "input-select-error-icon-hover": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-select-error-icon-idle": "light-dark(rgb(226 54 54), rgb(229 77 77))",
         "input-select-normal-icon-disabled": "light-dark(rgb(214 228 245), rgb(48 50 54))",
         "input-select-normal-icon-hover": "light-dark(rgb(23 99 207), rgb(81 157 246))",
-        "input-select-normal-icon-idle": "light-dark(rgb(23 99 207), rgb(81 157 246))"
+        "input-select-normal-icon-idle": "light-dark(rgb(23 99 207), rgb(81 157 246))",
+        "input-select-normal-icon-expand-disabled": "light-dark(rgb(214 228 245), rgb(48 50 54))",
+        "input-select-normal-icon-expand-hover": "light-dark(rgb(23 99 207), rgb(81 157 246))",
+        "input-select-normal-icon-expand-idle": "light-dark(rgb(23 99 207), rgb(81 157 246))"
       },
       "fontFamily": {
         "input-select-dropdown-dropdown-search-label-text-style": "Inter, system-ui, sans-serif",

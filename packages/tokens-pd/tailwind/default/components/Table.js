@@ -5,6 +5,11 @@
 export default {
   theme: {
     extend: {
+      "backgroundColor": {
+        "table-header-cell-active": "light-dark(rgb(226 235 245), rgb(48 50 54))",
+        "table-header-cell-hover": "light-dark(rgb(238 242 247), rgb(46 47 50))",
+        "table-header-cell-idle": "light-dark(transparent, transparent)"
+      },
       "textColor": {
         "table-data-value-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "table-data-value-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
@@ -12,6 +17,10 @@ export default {
       },
       "borderColor": {
         "table-global-row-border-color": "light-dark(rgb(214 228 245), rgb(48 50 54))"
+      },
+      "fill": {
+        "table-header-sort-icon-active": "light-dark(rgb(23 99 207), rgb(81 157 246))",
+        "table-header-sort-icon-inactive": "light-dark(rgb(201 204 207), rgb(73 76 80))"
       },
       "fontFamily": {
         "table-data-value-text-style": "Inter, system-ui, sans-serif",
