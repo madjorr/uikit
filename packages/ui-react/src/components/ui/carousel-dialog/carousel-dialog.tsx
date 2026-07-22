@@ -36,6 +36,19 @@ export interface CarouselDialogProps
   size?: DialogContentProps['size'];
   /** Forwarded to `<DialogContent>`. */
   className?: string;
+  /**
+   * Accessible name for the dialog, forwarded to `<DialogContent>`. There is
+   * no `DialogTitle` slot here (the popup's only content is the carousel), so
+   * one of `aria-label`/`aria-labelledby` is required for the dialog to have
+   * an accessible name — see Dialog's own `accessibility.md`.
+   */
+  'aria-label'?: string;
+  /**
+   * Accessible name via reference to an element id rendered inside a slide,
+   * forwarded to `<DialogContent>`. Prefer this over `aria-label` when the
+   * name is also visible on-screen.
+   */
+  'aria-labelledby'?: string;
 }
 
 function CarouselDialog({
@@ -45,11 +58,18 @@ function CarouselDialog({
   setApi,
   size,
   className,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   ...dialogProps
 }: CarouselDialogProps) {
   return (
     <Dialog {...dialogProps}>
-      <DialogContent size={size} className={className}>
+      <DialogContent
+        size={size}
+        className={className}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+      >
         <Carousel opts={opts} plugins={plugins} setApi={setApi}>
           <CarouselContent>{children}</CarouselContent>
           <CarouselDialogFooter />

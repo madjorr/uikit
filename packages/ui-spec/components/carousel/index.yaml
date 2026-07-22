@@ -12,6 +12,7 @@ description: >-
   `@acronis-platform/ui-react`'s public API; only `CarouselDialog` composes it
   (`CarouselItem` and `CarouselApi` are re-exported for building its slides).
 since: 0.58.0
+internal: true
 dependencies:
   components:
     - ButtonIcon

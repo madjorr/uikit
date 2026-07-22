@@ -53,6 +53,28 @@ describe('CarouselDialog', () => {
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
 
+  it('has an accessible name when aria-label is passed', () => {
+    render(
+      <CarouselDialog open aria-label="Onboarding tour">
+        <Slides />
+      </CarouselDialog>
+    );
+    expect(
+      screen.getByRole('dialog', { name: 'Onboarding tour' })
+    ).toBeInTheDocument();
+  });
+
+  it('has an accessible name when aria-labelledby references slide content', () => {
+    render(
+      <CarouselDialog open aria-labelledby="tour-heading">
+        <CarouselItem>
+          <h2 id="tour-heading">Welcome</h2>
+        </CarouselItem>
+      </CarouselDialog>
+    );
+    expect(screen.getByRole('dialog', { name: 'Welcome' })).toBeInTheDocument();
+  });
+
   it('forwards setApi and opts to the inner Carousel', () => {
     const setApi = vi.fn();
     render(

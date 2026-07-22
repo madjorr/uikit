@@ -14,7 +14,7 @@ import { Card, CardContent } from '../../card';
 import { Carousel } from '../carousel';
 
 const meta = {
-  title: 'UI/Carousel/All States (generated)',
+  title: 'Internal/Carousel/All States (generated)',
   component: Carousel,
 } satisfies Meta<typeof Carousel>;
 

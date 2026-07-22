@@ -36,6 +36,20 @@ contract:
       required: false
       default: false
       description: Forwarded to Dialog's root. Initial open state when uncontrolled.
+    - name: aria-label
+      type: string
+      required: false
+      description: >-
+        Accessible name for the dialog, forwarded to `DialogContent`. There is
+        no `DialogTitle` slot here, so one of `aria-label`/`aria-labelledby`
+        is required for the dialog to have an accessible name.
+    - name: aria-labelledby
+      type: string
+      required: false
+      description: >-
+        Accessible name via reference to an element id rendered inside a
+        slide, forwarded to `DialogContent`. Prefer this over `aria-label`
+        when the name is also visible on-screen.
 
   events:
     - name: setApi

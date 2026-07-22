@@ -800,11 +800,13 @@ function generate(name: string): boolean {
     `import { ${comp} } from '../${name}';`,
   ].join('\n');
 
+  const titleRoot = index.internal ? 'Internal' : 'UI';
+
   const file = `${HEADER}
 ${imports}
 
 const meta = {
-  title: 'UI/${index.component}/All States (generated)',
+  title: '${titleRoot}/${index.component}/All States (generated)',
   component: ${comp},
 } satisfies Meta<typeof ${comp}>;
 

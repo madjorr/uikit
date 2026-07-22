@@ -1,11 +1,21 @@
 # CarouselDialog — Accessibility Requirements
 
-CarouselDialog inherits Dialog's accessibility contract unchanged (focus
-trap, scroll lock, `role="dialog"`, Esc-to-close) — see Dialog's own
-`accessibility.md` for that baseline. This file covers only what
-CarouselDialog adds: the Carousel and its footer.
+CarouselDialog inherits Dialog's accessibility contract for focus trap,
+scroll lock, `role="dialog"`, and Esc-to-close — see Dialog's own
+`accessibility.md` for that baseline. **Naming does not carry over
+unchanged**: plain Dialog is named via a consumer-rendered `DialogTitle`,
+but CarouselDialog's popup content is only the Carousel/slides — there is no
+title slot. **Name the dialog** by passing `aria-label` (or
+`aria-labelledby`, referencing an element id rendered inside a slide) —
+without one, the dialog has no accessible name. This file covers naming plus
+what CarouselDialog adds on top of Dialog: the Carousel and its footer.
 
 ## ARIA Roles and Attributes
+
+### Name
+
+- **Required**: `aria-label` or `aria-labelledby`, forwarded to
+  `DialogContent`. Neither is set by default.
 
 ### Content (slide track)
 
@@ -34,7 +44,9 @@ controls and the 3-item position list.
 
 ## Screen Reader Requirements
 
-1. The dialog announces as a modal dialog (Dialog's own behavior).
+1. The dialog announces as a modal dialog **with the name supplied via
+   `aria-label`/`aria-labelledby`** — omitting both leaves it announcing as
+   an unnamed dialog (WCAG 4.1.2).
 2. The slide track announces its role description ("carousel"); each slide
    announces as a group with the role description "slide".
 3. The footer's Back/Next/Close controls and position indicator announce as
@@ -48,6 +60,7 @@ controls and the 3-item position list.
 ## Testing Checklist
 
 - [ ] Opening focuses inside the popup and traps focus (Dialog's own behavior)
+- [ ] The dialog has an accessible name when `aria-label`/`aria-labelledby` is passed
 - [ ] Esc closes the dialog from anywhere inside it
 - [ ] ArrowLeft/ArrowRight scroll the Carousel when focus is inside it
 - [ ] The footer's Close control (last slide) closes the dialog
