@@ -53,6 +53,18 @@ function renderLast(onOpenChange?: (open: boolean) => void) {
   );
 }
 
+// canScrollPrev/canScrollNext both false: a single-slide dialog, or the
+// pre-measurement instant before Embla's first `select`. getFooterState has
+// no dedicated case for this — it falls back to 'first', which is a correct
+// flash for a 3+ slide dialog but, for a genuine single slide, leaves no
+// working Close (Next renders but scrollNext is a no-op with nothing to
+// scroll to). Asserted here as documented current behavior, not a fix.
+function renderBothDisabled() {
+  mockCarousel.canScrollPrev = false;
+  mockCarousel.canScrollNext = false;
+  return render(<CarouselDialogFooter />);
+}
+
 function dotStates() {
   return screen.getAllByRole('listitem').map((dot) => dot.getAttribute('aria-current') === 'true');
 }
@@ -85,6 +97,14 @@ describe('CarouselDialogFooter', () => {
   it('always renders exactly 3 dot slots', () => {
     renderMiddle();
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
+  });
+
+  it('both-disabled state (single slide): falls back to first, with no Close reachable', () => {
+    renderBothDisabled();
+    expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+    expect(dotStates()).toEqual([true, false, false]);
   });
 
   it('calls scrollPrev when Back is activated', async () => {

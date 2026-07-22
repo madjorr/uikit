@@ -34,6 +34,26 @@ function FooterAtIndex({ startIndex }: { startIndex: number }) {
   );
 }
 
+// A single-slide dialog: canScrollPrev/canScrollNext are both false, a case
+// getFooterState has no dedicated branch for (see its own comment). It falls
+// back to the 'first' state, so this renders a non-disabled "Next" whose
+// scrollNext has nothing to scroll to, and no "Close" is ever reachable —
+// documented current behavior, not a fix.
+function SingleSlideFooter() {
+  return (
+    <Dialog open>
+      <Carousel className="w-80 border border-border">
+        <CarouselContent>
+          <CarouselItem className="flex h-40 items-center justify-center">
+            Only slide
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselDialogFooter />
+      </Carousel>
+    </Dialog>
+  );
+}
+
 const meta = {
   title: 'UI/CarouselDialogFooter',
   component: CarouselDialogFooter,
@@ -54,4 +74,8 @@ export const Middle: Story = {
 
 export const Last: Story = {
   render: () => <FooterAtIndex startIndex={2} />,
+};
+
+export const SingleSlide: Story = {
+  render: () => <SingleSlideFooter />,
 };

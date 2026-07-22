@@ -22,7 +22,7 @@ import {
 // Step-position-in-URL sync is deliberately NOT baked in here — `setApi` and
 // `opts.startIndex` are exposed so a consumer can seed/read the current slide
 // externally (e.g. from their own router).
-export interface CarouselDialogProps
+interface CarouselDialogBaseProps
   extends Omit<React.ComponentPropsWithoutRef<typeof Dialog>, 'children'> {
   /** One `<CarouselItem>` per slide — same shape as `<Carousel>`'s own children. */
   children: React.ReactNode;
@@ -36,20 +36,19 @@ export interface CarouselDialogProps
   size?: DialogContentProps['size'];
   /** Forwarded to `<DialogContent>`. */
   className?: string;
-  /**
-   * Accessible name for the dialog, forwarded to `<DialogContent>`. There is
-   * no `DialogTitle` slot here (the popup's only content is the carousel), so
-   * one of `aria-label`/`aria-labelledby` is required for the dialog to have
-   * an accessible name — see Dialog's own `accessibility.md`.
-   */
-  'aria-label'?: string;
-  /**
-   * Accessible name via reference to an element id rendered inside a slide,
-   * forwarded to `<DialogContent>`. Prefer this over `aria-label` when the
-   * name is also visible on-screen.
-   */
-  'aria-labelledby'?: string;
 }
+
+// There is no `DialogTitle` slot here (the popup's only content is the
+// carousel), so `aria-label`/`aria-labelledby` can't be optional the way
+// Dialog's own props are — one of the two must be supplied for the dialog to
+// have an accessible name (see `accessibility.md`), and this union enforces
+// that at the type level rather than leaving it to a JSDoc note.
+type CarouselDialogAccessibleNameProps =
+  | { 'aria-label': string; 'aria-labelledby'?: never }
+  | { 'aria-label'?: never; 'aria-labelledby': string };
+
+export type CarouselDialogProps = CarouselDialogBaseProps &
+  CarouselDialogAccessibleNameProps;
 
 function CarouselDialog({
   children,

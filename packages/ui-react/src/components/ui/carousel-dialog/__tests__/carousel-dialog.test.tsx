@@ -44,7 +44,7 @@ function Slides() {
 describe('CarouselDialog', () => {
   it('renders its slides and footer inside the dialog', () => {
     render(
-      <CarouselDialog open>
+      <CarouselDialog open aria-label="Onboarding tour">
         <Slides />
       </CarouselDialog>
     );
@@ -78,7 +78,12 @@ describe('CarouselDialog', () => {
   it('forwards setApi and opts to the inner Carousel', () => {
     const setApi = vi.fn();
     render(
-      <CarouselDialog open setApi={setApi} opts={{ startIndex: 1 }}>
+      <CarouselDialog
+        open
+        aria-label="Onboarding tour"
+        setApi={setApi}
+        opts={{ startIndex: 1 }}
+      >
         <Slides />
       </CarouselDialog>
     );
@@ -91,7 +96,7 @@ describe('CarouselDialog', () => {
     mockCarousel.canScrollPrev = true;
     mockCarousel.canScrollNext = false;
     render(
-      <CarouselDialog open onOpenChange={onOpenChange}>
+      <CarouselDialog open aria-label="Onboarding tour" onOpenChange={onOpenChange}>
         <Slides />
       </CarouselDialog>
     );

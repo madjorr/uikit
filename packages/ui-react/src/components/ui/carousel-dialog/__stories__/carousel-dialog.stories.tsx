@@ -44,7 +44,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <CarouselDialog open>
+    <CarouselDialog open aria-label="Onboarding tour">
       <CarouselItem className="flex h-48 items-center justify-center text-4xl font-semibold">
         1
       </CarouselItem>
