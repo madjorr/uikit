@@ -100,4 +100,15 @@ describe('InputText', () => {
       'text-[var(--ui-button-icon-global-icon-color-idle)]'
     );
   });
+
+  it('shows a pointer cursor and hover/active backgrounds on the clear button', () => {
+    render(
+      <InputText label="Email" clearable value="a" onChange={() => {}} />
+    );
+    expect(screen.getByRole('button', { name: 'Clear' })).toHaveClass(
+      'cursor-pointer',
+      'hover:bg-[var(--ui-button-icon-global-container-color-hover)]',
+      'active:bg-[var(--ui-button-icon-global-container-color-active)]'
+    );
+  });
 });

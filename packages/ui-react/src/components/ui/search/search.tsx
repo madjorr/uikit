@@ -114,7 +114,7 @@ const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
             type="button"
             aria-label="Clear search"
             onClick={handleClear}
-            className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-sm text-[var(--ui-button-icon-global-icon-color-idle)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] [&>svg]:size-4"
+            className="inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm p-0.5 text-[var(--ui-button-icon-global-icon-color-idle)] outline-none hover:bg-[var(--ui-button-icon-global-container-color-hover)] active:bg-[var(--ui-button-icon-global-container-color-active)] focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] [&>svg]:size-4"
           >
             <TimesIcon size={16} />
           </button>
