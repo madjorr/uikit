@@ -1,0 +1,17 @@
+spec_version: '1.0'
+component: CarouselDialog
+name: carousel-dialog
+status: draft
+category: overlays
+description: >-
+  A modal, paged walkthrough: a Dialog wrapping a Carousel, with a
+  CarouselDialogFooter (Back/Next/Close + a 3-dot position indicator) driving
+  navigation and closing on the last slide. No single Figma node backs this
+  composite — only its footer does (see CarouselDialogFooter); the dialog
+  chrome itself stays on Dialog's own pre-existing no-Figma-node bypass.
+since: 0.58.0
+dependencies:
+  components:
+    - Dialog
+    - Carousel
+    - CarouselDialogFooter

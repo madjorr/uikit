@@ -1,0 +1,80 @@
+spec_version: '1.0'
+component: CarouselDialog
+
+schematic: |
+  No single Figma node exists for this composite (only for `footer` — see
+  CarouselDialogFooter). This is Dialog + Carousel + CarouselDialogFooter.
+
+  ─ when open ─────────────────────────────────────────────────
+  overlay: full-screen scrim
+  +===========================================================+
+  |  root: <div role="dialog"> (centered popup)               |
+  |   +-----------------------------------------------------+ |
+  |   | content: one <CarouselItem> per slide (child)        | |
+  |   +-----------------------------------------------------+ |
+  |   | footer:  [Back]   ( o )( o )( o )   [Next] / [Close] | |
+  |   +-----------------------------------------------------+ |
+  +===========================================================+
+     root/overlay -> still Dialog's own no-Figma-node bypass (bg-muted,
+                     bg-background, var(--ui-background-backdrop-screen))
+     footer        -> its own spec (real Figma nodes) — see
+                     CarouselDialogFooter
+
+root:
+  element: div
+  role: dialog
+  description: >-
+    The modal popup — Dialog's `DialogContent` (Base UI `Dialog.Popup`),
+    unchanged from Dialog's own spec. Traps focus, locks scroll, portaled.
+
+parts:
+  - id: overlay
+    description: Full-screen scrim behind the popup. Same part as Dialog's own `overlay`.
+    element: div
+  - id: content
+    description: >-
+      The scrollable slide track (Carousel's `content` part) wrapping one
+      `CarouselItem` per child passed to `CarouselDialog` — the same
+      children shape as a plain `<Carousel>`.
+    element: div
+  - id: footer
+    description: >-
+      `CarouselDialogFooter`, rendered inside the `Carousel` so it can read
+      navigation state from context. See its own spec for its
+      first/middle/last anatomy.
+    element: div
+
+layout:
+  type: flex
+  direction: column
+  order: [content, footer]
+
+# CarouselDialog forwards Dialog's own `open` root props verbatim — it adds
+# no state of its own beyond what Dialog and Carousel already own (the
+# current slide is Carousel/Embla's; see CarouselDialogFooter's `position`).
+internal_state:
+  - id: open
+    type: boolean
+    values: [false, true]
+    initial: false
+    controllable_via: [open]
+    controlled_default: default-open
+    emits: open-change
+    changed_by: >-
+      the footer's Close control (last slide) closes; trigger/Esc/outside-press
+      behave exactly as in Dialog
+    description: Whether the dialog is shown; forwarded verbatim to/from Dialog.
+
+states:
+  - {
+      id: open,
+      trigger: 'internal open === true (data-[open])',
+      kind: internal,
+      affects: [root, overlay],
+    }
+  - {
+      id: closed,
+      trigger: 'internal open === false (data-[closed])',
+      kind: internal,
+      affects: [root, overlay],
+    }

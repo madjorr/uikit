@@ -1,0 +1,90 @@
+spec_version: '1.0'
+component: CarouselDialog
+
+contract:
+  properties:
+    - name: children
+      type: ReactNode
+      required: true
+      description: >-
+        One `<CarouselItem>` per slide — the same shape as `<Carousel>`'s own
+        children. Wrapped internally in a `CarouselContent` track.
+    - name: opts
+      type: EmblaOptionsType
+      required: false
+      default: undefined
+      description: >-
+        Forwarded to the inner Carousel. `opts.startIndex` seeds which slide
+        is shown on open — use it to resume at a specific step (e.g. from a
+        URL param a consumer reads themselves).
+    - name: plugins
+      type: EmblaPluginType[]
+      required: false
+      default: undefined
+      description: Forwarded to the inner Carousel verbatim.
+    - name: size
+      type: "'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'"
+      required: false
+      default: "'sm'"
+      description: Forwarded to `DialogContent` (popup max-width).
+    - name: open
+      type: boolean
+      required: false
+      description: Forwarded to Dialog's root. Controlled open state.
+    - name: default-open
+      type: boolean
+      required: false
+      default: false
+      description: Forwarded to Dialog's root. Initial open state when uncontrolled.
+
+  events:
+    - name: setApi
+      payload: '(api: CarouselApi) => void'
+      description: >-
+        Forwarded to the inner Carousel; called once with the underlying
+        Embla API instance. Use it to observe the `select` event (current
+        slide changes) — CarouselDialog itself bakes in no routing.
+    - name: open-change
+      payload: boolean
+      description: >-
+        Forwarded to Dialog's root (React: `onOpenChange`). Fires when the
+        dialog opens or closes, including via the footer's Close control on
+        the last slide.
+
+  content:
+    - name: children
+      description: One `<CarouselItem>` per slide.
+
+  methods: []
+
+adapters:
+  react:
+    component: CarouselDialog
+    status: implemented
+    import: "import { CarouselDialog, CarouselItem } from '@acronis-platform/ui-react'"
+    example: |
+      <CarouselDialog open>
+        <CarouselItem>Slide 1</CarouselItem>
+        <CarouselItem>Slide 2</CarouselItem>
+        <CarouselItem>Slide 3</CarouselItem>
+      </CarouselDialog>
+
+  vue:
+    element: AvCarouselDialog
+    status: planned
+    import: "import { AvCarouselDialog, AvCarouselItem } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvCarouselDialog v-model:open="open">
+        <AvCarouselItem>Slide 1</AvCarouselItem>
+        <AvCarouselItem>Slide 2</AvCarouselItem>
+      </AvCarouselDialog>
+
+  web-components:
+    element: ui-carousel-dialog
+    status: planned
+    import: "import '@acronis-platform/ui-wc/carousel-dialog'"
+    example: |
+      <ui-carousel-dialog open>
+        <ui-carousel-item>Slide 1</ui-carousel-item>
+        <ui-carousel-item>Slide 2</ui-carousel-item>
+      </ui-carousel-dialog>

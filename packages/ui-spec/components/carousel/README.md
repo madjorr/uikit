@@ -3,12 +3,17 @@
 A scrollable, paged sequence of slides with previous/next navigation, built on
 [Embla](https://www.embla-carousel.com/). Composable from parts; no variants.
 
-> **Status: draft (design-pending v1).** Ported from the legacy
-> `@acronis-platform/shadcn-uikit` `Carousel`. There is no `--ui-carousel-*`
-> token tier yet — the track/item carry no color at all, and the previous/next
-> controls reuse the already-tokenized `ButtonIcon` rather than inventing a
-> carousel-specific palette. Reconcile against Figma with
-> `/figma-component Carousel <url> --update` once a mockup lands.
+> **Status: draft (design-pending v1). Internal — not exported from the
+> package.** Ported from the legacy `@acronis-platform/shadcn-uikit`
+> `Carousel`. There is no `--ui-carousel-*` token tier yet — the track/item
+> carry no color at all, and the previous/next controls reuse the
+> already-tokenized `ButtonIcon` rather than inventing a carousel-specific
+> palette. `Carousel`/`CarouselContent`/`CarouselPrevious`/`CarouselNext`/
+> `useCarousel` aren't part of `@acronis-platform/ui-react`'s public API — only
+> `CarouselDialog` composes them (`CarouselItem` and the `CarouselApi` type
+> are re-exported for building its slides). Reconcile against Figma with
+> `/figma-component Carousel <url> --update` once a mockup lands, and revisit
+> whether to make this public then.
 
 ## When to use
 

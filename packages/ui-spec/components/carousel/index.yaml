@@ -8,7 +8,9 @@ description: >-
   of composable parts (content track, item, previous/next controls) built on
   Embla; arbitrary content (e.g. cards) is placed inside each item. Initial
   version ported from the legacy shadcn-uikit `Carousel`; design reconciliation
-  against Figma is pending.
+  against Figma is pending. Internal — not exported from
+  `@acronis-platform/ui-react`'s public API; only `CarouselDialog` composes it
+  (`CarouselItem` and `CarouselApi` are re-exported for building its slides).
 since: 0.58.0
 dependencies:
   components:

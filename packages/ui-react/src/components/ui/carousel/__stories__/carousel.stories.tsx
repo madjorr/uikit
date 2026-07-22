@@ -9,8 +9,13 @@ import {
 } from '../carousel';
 import { Card, CardContent } from '@/components/ui/card';
 
+// Not part of the public API — `Carousel` (and `CarouselContent`/
+// `CarouselPrevious`/`CarouselNext`/`useCarousel`) isn't exported from
+// `@acronis-platform/ui-react`'s package entry; only consumed internally by
+// `CarouselDialog`. Kept under `Internal/` (not `UI/`) so it's still visible
+// here for reference/dev purposes without implying it's a supported export.
 const meta = {
-  title: 'UI/Carousel',
+  title: 'Internal/Carousel',
   component: Carousel,
   parameters: { layout: 'centered' },
   tags: ['autodocs'],

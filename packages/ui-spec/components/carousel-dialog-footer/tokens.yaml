@@ -1,0 +1,35 @@
+spec_version: '1.0'
+component: CarouselDialogFooter
+
+# References only. Values live in @acronis-platform/tokens-pd (generated from
+# @acronis-platform/design-tokens) and resolve per brand/theme at paint time.
+# The Back/Next/Close buttons are ui-react's own `Button` (secondary/default)
+# and own their own token set — see that component's spec; only the dots
+# here are themed directly (reusing the already-tokenized ButtonIcon tier,
+# same rationale as Carousel's previous/next controls).
+#
+# Five more values are real, Figma-resolved numbers not yet in tokens-pd —
+# deliberately NOT listed below (this file lists resolvable token names only,
+# per the "references, never values" rule): gap-1.5 between dots (pending
+# --ui-carousel-dialog-listindicator-gap), the bar's gap-4/h-16/px-4 (pending
+# --ui-footer-global-gap/-height/-paddingx), and the bar's bg-background fill
+# (pending --ui-footer-carousel-color — an open design decision, not just a
+# sync gap: Figma has no value bound there at all).
+source: '@acronis-platform/tokens-pd'
+
+tokens:
+  - {
+      name: --ui-button-icon-global-container-color-active,
+      affects: dots,
+      description: Active dot's container fill (32px box). Idle dots use a transparent container — no dedicated idle-container token exists or is needed.,
+    }
+  - {
+      name: --ui-button-icon-global-icon-color-idle,
+      affects: dots,
+      description: Every dot's glyph color — idle AND active dots share this one token; only the container differs.,
+    }
+  - {
+      name: --ui-button-icon-global-container-border-radius,
+      affects: dots,
+      description: Corner radius of each dot's 32px container box.,
+    }

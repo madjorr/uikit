@@ -1,0 +1,9 @@
+spec_version: '1.0'
+component: CarouselDialog
+
+# CarouselDialog itself introduces no styling of its own — it is pure
+# composition (Dialog + Carousel + CarouselDialogFooter). Every token it
+# paints with belongs to one of those three specs; see them for the full set.
+source: '@acronis-platform/tokens-pd'
+
+tokens: []

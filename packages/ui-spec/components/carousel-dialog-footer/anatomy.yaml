@@ -1,0 +1,99 @@
+spec_version: '1.0'
+component: CarouselDialogFooter
+
+schematic: |
+  root: <div> (footer bar, wraps the "FooterCarousel" Figma node)
+  +----------------------------------------------------------------+
+  |  [back]        dots: ( o ) ( o ) ( o )              [next]     |
+  |                                                     [close]    |
+  +----------------------------------------------------------------+
+  back:  secondary Button, hidden in state=first
+  dots:  always exactly 3 slots; the active one's container fills
+  next:  default Button, hidden in state=last
+  close: default Button composed with DialogClose, shown only in state=last,
+         occupying next's slot
+
+root:
+  element: div
+  description: >-
+    The footer bar. Not polymorphic (no `render` prop) — a plain `<div>`
+    reading Carousel context via `useCarousel()` to derive its state.
+
+parts:
+  - id: back
+    description: >-
+      Scrolls to the earlier slide. A `Button` (`secondary` variant) calling
+      `scrollPrev()`. Hidden (not rendered) in state=first.
+    element: button
+    optional: true
+    visible_when: "state !== 'first'"
+  - id: dots
+    description: >-
+      The slide-position indicator. Always exactly 3 slots regardless of
+      total slide count (confirmed from Figma — the row has no step-count
+      parameter). Each slot is a 32px container around a 9.6px filled-circle
+      glyph; the active slot's container fills, idle containers stay
+      transparent. Idle and active glyphs share the same color.
+    element: div
+  - id: next
+    description: >-
+      Scrolls to the later slide. A `Button` (`default` variant) calling
+      `scrollNext()`. Hidden (not rendered) in state=last.
+    element: button
+    optional: true
+    visible_when: "state !== 'last'"
+  - id: close
+    description: >-
+      Closes the ambient Dialog. A `Button` (`default` variant) composed with
+      `DialogClose` via Base UI's `render` prop (not a manual `onClick`), so
+      activating it actually closes the dialog. Rendered only in state=last,
+      in `next`'s slot. Requires a `Dialog` ancestor once this state is
+      reached.
+    element: button
+    optional: true
+    visible_when: "state === 'last'"
+
+layout:
+  type: flex
+  direction: row
+  align: center
+  order: [back, dots, next]
+
+states:
+  - id: first
+    trigger: 'no earlier slide (ambient Carousel context: canScrollPrev() === false)'
+    kind: internal
+    affects: [back, dots, next, close]
+  - id: middle
+    trigger: 'both an earlier and a later slide exist'
+    kind: internal
+    affects: [back, dots, next, close]
+  - id: last
+    trigger: 'no later slide (ambient Carousel context: canScrollNext() === false)'
+    kind: internal
+    affects: [back, dots, next, close]
+  - id: hover
+    trigger: pointer hover over a control
+    kind: pseudo
+    pseudo: ':hover'
+    affects: [back, next, close]
+  - id: focus-visible
+    trigger: keyboard focus on a control
+    kind: pseudo
+    pseudo: ':focus-visible'
+    affects: [back, next, close]
+  - id: active
+    trigger: pointer or keyboard activation of a control
+    kind: pseudo
+    pseudo: ':active'
+    affects: [back, next, close]
+
+internal_state:
+  - id: position
+    type: "'first' | 'middle' | 'last'"
+    values: [first, middle, last]
+    initial: first
+    description: >-
+      Derived every render from the ambient Carousel context's
+      canScrollPrev()/canScrollNext() — never set directly, so it has no
+      controlling prop, uncontrolled default, or change event.

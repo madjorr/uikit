@@ -19,7 +19,14 @@ export * from './components/ui/button-menu';
 export * from './components/ui/calendar';
 export * from './components/ui/card';
 export * from './components/ui/card-filter';
-export * from './components/ui/carousel';
+// `Carousel` (the standalone slider — root, content, previous/next arrows,
+// `useCarousel`) is internal: not ready for public use (design-pending v1,
+// no Figma reconciliation), only consumed internally by `CarouselDialog`.
+// `CarouselItem` (+ the `CarouselApi` type, for typing a `setApi` callback)
+// stay public since building `CarouselDialog` slides requires them.
+export { CarouselItem, type CarouselApi } from './components/ui/carousel';
+export * from './components/ui/carousel-dialog';
+export * from './components/ui/carousel-dialog-footer';
 export * from './components/ui/chart';
 export * from './components/ui/checkbox';
 export * from './components/ui/chip';

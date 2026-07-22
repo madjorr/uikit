@@ -1,0 +1,46 @@
+spec_version: '1.0'
+component: CarouselDialogFooter
+
+# No custom properties: state is entirely derived from the ambient Carousel
+# context (see anatomy.yaml's `position` internal_state), never a prop.
+contract:
+  properties: []
+  content: []
+  methods: []
+
+adapters:
+  react:
+    component: CarouselDialogFooter
+    status: implemented
+    import: "import { CarouselDialogFooter } from '@acronis-platform/ui-react'"
+    example: |
+      <Carousel opts={{ startIndex: 0 }}>
+        <CarouselContent>
+          <CarouselItem>Slide 1</CarouselItem>
+          <CarouselItem>Slide 2</CarouselItem>
+          <CarouselItem>Slide 3</CarouselItem>
+        </CarouselContent>
+        <CarouselDialogFooter />
+      </Carousel>
+
+  vue:
+    element: AvCarouselDialogFooter
+    status: planned
+    import: "import { AvCarouselDialogFooter } from '@acronis-platform/ui-vue'"
+    example: |
+      <AvCarousel :opts="{ startIndex: 0 }">
+        <AvCarouselContent>
+          <AvCarouselItem>Slide 1</AvCarouselItem>
+        </AvCarouselContent>
+        <AvCarouselDialogFooter />
+      </AvCarousel>
+
+  web-components:
+    element: ui-carousel-dialog-footer
+    status: planned
+    import: "import '@acronis-platform/ui-wc/carousel-dialog-footer'"
+    example: |
+      <ui-carousel opts='{"startIndex": 0}'>
+        <ui-carousel-item>Slide 1</ui-carousel-item>
+        <ui-carousel-dialog-footer></ui-carousel-dialog-footer>
+      </ui-carousel>
