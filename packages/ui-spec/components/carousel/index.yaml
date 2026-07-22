@@ -1,0 +1,17 @@
+spec_version: '1.0'
+component: Carousel
+name: carousel
+status: draft
+category: layout
+description: >-
+  A scrollable, paged sequence of slides with previous/next navigation. A set
+  of composable parts (content track, item, previous/next controls) built on
+  Embla; arbitrary content (e.g. cards) is placed inside each item. Initial
+  version ported from the legacy shadcn-uikit `Carousel`; design reconciliation
+  against Figma is pending.
+since: 0.58.0
+dependencies:
+  components:
+    - ButtonIcon
+    - ArrowLeftIcon
+    - ArrowRightIcon

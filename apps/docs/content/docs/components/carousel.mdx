@@ -1,0 +1,84 @@
+---
+title: Carousel
+description: A scrollable, paged sequence of slides with previous/next navigation.
+---
+
+import { DemoReact } from '@/components/DemoReact';
+import { CarouselDemo } from '@/components/demos-react/carousel';
+
+## Usage
+
+```tsx
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from '@acronis-platform/ui-react';
+```
+
+`Carousel` is a compound component built on [Embla](https://www.embla-carousel.com/):
+`CarouselContent` wraps one `CarouselItem` per slide, and `CarouselPrevious`/
+`CarouselNext` drive navigation. This is a design-pending v1 with no
+`--ui-carousel-*` token tier yet — the track and items carry no color of their
+own (pure layout), and the nav controls reuse the already-tokenized
+`ButtonIcon` rather than a carousel-specific palette.
+
+## Examples
+
+<DemoReact>
+  <CarouselDemo />
+</DemoReact>
+
+Multiple items per view — add a basis utility to each item and a matching
+negative-margin/padding pair on the content:
+
+```tsx
+<Carousel className="w-full max-w-sm">
+  <CarouselContent className="-ml-2 md:-ml-4">
+    {items.map((item) => (
+      <CarouselItem key={item.id} className="pl-2 md:basis-1/2 md:pl-4">
+        <Card>
+          <CardContent className="flex aspect-square items-center justify-center p-6">
+            {item.label}
+          </CardContent>
+        </Card>
+      </CarouselItem>
+    ))}
+  </CarouselContent>
+  <CarouselPrevious />
+  <CarouselNext />
+</Carousel>
+```
+
+Vertical orientation:
+
+```tsx
+<Carousel orientation="vertical" className="w-full max-w-xs">
+  <CarouselContent className="h-[200px]">
+    {items.map((item) => (
+      <CarouselItem key={item.id}>{item.label}</CarouselItem>
+    ))}
+  </CarouselContent>
+  <CarouselPrevious />
+  <CarouselNext />
+</Carousel>
+```
+
+Looping — both nav controls stay enabled and wrap around at the ends:
+
+```tsx
+<Carousel opts={{ loop: true }}>{/* … */}</Carousel>
+```
+
+## API Reference
+
+<AutoTypeTable
+  path="../../packages/ui-react/src/components/ui/carousel/carousel.tsx"
+  name="CarouselProps"
+/>
+
+`CarouselContent` and `CarouselItem` accept the standard `<div>` attributes.
+`CarouselPrevious` and `CarouselNext` accept `ButtonIcon`'s props (they render
+one internally) and must be used inside a `Carousel`.
