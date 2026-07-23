@@ -16,7 +16,7 @@ import { CarouselDialogFooter } from '../carousel-dialog-footer';
 function FooterAtIndex({ startIndex }: { startIndex: number }) {
   return (
     <Dialog open>
-      <Carousel opts={{ startIndex }} className="w-80 border border-border">
+      <Carousel opts={{ startIndex }} className="w-full max-w-[464px] border border-border">
         <CarouselContent>
           <CarouselItem className="flex h-40 items-center justify-center">
             Slide 1
@@ -42,11 +42,33 @@ function FooterAtIndex({ startIndex }: { startIndex: number }) {
 function SingleSlideFooter() {
   return (
     <Dialog open>
-      <Carousel className="w-80 border border-border">
+      <Carousel className="w-full max-w-[464px] border border-border">
         <CarouselContent>
           <CarouselItem className="flex h-40 items-center justify-center">
             Only slide
           </CarouselItem>
+        </CarouselContent>
+        <CarouselDialogFooter />
+      </Carousel>
+    </Dialog>
+  );
+}
+
+// Renders `count` slides, seeded at `startIndex` — the position indicator
+// always renders exactly 3 dot slots regardless of `count` (see
+// behavior.md's "never grows or shrinks with slide count" scenario); these
+// stories vary the total to exercise that invariant across boundary counts
+// (2 slides never reach a "middle" state; 11 exercises a much larger range).
+function FooterWithSlideCount({ count, startIndex }: { count: number; startIndex: number }) {
+  return (
+    <Dialog open>
+      <Carousel opts={{ startIndex }} className="w-full max-w-[464px] border border-border">
+        <CarouselContent>
+          {Array.from({ length: count }, (_, index) => (
+            <CarouselItem key={index} className="flex h-40 items-center justify-center">
+              Slide {index + 1} of {count}
+            </CarouselItem>
+          ))}
         </CarouselContent>
         <CarouselDialogFooter />
       </Carousel>
@@ -80,12 +102,29 @@ export const SingleSlide: Story = {
   render: () => <SingleSlideFooter />,
 };
 
+// With only 2 slides, the footer never reaches its "middle" state — the very
+// first navigation already lands on the last slide (Back appears, Next is
+// replaced by Close).
+export const TwoSlides: Story = {
+  render: () => <FooterWithSlideCount count={2} startIndex={0} />,
+};
+
+export const FourSlides: Story = {
+  render: () => <FooterWithSlideCount count={4} startIndex={1} />,
+};
+
+// A large slide count — the dot indicator still renders exactly 3 slots, not
+// 11, and not the (incorrect) current-slide-out-of-11 count.
+export const ElevenSlides: Story = {
+  render: () => <FooterWithSlideCount count={11} startIndex={5} />,
+};
+
 // Demonstrates that Back/Next/Close and the position list's accessible name
 // are localizable via props, not baked into the component.
 export const CustomLabels: Story = {
   render: () => (
     <Dialog open>
-      <Carousel opts={{ startIndex: 1 }} className="w-80 border border-border">
+      <Carousel opts={{ startIndex: 1 }} className="w-full max-w-[464px] border border-border">
         <CarouselContent>
           <CarouselItem className="flex h-40 items-center justify-center">
             Diapositive 1
