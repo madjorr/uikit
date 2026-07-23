@@ -5270,9 +5270,9 @@
         "$value": {
           "colorSpace": "hsl",
           "components": [
-            0,
-            0,
-            100
+            300,
+            80,
+            98.04
           ]
         }
       },
