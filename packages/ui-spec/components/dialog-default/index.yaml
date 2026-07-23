@@ -1,0 +1,24 @@
+spec_version: '1.0'
+component: DialogDefault
+name: dialog-default
+status: draft
+category: overlays
+description: >-
+  A higher-level "recipe" dialog built on top of the Dialog primitive parts. A
+  single `variant` prop selects one of seven canned use-cases (default, rename,
+  save changes, reset password, discard changes, accept, read-only) — each with
+  its own title, body copy and footer buttons — while `children` overrides the
+  body slot and `hasLoading` shows a spinner overlay. Colors and typography
+  resolve to shipped semantic tokens; container/header/footer geometry has no
+  dedicated token tier yet (see tokens.yaml).
+since: 0.58.0
+figma:
+  node: '6343-58898'
+  codeConnect: packages/ui-react/src/components/ui/dialog-default/dialog-default.figma.tsx
+dependencies:
+  components:
+    - Dialog
+    - Button
+    - InputText
+    - Spinner
+    - TimesIcon

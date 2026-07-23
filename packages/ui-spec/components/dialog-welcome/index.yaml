@@ -1,0 +1,21 @@
+spec_version: '1.0'
+component: DialogWelcome
+name: dialog-welcome
+status: draft
+category: overlays
+description: >-
+  A higher-level "recipe" welcome/onboarding dialog built on top of the Dialog
+  primitive parts. It shows an illustration slot above a centered title and
+  description; `children` overrides the text block. The footer carousel (step-dot
+  indicator + Back/Next navigation) shown in Figma is intentionally out of scope —
+  it is a separate Carousel / CarouselDialogFooter component set, composed
+  alongside DialogWelcome when a stepped walkthrough footer is needed. Colors and
+  typography resolve to shipped semantic tokens; container geometry has no
+  dedicated token tier yet (see tokens.yaml).
+since: 0.58.0
+figma:
+  node: '6353-6164'
+  codeConnect: packages/ui-react/src/components/ui/dialog-welcome/dialog-welcome.figma.tsx
+dependencies:
+  components:
+    - Dialog

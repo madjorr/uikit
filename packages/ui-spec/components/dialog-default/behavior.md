@@ -1,0 +1,73 @@
+# DialogDefault — behavior
+
+DialogDefault is a recipe over the Dialog primitive: it owns the same `open`
+state and modal focus/scroll management, and adds a `variant`-driven preset for
+the title, body and footer.
+
+## Variants
+
+```gherkin
+Scenario: A variant selects its canned content
+  Given a DialogDefault with variant = "discard changes"
+  When it opens
+  Then the title reads "Discard changes"
+  And the body asks to confirm discarding changes
+  And the footer shows a "Go back" secondary and a destructive "Confirm"
+```
+
+```gherkin
+Scenario: The rename variant embeds a text field
+  Given a DialogDefault with variant = "rename"
+  When it opens
+  Then the body renders a text field prefilled with the current name
+```
+
+```gherkin
+Scenario: The read-only variant has a single action
+  Given a DialogDefault with variant = "read-only"
+  When it opens
+  Then the footer shows only a primary "Done" button (no secondary button)
+```
+
+## Body slot
+
+```gherkin
+Scenario: Children override the canned body
+  Given a DialogDefault with children provided
+  When it opens
+  Then the body renders the children instead of the variant's default copy
+  And the header title and footer buttons are unchanged
+```
+
+## Loading
+
+```gherkin
+Scenario: The loading overlay covers body and footer
+  Given an open DialogDefault with hasLoading = true
+  Then a spinner overlay is shown from just below the header to the bottom
+  And it is hidden when hasLoading is false
+```
+
+## Opening & closing
+
+```gherkin
+Scenario: Dismissing via the secondary button
+  Given an open DialogDefault with a secondary button
+  When the user activates it
+  Then the dialog closes and open-change(false) fires
+```
+
+```gherkin
+Scenario: Dismissing with the keyboard
+  Given an open modal DialogDefault
+  When the user presses Escape
+  Then the dialog closes and open-change(false) fires
+```
+
+```gherkin
+Scenario: Controlled
+  Given a DialogDefault with a fixed open prop
+  When the user attempts to dismiss it
+  Then internal state does NOT change on its own
+  And open-change fires so the consumer can update the open prop
+```

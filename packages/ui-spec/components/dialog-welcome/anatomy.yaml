@@ -1,0 +1,86 @@
+spec_version: '1.0'
+component: DialogWelcome
+
+# NOTE: the footer carousel (step-dot indicator + Back/Next navigation) shown in
+# the Figma frame is intentionally OUT of scope here — it is a separate
+# Carousel / CarouselDialogFooter component set, composed alongside DialogWelcome
+# when a stepped walkthrough footer is needed. DialogWelcome renders no footer.
+
+schematic: |
+  ─ when open ─────────────────────────────────────────────────
+  overlay: full-screen scrim (from DialogContent)
+  +===========================================================+
+  |  root/container: <div role="dialog"> (centered popup card) |
+  |   +-----------------------------------------------------+ |
+  |   | body:                                               | |
+  |   |   image: illustration slot (272px tall)             | |
+  |   |   title ....................... (centered, 24px)    | |
+  |   |   description ................. (centered, 14px)    | |
+  |   +-----------------------------------------------------+ |
+  +===========================================================+
+     container -> bg-muted (surface-secondary), rounded, shadow
+     title / description -> text-foreground, centered
+     (no footer — the carousel footer is a separate component)
+
+root:
+  element: div
+  role: dialog
+  description: >-
+    The modal popup (Base UI `Dialog.Popup` via `DialogContent`), centered and
+    portaled. Carries `role="dialog"`/`aria-modal`, is labelled by the title,
+    traps focus, and locks scroll while open. This variant has no header or
+    footer bar.
+
+parts:
+  - id: container
+    description: >-
+      The rounded surface card (the popup) that holds the body. Surface-secondary
+      fill with a shadow; min-width 256px, 512px wide.
+    element: div
+  - id: image
+    description: >-
+      Illustration / media slot at the top of the body (272px tall, rounded).
+      Renders the `image` node; empty when none is provided.
+    element: div
+  - id: title
+    description: >-
+      The dialog's accessible name (Base UI `Dialog.Title`), wired to
+      `aria-labelledby`. Centered 24px text below the image.
+    element: h2
+  - id: description
+    description: >-
+      Supporting copy below the title (Base UI `Dialog.Description`), wired to
+      `aria-describedby`. Centered 14px text.
+    element: p
+
+layout:
+  type: flex
+  direction: column
+  order: [image, title, description]
+
+internal_state:
+  - id: open
+    type: boolean
+    values: [false, true]
+    initial: false
+    controllable_via: [open]
+    controlled_default: default-open
+    emits: open-change
+    changed_by: >-
+      controlled `open`/`default-open`; Esc / outside-press closes when
+      uncontrolled
+    description: Whether the dialog is shown; reflected to the popup + overlay.
+
+states:
+  - {
+      id: open,
+      trigger: 'internal open === true (data-[open])',
+      kind: internal,
+      affects: [root, container],
+    }
+  - {
+      id: closed,
+      trigger: 'internal open === false (data-[closed])',
+      kind: internal,
+      affects: [root, container],
+    }

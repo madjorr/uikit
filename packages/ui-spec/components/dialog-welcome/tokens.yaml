@@ -1,0 +1,39 @@
+spec_version: '1.0'
+component: DialogWelcome
+
+# References only. Values live in @acronis-platform/tokens-pd (generated from
+# @acronis-platform/design-tokens) and resolve per brand/theme at paint time.
+#
+# COLORS + TYPOGRAPHY are fully tokenized: DialogWelcome reuses the shared
+# semantic tokens (via the bridged Tailwind names bg-muted / text-foreground and
+# the backdrop token inside DialogContent) — nothing is hand-authored.
+#
+# GEOMETRY IS A KNOWN GAP (tracked technical debt, not an oversight): there is no
+# `--ui-dialog-*` component token tier in tokens-pd yet, so the container/body
+# geometry (border-radius 8px, min-width 256px, width 512px, image height 272px +
+# 4px radius, body gaps 12px/4px, 16px horizontal insets) is applied as plain
+# Tailwind utilities in the ui-react source. Replace those with a dedicated tier
+# once the design team ships one in tokens-pd. This mirrors dialog.tsx /
+# dialog-default.tsx.
+#
+# The footer carousel (and its --ui-background-surface-active / ButtonIcon dot
+# tokens) is out of scope here — see the separate Carousel / CarouselDialogFooter
+# component set.
+source: '@acronis-platform/tokens-pd'
+
+tokens:
+  - {
+      name: --ui-background-backdrop-screen,
+      affects: root,
+      description: Scrim color behind the popup (via DialogContent overlay),
+    }
+  - {
+      name: --ui-background-surface-secondary,
+      affects: container,
+      description: 'Container surface (bridged bg-muted); also the empty image-slot fallback',
+    }
+  - {
+      name: --ui-text-on-surface-primary,
+      affects: title,
+      description: Title + description text color (bridged as `text-foreground`),
+    }
