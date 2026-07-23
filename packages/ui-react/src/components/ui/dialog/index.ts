@@ -12,5 +12,9 @@ export {
   DialogBody,
   DialogDescription,
   dialogContentVariants,
+  DialogDefault,
   type DialogContentProps,
+  type DialogCloseButtonProps,
+  type DialogDefaultProps,
+  type DialogDefaultVariant,
 } from './dialog';

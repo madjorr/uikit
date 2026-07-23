@@ -14,6 +14,10 @@ import {
   DialogTrigger,
 } from '../dialog';
 
+// Dialog is the internal composable primitive DialogDefault is built on — it
+// is NOT exported from the package root. This story exists for internal
+// Storybook/VR coverage of the primitive only; consumers should use
+// DialogDefault (see the UI/DialogDefault story).
 const meta = {
   title: 'UI/Dialog',
   component: Dialog,
@@ -45,8 +49,6 @@ const meta = {
       description: 'Fires when the dialog opens or closes.',
       table: { type: { summary: '(open, eventDetails) => void' }, category: 'Events' },
     },
-    // `size` is a `DialogContent` prop (not a Dialog root prop), so it isn't an
-    // arg here — see the `Large` story and the API reference for the scale.
     children: {
       control: false,
       description:
@@ -83,49 +85,3 @@ export const Default: Story = {
   ),
 };
 
-export const Confirmation: Story = {
-  render: () => (
-    <Dialog defaultOpen>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Run backup now?</DialogTitle>
-        </DialogHeader>
-        <DialogBody>
-          <DialogDescription>
-            A full backup of all 24 workloads will start immediately.
-          </DialogDescription>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="ghost">Cancel</Button>
-          <Button>Run backup</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  ),
-};
-
-// `DialogContent` takes a `size` prop (max-width): xs 464 · sm 512 (default) ·
-// md 672 · lg 832 · xl 992 · 2xl 1136 (px).
-export const Large: Story = {
-  render: () => (
-    <Dialog defaultOpen>
-      <DialogContent size="lg">
-        <DialogHeader>
-          <DialogTitle>Configure discovery agent</DialogTitle>
-          <DialogCloseButton />
-        </DialogHeader>
-        <DialogBody>
-          <DialogDescription>
-            The discovery agent will obtain the neighbor IP addresses by using
-            NetBIOS discovery, Web Service Discovery (WSD), and Address
-            Resolution Protocol (ARP) table.
-          </DialogDescription>
-        </DialogBody>
-        <DialogFooter>
-          <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-          <Button>Configure</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  ),
-};

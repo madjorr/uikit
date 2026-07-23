@@ -51,11 +51,6 @@ const RENDER: Record<string, RenderHint> = {
   // grid is a misleading (and focus-trap-fighting) snapshot. The hand-written
   // stories cover each variant in its own story (one clean modal per snapshot).
   'dialog-default': { skip: true },
-  // A portaled, focus-trapping modal with required props (step / totalSteps /
-  // title / description / onNext) and no cva variant axis — an auto-generated
-  // "All states" grid can't render it meaningfully. The hand-written stories
-  // cover each step state in its own clean single-modal snapshot.
-  'dialog-welcome': { skip: true },
   avatar: {
     extraImports: ["import { AvatarFallback } from '../avatar';"],
     sample: '\n      <AvatarFallback>SN</AvatarFallback>\n    ',

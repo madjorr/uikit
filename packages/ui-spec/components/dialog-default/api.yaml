@@ -21,6 +21,28 @@ contract:
       description: >-
         Shows a spinner overlay across the body + footer (inset from just below
         the header to the bottom).
+    - name: title
+      type: string
+      required: false
+      description: >-
+        Overrides the variant's default title, for localization or copy
+        changes.
+    - name: secondaryLabel
+      type: string
+      required: false
+      description: >-
+        Overrides the variant's default secondary (dismiss) button label.
+        Passing this on a variant with no secondary button by default (e.g.
+        `read-only`) also makes the button appear.
+    - name: primaryLabel
+      type: string
+      required: false
+      description: Overrides the variant's default primary button label.
+    - name: closeLabel
+      type: string
+      required: false
+      default: "'Close'"
+      description: Overrides the close button's accessible name.
     - name: open
       type: boolean
       required: false

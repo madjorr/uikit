@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DialogDefault } from '../dialog-default';
+import { DialogDefault } from '../dialog';
 
 const VARIANTS = [
   'default',
@@ -39,10 +39,11 @@ const meta = {
     },
     size: {
       control: 'select',
-      options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-      description: 'Popup max-width (forwarded to DialogContent).',
+      options: ['sm'],
+      description:
+        'Popup max-width (forwarded to DialogContent). Only `sm` is defined today.',
       table: {
-        type: { summary: "'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'" },
+        type: { summary: "'sm'" },
         defaultValue: { summary: "'sm'" },
         category: 'Appearance',
       },
@@ -78,6 +79,31 @@ const meta = {
       control: false,
       description: "Overrides the variant's default body content.",
       table: { type: { summary: 'ReactNode' }, category: 'Content' },
+    },
+    title: {
+      control: 'text',
+      description: "Overrides the variant's default title.",
+      table: { type: { summary: 'string' }, category: 'Content' },
+    },
+    secondaryLabel: {
+      control: 'text',
+      description:
+        "Overrides the variant's default secondary (dismiss) button label. Passing this on a variant with no secondary button by default also makes the button appear.",
+      table: { type: { summary: 'string' }, category: 'Content' },
+    },
+    primaryLabel: {
+      control: 'text',
+      description: "Overrides the variant's default primary button label.",
+      table: { type: { summary: 'string' }, category: 'Content' },
+    },
+    closeLabel: {
+      control: 'text',
+      description: "Overrides the close button's accessible name.",
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: "'Close'" },
+        category: 'Content',
+      },
     },
     portal: {
       control: false,

@@ -1,5 +1,12 @@
 # Dialog
 
+> **Internal-only.** Not exported from `@acronis-platform/ui-react`. This is
+> the composable primitive `DialogDefault` is built on — use
+> [`DialogDefault`](../dialog-default/README.md) instead. Documented here
+> because its source lives alongside `DialogDefault`'s
+> (`packages/ui-react/src/components/ui/dialog/`) and other internal code
+> (tests, Storybook VR coverage) still references it directly.
+
 A modal overlay that interrupts the user to show focused content or request a
 decision. Composable from parts; built on the Base UI Dialog primitive.
 
@@ -12,15 +19,9 @@ decision. Composable from parts; built on the Base UI Dialog primitive.
 
 ## When to use
 
-- Confirming a destructive or significant action ("Delete account?").
-- Showing a focused, self-contained task that should block the rest of the UI
-  until completed or dismissed (a short form, details, a decision).
-
-## When not to use
-
-- For transient, non-blocking feedback — use a toast.
-- For contextual hints anchored to an element — use a tooltip or popover.
-- For large, navigable content — prefer a full page or a side panel.
+- Never directly — it has no public export. Use `DialogDefault`; if none of
+  its seven canned use-cases fit, that's a gap to raise with the design system
+  team (a new variant), not a reason to reach for this primitive.
 
 ## Parts
 
@@ -40,14 +41,16 @@ decision. Composable from parts; built on the Base UI Dialog primitive.
 
 ## Sizes
 
-`DialogContent` takes a `size` prop controlling the popup max-width: `xs` 464 ·
-`sm` 512 (default) · `md` 672 · `lg` 832 · `xl` 992 · `2xl` 1136 (px). These
-mirror the reference design's six width steps; until a `--ui-dialog-*` tier
-defines them they are plain max-width utilities.
+`DialogContent` takes a `size` prop controlling the popup max-width. Only `sm`
+(512px, default) has a Figma-defined token (`--ui-dialog-container-size-sm`)
+today; it stays a variant axis so a wider size can be added later without an
+API change.
 
-## Example
+## Example (internal usage only)
 
 ```tsx
+// NOT a public import — './dialog' is an internal module path, shown here
+// only to document what DialogDefault composes internally.
 import {
   Dialog,
   DialogTrigger,
@@ -59,8 +62,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-  Button,
-} from '@acronis-platform/ui-react';
+} from './dialog';
+import { Button } from '../button';
 
 <Dialog>
   <DialogTrigger render={<Button variant="secondary">Open dialog</Button>} />

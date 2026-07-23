@@ -21,7 +21,9 @@ most common dialog use-cases, so product code doesn't reassemble the same
 
 ## When not to use
 
-- You need a bespoke layout or extra parts — compose the `Dialog` parts directly.
+- You need a bespoke layout or extra parts none of the seven variants cover —
+  this is a gap to raise with the design system team (the underlying `Dialog`
+  primitive is internal-only, not a public escape hatch).
 - For transient, non-blocking feedback — use a toast.
 - For contextual hints anchored to an element — use a tooltip or popover.
 
@@ -64,4 +66,15 @@ import { DialogDefault } from '@acronis-platform/ui-react';
 
 // Busy state
 <DialogDefault variant="save changes" hasLoading open />;
+
+// Localize the canned copy (title/secondaryLabel/primaryLabel/closeLabel all
+// override the variant's default English string)
+<DialogDefault
+  variant="discard changes"
+  title="Modifications non enregistrées"
+  secondaryLabel="Retour"
+  primaryLabel="Confirmer"
+  closeLabel="Fermer"
+  open
+/>;
 ```
