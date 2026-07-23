@@ -5,10 +5,9 @@ flanking a fixed three-dot slide-position indicator. Renders inside a
 `<Carousel>` and derives its first/middle/last treatment from that Carousel's
 own context — it takes no `variant` prop.
 
-> **Status: draft.** Backed by two real Figma nodes (the wrapping bar and its
-> inner row), but five geometry/fill values are still TEMP hardcodes pending
-> a `tokens-pd` sync, and the bar's own fill has no Figma-bound value at all
-> (an open design decision). See `tokens.yaml`.
+> Backed by two real Figma nodes (the wrapping bar and its inner row) — see
+> `tokens.yaml` for the full token set, including the footer bar's own
+> geometry/fill.
 
 ## When to use
 

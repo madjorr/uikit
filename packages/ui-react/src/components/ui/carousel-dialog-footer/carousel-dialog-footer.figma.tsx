@@ -1,5 +1,5 @@
 // Figma Code Connect — status: COMPLETE
-// Mapped to the "FooterCarousel" node in the shadcn-uikit Figma file (fileKey
+// Mapped to the "FooterCarousel" node in the ui-react Figma file (fileKey
 // lrU3ydIyvPYQNE6ixdsKtJ), which wraps the "CarouselDialog" row (variant
 // first/middle/last). CarouselDialogFooter has no `variant` prop of its own —
 // the row/bar state is derived from the ambient <Carousel /> context, not set
@@ -12,7 +12,7 @@ import { CarouselDialogFooter } from './carousel-dialog-footer';
 
 figma.connect(
   CarouselDialogFooter,
-  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/shadcn-uikit?node-id=6353-5864',
+  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/ui-react?node-id=6353-5864',
   {
     props: {
       startIndex: figma.enum('variant', {

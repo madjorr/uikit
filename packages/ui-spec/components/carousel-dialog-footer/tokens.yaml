@@ -7,14 +7,6 @@ component: CarouselDialogFooter
 # and own their own token set — see that component's spec; only the dots
 # here are themed directly (reusing the already-tokenized ButtonIcon tier,
 # same rationale as Carousel's previous/next controls).
-#
-# Five more values are real, Figma-resolved numbers not yet in tokens-pd —
-# deliberately NOT listed below (this file lists resolvable token names only,
-# per the "references, never values" rule): gap-1.5 between dots (pending
-# --ui-carousel-dialog-listindicator-gap), the bar's gap-4/h-16/px-4 (pending
-# --ui-footer-global-gap/-height/-paddingx), and the bar's bg-background fill
-# (pending --ui-footer-carousel-color — an open design decision, not just a
-# sync gap: Figma has no value bound there at all).
 source: '@acronis-platform/tokens-pd'
 
 tokens:
@@ -32,4 +24,29 @@ tokens:
       name: --ui-button-icon-global-container-border-radius,
       affects: dots,
       description: Corner radius of each dot's 32px container box.,
+    }
+  - {
+      name: --ui-carousel-dialog-list-indicator-gap,
+      affects: dots,
+      description: Gap between the 3 dot slots.,
+    }
+  - {
+      name: --ui-footer-global-height,
+      affects: root,
+      description: Height of the footer bar.,
+    }
+  - {
+      name: --ui-footer-global-gap,
+      affects: root,
+      description: Gap between the bar's boxLeft/dots/boxRight regions.,
+    }
+  - {
+      name: --ui-footer-global-padding-x,
+      affects: root,
+      description: Horizontal padding of the footer bar.,
+    }
+  - {
+      name: --ui-footer-carousel-color,
+      affects: root,
+      description: Footer bar's own background fill. Resolves to transparent — Figma's "unset" placeholder for this node.,
     }

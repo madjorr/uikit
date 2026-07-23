@@ -1,7 +1,7 @@
 spec_version: '1.0'
 component: CarouselDialogFooter
 name: carousel-dialog-footer
-status: draft
+status: ready
 category: overlays
 description: >-
   The footer bar for a CarouselDialog: a Back/Next/Close action pair flanking
@@ -11,10 +11,6 @@ description: >-
   nodes, implemented as one part: the wrapping bar ("FooterCarousel" in
   Figma's own naming) and its inner row ("CarouselDialog" in Figma's naming —
   inverted from this library's, where CarouselDialog is the whole modal).
-  Five geometry/fill values are still TEMP hardcodes pending a tokens-pd sync
-  (see tokens.yaml); the bar's own fill has no Figma-bound value at all and
-  needs a design decision, not just a sync — status stays draft until both
-  resolve.
 since: 0.58.0
 dependencies:
   components:
