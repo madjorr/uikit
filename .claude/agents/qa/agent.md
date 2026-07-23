@@ -54,6 +54,19 @@ Report each as **PASS** / **FAIL** (new error = FAIL, pre-existing = WARNING).
 - [ ] Any new color name is bridged in `src/styles/index.css` `@theme inline`,
       not forked from `design-theme`.
 
+**Localization / RTL** (see `packages/ui-react/context/conventions.md`):
+
+- [ ] No text the component renders on its own (`aria-label` fallback,
+      `sr-only` copy, placeholder/empty-state/tooltip strings) is inlined as a
+      literal — it comes from a prop, literal only as that prop's default.
+      Consumer-supplied `children`/`label` values don't count.
+- [ ] No physical directional Tailwind utility (`ml-`/`mr-`, `pl-`/`pr-`,
+      `left-`/`right-`) where a logical one (`ms-`/`me-`, `ps-`/`pe-`,
+      `start-`/`end-`) applies; directional icons that should flip under
+      `dir="rtl"` have an explicit `rtl:`/`ltr:` variant.
+- [ ] Check this on **every** change to component source, including a small
+      follow-up fix — not just on new components.
+
 **Tests & stories:**
 
 - [ ] Vitest + RTL test exists under `__tests__/`, asserts the public contract.

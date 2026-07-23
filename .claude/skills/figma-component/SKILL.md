@@ -251,6 +251,17 @@ Conventions (mirror Button):
 mergeProps<'tag'>({…}, props) })`.
 - Export everything from `index.ts`, then add a line to
   `packages/ui-react/src/index.ts` (keep it alphabetical).
+- **Localization**: any text the component renders on its own (`aria-label`
+  fallback, `sr-only` copy, placeholder/empty-state/tooltip strings that the
+  design shows as static labels) must be a prop with that string only as its
+  default — never inlined in JSX. `children`/other consumer-supplied content
+  is fine as-is. See `context/conventions.md#localization--no-hardcoded-labels`.
+- **RTL**: use logical Tailwind utilities (`ms-`/`me-`, `ps-`/`pe-`,
+  `start-`/`end-`), never physical ones (`ml-`/`mr-`, `pl-`/`pr-`,
+  `left-`/`right-`), unless the design genuinely anchors to a physical edge
+  regardless of direction (e.g. a `side="left"` variant). Directional icons
+  that should flip need an explicit `rtl:`/`ltr:` variant. See
+  `context/conventions.md#rtl--bidirectional-layout`.
 
 For a **composable** component, export the full set of parts (see breadcrumb:
 `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`,
@@ -418,6 +429,10 @@ the committed baselines still pass, and commit no PNGs.
 
 - [ ] `src/components/ui/<name>/<name>.tsx` — Base UI + `--ui-*` tokens, no hex.
 - [ ] `index.ts` + export line in `src/index.ts`.
+- [ ] No component-rendered text hardcoded — self-generated labels are prop
+      defaults, not inlined literals.
+- [ ] No physical directional utility where a logical one applies; directional
+      icons that should mirror under `dir="rtl"` have an explicit variant.
 - [ ] `__tests__/<name>.test.tsx` — render, variants/states, a11y roles, ref,
       `render`-prop composition.
 - [ ] `__stories__/<name>.stories.tsx` (hand) + `<name>.generated.stories.tsx`.

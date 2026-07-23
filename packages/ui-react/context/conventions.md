@@ -69,6 +69,47 @@ the token is**, not by habit:
 - Lean on Base UI primitives for keyboard nav, focus management, and ARIA.
 - A11y is checked in Storybook via `@storybook/addon-a11y`.
 
+## Localization — no hardcoded labels
+
+There is no i18n library in this repo (no `react-intl`/`i18next`). Consumers
+localize by controlling the text they pass in — `children`, a `label` prop,
+an `aria-label` prop, a render prop. A component is only "hardcoded" when
+**the component itself** bakes in a string the consumer has no way to
+override:
+
+- Every piece of user-facing text the component renders on its own —
+  `aria-label`/`aria-labelledby` fallback text, `sr-only` helper text,
+  placeholder copy, empty-state/error copy, a tooltip string — must come from
+  a prop, with the literal only ever used as that prop's **default value**
+  (`ariaLabel = 'More pages'`), never inlined directly in the JSX output.
+- Consumer-supplied content (`<Button>Submit</Button>`, a `children` render
+  prop, a `label` prop's value) is **not** a violation — the consumer already
+  controls it and can localize at their layer.
+- Static demo/story/Figma-fixture text (`.stories.tsx`, `.figma.tsx`) is
+  exempt — it's example data, not shipped UI.
+- Applies **to every change that touches component source**, not just new
+  components — a one-line fix that introduces a literal string is the same
+  violation as shipping it on day one.
+
+## RTL / bidirectional layout
+
+Every component must render correctly under `dir="rtl"` (Base UI/the app
+shell sets `dir` on an ancestor; components don't set it themselves).
+
+- **Use logical Tailwind utilities** (`ms-`/`me-`, `ps-`/`pe-`, `start-`/
+  `end-`) for anything that should mirror in RTL — never physical ones
+  (`ml-`/`mr-`, `pl-`/`pr-`, `left-`/`right-`). See `switch.tsx`,
+  `breadcrumb.tsx`, `sidebar-secondary.tsx`, `avatar.tsx`, `input-text.tsx`
+  for the existing pattern.
+- **Directional icons/artwork that should flip** (e.g. a "next"/"back"
+  chevron) need an explicit `rtl:`/`ltr:` Tailwind variant (e.g.
+  `rtl:rotate-180`) — logical positioning alone doesn't mirror the artwork
+  itself. Icons that are direction-**agnostic** (e.g. a checkmark, an
+  external-link glyph) must not be flipped.
+- Applies **to every change that touches component source**, not just new
+  components — a follow-up fix that reintroduces a physical `ml-`/`pr-`/
+  `left-` utility is a regression even if the original component was correct.
+
 ## Theming source of truth
 
 `@acronis-platform/design-tokens` (upstream source package; raw Design Tokens

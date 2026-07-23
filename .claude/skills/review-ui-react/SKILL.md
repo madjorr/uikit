@@ -9,8 +9,10 @@ description: >
   that feed its styling/icons, its other declared dependencies, and
   consumer apps that render it: impact review; everything else: listed
   only), statically verifies --ui-* token resolution and repo conventions
-  (no --av-*, no hardcoded colors, tier imports present, changeset present)
-  against the PR's HEAD commit — not just main — using only local
+  (no --av-*, no hardcoded colors, tier imports present, changeset present,
+  plus advisory greps for hardcoded labels and physical directional
+  utilities that risk breaking RTL) against the PR's HEAD commit — not just
+  main — using only local
   tokens-pd/design-tokens data (no Figma value queries), checks whether a
   source change requires a regeneration command that wasn't run in the same
   PR (design-tokens → tokens-pd, icons-svg → icons-sprite, a component change
@@ -144,6 +146,14 @@ contains and exit — don't run devil-advocate on nothing.
      devil-advocate in step 8.
    - `ICONS_SVG_NEXT_CHANGED` and `VR_BASELINE_HEURISTIC` are advisory only —
      read them, decide whether they're worth a finding, don't auto-escalate.
+   - `HARDCODED_LABELS_ADVISORY` / `RTL_PHYSICAL_UTILITY_ADVISORY` are heuristic
+     greps over added lines in changed component source (see
+     `packages/ui-react/context/conventions.md`), also advisory only. A hit is
+     only a real finding if the string truly has no way for the consumer to
+     override it, or the physical utility truly needs to mirror under
+     `dir="rtl"` — a `side="left"` variant or symmetric centering
+     (`left-1/2 -translate-x-1/2`) is a legitimate false positive; check the
+     surrounding code before reporting it as Important/Critical.
    - For any component under `packages/ui-react/src/components/ui/<X>/` that
      changed, reuse the existing gate instead of re-deriving it — pass
      `refs/pr/<num>` as the optional second argument so it audits the
@@ -318,6 +328,8 @@ generated-artifact-pipeline dependencies, and its direct consumers
 | Hardcoded hex/hsl/oklch on added lines                                            | PASS/FAIL (list)            |
 | Tier `@import` present in styles/index.css                                        | PASS/FAIL (list)            |
 | Changeset present (published package)                                             | PASS/FAIL                   |
+| Hardcoded label introduced (advisory — confirm it's a prop default)               | none / flagged (list)       |
+| Physical directional utility introduced (advisory — RTL risk)                     | none / flagged (list)       |
 | Visual snapshot PNGs changed                                                      | N/A / flagged               |
 | `tokens-pd` regenerated after `design-tokens` change                              | PASS/FAIL/N/A               |
 | `icons-sprite` regenerated after `icons-svg` change                               | PASS/FAIL/N/A               |

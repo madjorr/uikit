@@ -4,14 +4,16 @@ description: >
   Read-only pre-flight gate that audits ui-react components for token drift and
   spec/test completeness BEFORE running /figma-component. Per component it checks
   that every --ui-* reference resolves in tokens-pd, that each referenced token
-  tier is imported in styles/index.css, that the ui-spec 7-file set is present and
+  tier is imported in styles/index.css, that no Radix/asChild import crept into
+  ui-react (Base UI only), that the ui-spec 7-file set is present and
   conformance passes, that tests exist, and that the Figma link is intact
-  (index.yaml node + a COMPLETE Code Connect). A deep mode adds Figma design
-  parity: structural (variants/states), value-level (each design variable's value
-  == the referenced --ui-* token's resolved value), and an advisory screenshot
-  pixel-diff — via the Figma MCP + bundled scripts. Reports a
-  READY / DRIFT / INCOMPLETE matrix; never edits files. Invoke with
-  /component-readiness [ComponentName | all].
+  (index.yaml node + a COMPLETE Code Connect) — plus advisory heuristics for
+  hardcoded labels, physical directional (RTL-risk) utilities, and a missing or
+  stale apps/docs page. A deep mode adds Figma design parity: structural
+  (variants/states), value-level (each design variable's value == the referenced
+  --ui-* token's resolved value), and an advisory screenshot pixel-diff — via the
+  Figma MCP + bundled scripts. Reports a READY / DRIFT / INCOMPLETE matrix; never
+  edits files. Invoke with /component-readiness [ComponentName | all].
 argument-hint: '[ComponentName | all]'
 ---
 
@@ -61,6 +63,7 @@ mirrors `/figma-component` Phase 2.
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
 | **TOKENS**  | Every `--ui-*` referenced in the component's code (`.tsx`/`.ts`: `var(--ui-*)` bindings, test/story class assertions) **and** in its `ui-spec` YAML (`tokens.yaml`, `anatomy.yaml`) resolves to a token defined in `packages/tokens-pd/css/**`.                                                             | **Yes** → DRIFT                |
 | **IMPORTS** | Every component **tier** whose tokens it references (e.g. `--ui-radio-*` → `Radio`) is `@import`-ed in `packages/ui-react/src/styles/index.css`. Component tiers are **opt-in**; a missing import means the tokens are undefined at runtime even though they exist in `tokens-pd`.                          | **Yes** → DRIFT                |
+| **IMPL**    | No `@radix-ui` import or `asChild` prop in the component's own `.tsx` — `ui-react` is Base UI only (`useRender`/`mergeProps`), never Radix/`asChild`/`Slot`. This is the one objective slice of "implementation correctness" a grep can decide; see the agent step below for the rest.                      | **Yes** → DRIFT                |
 | **SPEC**    | The `ui-spec` 7-file set is present (`index.yaml`, `anatomy.yaml`, `api.yaml`, `tokens.yaml`, `behavior.md`, `accessibility.md`, `README.md`).                                                                                                                                                              | No → INCOMPLETE                |
 | **TESTS**   | `__tests__/<name>.test.tsx` exists.                                                                                                                                                                                                                                                                         | No → INCOMPLETE                |
 | **FIGMA**   | **Linkage parity:** `index.yaml` has a `figma.node` **and** a `<name>.figma.tsx` marked `COMPLETE` whose `figma.codeConnect` path resolves. Values: `LINKED` / `DRAFT` (Code Connect unfinished) / `PARTIAL` (one side missing/broken) / `NONE`. The script surfaces both node IDs for the live diff below. | No → INCOMPLETE (NONE/PARTIAL) |
@@ -72,6 +75,32 @@ mirrors `/figma-component` Phase 2.
 **Non-blocking advisory:** stale `--ui-*` token names mentioned in spec **prose**
 (`behavior.md` etc.) that no longer resolve are reported but do **not** fail the
 gate (prose is documentation, not a live binding) — clean them during an update.
+
+**Non-blocking advisory — Localization / RTL:** two more heuristic greps run
+per component (see `packages/ui-react/context/conventions.md` for the actual
+rule) and print a note, never fail the gate — they're pattern matches, not
+semantic analysis, so judge each hit:
+
+- **Hardcoded label** — a literal string sits in `aria-label`/`placeholder`/
+  `title` or bare JSX text in the component's own `.tsx` where a prop default
+  belongs. Real hit: `pagination.tsx`'s `sr-only` "More pages" span has no
+  override. False-positive shape: a `.figma.tsx`/`.stories.tsx`/`.test.tsx`
+  file (excluded already) or example/demo text.
+- **Physical directional utility** — `ml-`/`mr-`/`pl-`/`pr-`/`left-`/`right-`
+  where a logical one (`ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`) should mirror
+  under `dir="rtl"`. Real hit: `calendar.tsx`'s `pl-2 pr-1`. False-positive
+  shape: symmetric centering (`left-1/2 -translate-x-1/2`) or a named `side`
+  variant (`sheet.tsx`'s `side="left"`) that's intentionally anchored to a
+  physical edge regardless of direction — use judgment, don't blanket-convert.
+
+**Non-blocking advisory — Docs:** `apps/docs/content/docs/components/<name>.mdx`
+existence and a prop-mention check (only runs when the component declares its
+own `Props` interface — nothing to check for a component that's purely
+`React.ComponentProps<'tag'>`). Never blocking, because not every component has
+a docs page by design — only `/legacy-component` writes one (Phase 5);
+`/figma-component` doesn't touch `apps/docs` at all. A missing page or an
+unmentioned prop is a genuine signal on a component you know went through
+`/legacy-component` or has a docs page already; it's expected noise otherwise.
 
 ---
 
@@ -174,13 +203,46 @@ diff PNG. Crop the Storybook capture to just the component for the cleanest resu
 
 ---
 
+## Implementation conformance & spec/docs content accuracy (agent step)
+
+The static checks above prove **files exist** and **references resolve** — they
+can't judge whether the content is actually right. That needs reading, the same
+way the Figma-parity section above requires reading the design instead of
+grepping it. Walk this checklist by hand for each component you're auditing
+(reuses the `qa`/`devil-advocate` repo-specific checklists — don't re-derive it):
+
+**Implementation conformance** — read the component against
+[`.claude/agents/qa/agent.md`](../../agents/qa/agent.md)'s "Component-level
+checks" (or [`devil-advocate/agent.md`](../../agents/devil-advocate/agent.md)'s
+mirror): right primitive for the interaction (Base UI `useRender`/`mergeProps`
+for polymorphism, not a hand-rolled pattern), `forwardRef` where a ref is
+actually accepted (not everywhere — e.g. a markup-only component like
+`pagination.tsx` legitimately has none), `cva` for variants merged with `cn()`,
+prop interface extending the right HTML/Base-UI type. The `IMPL` column only
+proves the one binary rule (no Radix/`asChild`); everything else here is a
+judgment call.
+
+**Spec content accuracy** — read `behavior.md`/`accessibility.md` against the
+component's actual code and tests: does the prose still describe what it does,
+or did a later fix change behavior the spec never caught up to? `ui-spec test`
+(the dynamic check above) only proves `cva` keys and `api.yaml` enums agree
+structurally — it can't read prose.
+
+**Docs content accuracy** — if `apps/docs/content/docs/components/<name>.mdx`
+exists, read its Usage/Examples/API Reference against the current component:
+does an example still compile against the real prop names, does the API
+Reference describe current defaults? The static `DOCS` advisory only checks a
+prop is _mentioned somewhere_, not that the description is still correct.
+
+---
+
 ## Verdict → gate decision
 
-| Verdict        | Meaning                                                                           | Action before `/figma-component`                                                                                                               |
-| -------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **READY**      | No token drift; spec + tests present.                                             | Proceed.                                                                                                                                       |
-| **DRIFT**      | A `--ui-*` ref doesn't resolve, or a tier isn't imported. **Will render broken.** | **Fix first.** Rewire dead token names to the current `tokens-pd` tier; add the missing `@import` to `styles/index.css`. Then re-run the gate. |
-| **INCOMPLETE** | Renders fine, but the spec or tests are missing.                                  | Safe to build; close the gap in the same change (`/figma-component` Phases 3–4 produce these).                                                 |
+| Verdict        | Meaning                                                                                                                                    | Action before `/figma-component`                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **READY**      | No token drift; spec + tests present.                                                                                                      | Proceed.                                                                                                                                                                             |
+| **DRIFT**      | A `--ui-*` ref doesn't resolve, a tier isn't imported, or Radix/`asChild` was introduced. **Will render broken, or violates a hard rule.** | **Fix first.** Rewire dead token names to the current `tokens-pd` tier; add the missing `@import` to `styles/index.css`; replace Radix/`asChild` with Base UI. Then re-run the gate. |
+| **INCOMPLETE** | Renders fine, but the spec or tests are missing.                                                                                           | Safe to build; close the gap in the same change (`/figma-component` Phases 3–4 produce these).                                                                                       |
 
 For a **`--update`** run of `/figma-component`, a `READY` verdict on the target
 component means you're refreshing a sound baseline; a `DRIFT` verdict means the
