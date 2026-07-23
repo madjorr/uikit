@@ -284,6 +284,17 @@ when using `cva`; `cva` for `variant`/`size` merged with `cn()`; polymorphism vi
 Export everything from `index.ts`, then add an alphabetical line to
 `src/index.ts`. For a composable component, export the full set of parts.
 
+**Localization / RTL** — porting from legacy is exactly where a hardcoded
+label or a physical directional utility (`ml-`/`mr-`, `pl-`/`pr-`,
+`left-`/`right-`) tends to carry over verbatim; don't port it as-is. Expose
+any self-rendered text (`aria-label` fallback, `sr-only` copy, placeholder/
+empty-state strings) as a prop with the legacy string only as its default,
+and translate physical spacing/position utilities to logical ones
+(`ms-`/`me-`, `ps-`/`pe-`, `start-`/`end-`) unless the design genuinely
+anchors to a physical edge. See
+`context/conventions.md#localization--no-hardcoded-labels` and
+`#rtl--bidirectional-layout`.
+
 **Figma Code Connect — deferred.** Because there's no "ready for dev" node yet,
 the `.figma.tsx` carries the **`NEEDS_FIGMA_URL`** status marker (props are
 mapped correctly from the legacy contract; the node URL is a placeholder). Write
@@ -513,6 +524,10 @@ the `/figma-component` Phase 5 notes for the single-mode variants and the
       (component tier if it exists, else semantic/primitive), **no `--av-*`, no hex**.
 - [ ] `index.ts` + alphabetical export line in `src/index.ts`.
 - [ ] If an existing `--ui-<name>-*` tier is used: `@import` added to `src/styles/index.css`.
+- [ ] No hardcoded label carried over from legacy — self-rendered text is a
+      prop default, not an inlined literal.
+- [ ] No physical directional utility carried over from legacy where a
+      logical one applies.
 - [ ] `__tests__/<name>.test.tsx` — render, variants/states, a11y roles, ref,
       `render`-prop composition (intent ported from the legacy tests).
 - [ ] `__stories__/<name>.stories.tsx` (hand) + `<name>.generated.stories.tsx`.

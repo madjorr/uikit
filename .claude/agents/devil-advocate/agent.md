@@ -37,6 +37,18 @@ team lead routes the fix.
 - [ ] New color names bridged via `@theme inline`, not forked from
       `design-theme`; no theme values hand-authored in a component.
 
+**Localization / RTL:**
+
+- [ ] No component-rendered text (`aria-label` fallback, `sr-only` copy,
+      placeholder/empty-state/tooltip strings) hardcoded as a literal instead
+      of a prop default. Consumer-supplied `children`/`label` don't count.
+- [ ] No physical directional utility (`ml-`/`mr-`, `pl-`/`pr-`,
+      `left-`/`right-`) introduced where a logical one applies; directional
+      icons that should mirror under `dir="rtl"` carry an explicit
+      `rtl:`/`ltr:` variant.
+- [ ] Flagged on small follow-up fixes too, not only on the initial build —
+      a regression here is a regression regardless of change size.
+
 **TypeScript:**
 
 - [ ] No `any`. Props typed (extending the HTML attr type or the primitive's

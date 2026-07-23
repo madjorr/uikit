@@ -196,6 +196,30 @@ if [ -s "$TIER_A_FILE" ]; then
     echo "SNAPSHOT_PNGS_CHANGED (confirm Docker/Linux origin):"
     printf '%s\n' "$snap" | sed 's/^/  /'
   fi
+
+  # Advisory only (heuristic greps, not semantic analysis) — restricted to a
+  # component's own source (excludes .stories./.test./.figma., where example
+  # text and dir-comparison fixtures are expected). See
+  # packages/ui-react/context/conventions.md for the actual rule.
+  comp_src="$(grep -E '^packages/ui-react/src/components/ui/[^/]+/[^/]+\.tsx$' "$TIER_A_FILE" \
+              | grep -vE '\.(stories|test|figma)\.tsx$')"
+  hc_label=""; rtl_phys=""
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    added_f="$(git diff "origin/main...$PR_REF" -- "$f" 2>/dev/null | grep -E '^\+' | grep -v '^\+\+\+')"
+    h="$(printf '%s\n' "$added_f" | grep -noE '(aria-label|placeholder|title)=["'"'"'][A-Za-z][A-Za-z ]{2,}["'"'"']|>[A-Z][a-zA-Z]+( [a-zA-Z]+){1,4}<')"
+    [ -n "$h" ] && hc_label="$hc_label$f: $(printf '%s' "$h" | tr '\n' ';')"$'\n'
+    r="$(printf '%s\n' "$added_f" | grep -noE '(^|[[:space:]"'"'"'])(ml|mr|pl|pr)-[0-9\[]|(^|[[:space:]"'"'"'])(left|right)-[0-9\[]')"
+    [ -n "$r" ] && rtl_phys="$rtl_phys$f: $(printf '%s' "$r" | tr '\n' ';')"$'\n'
+  done <<< "$comp_src"
+  if [ -z "$hc_label" ]; then echo "HARDCODED_LABELS_ADVISORY: none"; else
+    echo "HARDCODED_LABELS_ADVISORY (confirm it's a prop default, not inlined):"
+    printf '%s' "$hc_label" | sed 's/^/  /'
+  fi
+  if [ -z "$rtl_phys" ]; then echo "RTL_PHYSICAL_UTILITY_ADVISORY: none"; else
+    echo "RTL_PHYSICAL_UTILITY_ADVISORY (confirm dir=\"rtl\" still renders correctly; prefer ms-/me-/ps-/pe-/start-/end-):"
+    printf '%s' "$rtl_phys" | sed 's/^/  /'
+  fi
 else
   echo "n/a (no tier A files)"
 fi

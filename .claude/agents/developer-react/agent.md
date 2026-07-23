@@ -54,6 +54,22 @@ This is a React-only monorepo (no Vue). Your code lives in:
   `@acronis-platform/design-tokens`, then rebuild `design-theme` — never fork
   values inside a component.
 
+## Localization & RTL — `packages/ui-react`
+
+Full rule in
+[context/conventions.md](../../../packages/ui-react/context/conventions.md#localization--no-hardcoded-labels).
+Applies to **every** change that touches component source, including a
+one-line fix — not just new components:
+
+- Any text the component renders on its own (`aria-label` fallback,
+  `sr-only` copy, placeholder/empty-state/tooltip strings) must come from a
+  prop with the literal only as that prop's default — never inlined in JSX.
+  Consumer-supplied `children`/`label` props are fine as-is.
+- Use **logical** Tailwind utilities (`ms-`/`me-`, `ps-`/`pe-`, `start-`/
+  `end-`) for anything that should mirror under `dir="rtl"` — never
+  physical ones (`ml-`/`mr-`, `pl-`/`pr-`, `left-`/`right-`). A directional
+  icon that should flip needs an explicit `rtl:`/`ltr:` variant.
+
 ## File layout per component
 
 ```
@@ -72,6 +88,9 @@ src/components/ui/<component>/
    **light and dark** mode.
 3. A **Changeset** (`pnpm changeset` from repo root) for any published-package
    change. See [context/releasing.md](../../../context/releasing.md).
+4. No new hardcoded label and no new physical directional utility introduced
+   in `packages/ui-react` (see Localization & RTL above) — check this even
+   when the change is a small fix, not just on new components.
 
 ## Commands
 
