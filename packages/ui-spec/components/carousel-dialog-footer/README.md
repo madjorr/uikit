@@ -52,3 +52,19 @@ import {
 
 Normally you won't reach for this directly — use `CarouselDialog`, which
 composes a `Dialog` + `Carousel` + `CarouselDialogFooter` for you.
+
+## Localization
+
+The repo has no i18n library, so this component's own visible/accessible
+text is overridable via props rather than baked in: `backLabel`/`nextLabel`/
+`closeLabel` (default "Back"/"Next"/"Close") and `positionLabel` (the `dots`
+list's `aria-label`, default "Slide position"). See `api.yaml`.
+
+```tsx
+<CarouselDialogFooter
+  backLabel="Précédent"
+  nextLabel="Suivant"
+  closeLabel="Fermer"
+  positionLabel="Position de la diapositive"
+/>
+```

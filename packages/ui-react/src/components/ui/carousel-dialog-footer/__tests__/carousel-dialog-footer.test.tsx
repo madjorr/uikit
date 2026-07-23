@@ -128,4 +128,20 @@ describe('CarouselDialogFooter', () => {
     await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
   });
+
+  it('overrides Back/Next/Close labels and the position list name via props', () => {
+    mockCarousel.canScrollPrev = true;
+    mockCarousel.canScrollNext = true;
+    render(
+      <CarouselDialogFooter
+        backLabel="Précédent"
+        nextLabel="Suivant"
+        closeLabel="Fermer"
+        positionLabel="Position de la diapositive"
+      />
+    );
+    expect(screen.getByRole('button', { name: 'Précédent' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Suivant' })).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: 'Position de la diapositive' })).toBeInTheDocument();
+  });
 });

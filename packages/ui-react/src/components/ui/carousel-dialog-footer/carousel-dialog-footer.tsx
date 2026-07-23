@@ -41,74 +41,94 @@ function getFooterState(
   return 'middle';
 }
 
-const CarouselDialogFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useCarousel();
-  const state = getFooterState(canScrollPrev, canScrollNext);
-  const activeDot = state === 'first' ? 0 : state === 'last' ? 2 : 1;
+interface CarouselDialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Accessible name for the 3-dot slide-position indicator. */
+  positionLabel?: string;
+  /** Label for the "scroll to previous slide" control. */
+  backLabel?: string;
+  /** Label for the "scroll to next slide" control. */
+  nextLabel?: string;
+  /** Label for the "close the dialog" control (shown on the last slide). */
+  closeLabel?: string;
+}
 
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'flex items-center',
-        'h-[var(--ui-footer-global-height)]',
-        'gap-[var(--ui-footer-global-gap)]',
-        'px-[var(--ui-footer-global-padding-x)]',
-        'bg-[var(--ui-footer-carousel-color)]',
-        className
-      )}
-      {...props}
-    >
-      {/* boxLeft/boxRight are equal flex-1 growers (Figma's own structure) so
-          the dot indicator stays pinned dead-center regardless of whether
-          Back/Next/Close are present — a plain justify-between would let the
-          dots drift when a side slot is empty (state=first has no Back). */}
-      <div className="flex flex-1 items-center">
-        {state !== 'first' && (
-          <Button variant="secondary" onClick={scrollPrev}>
-            Back
-          </Button>
-        )}
-      </div>
+const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFooterProps>(
+  (
+    {
+      className,
+      positionLabel = 'Slide position',
+      backLabel = 'Back',
+      nextLabel = 'Next',
+      closeLabel = 'Close',
+      ...props
+    },
+    ref
+  ) => {
+    const { canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useCarousel();
+    const state = getFooterState(canScrollPrev, canScrollNext);
+    const activeDot = state === 'first' ? 0 : state === 'last' ? 2 : 1;
+
+    return (
       <div
-        role="list"
-        aria-label="Slide position"
-        className={cn('flex shrink-0 items-center', 'gap-[var(--ui-carousel-dialog-list-indicator-gap)]')}
-      >
-        {DOT_INDICES.map((index) => (
-          <span
-            key={index}
-            role="listitem"
-            aria-current={index === activeDot ? 'true' : undefined}
-            className={cn(
-              'flex size-8 items-center justify-center rounded-[var(--ui-button-icon-global-container-border-radius)]',
-              index === activeDot
-                ? 'bg-[var(--ui-button-icon-global-container-color-active)]'
-                : 'bg-transparent'
-            )}
-          >
-            <span
-              aria-hidden="true"
-              className="size-[9.6px] rounded-full bg-[var(--ui-button-icon-global-icon-color-idle)]"
-            />
-          </span>
-        ))}
-      </div>
-      <div className="flex flex-1 items-center justify-end">
-        {state === 'last' ? (
-          <DialogClose render={<Button variant="default">Close</Button>} />
-        ) : (
-          <Button variant="default" onClick={scrollNext}>
-            Next
-          </Button>
+        ref={ref}
+        className={cn(
+          'flex items-center',
+          'h-[var(--ui-footer-global-height)]',
+          'gap-[var(--ui-footer-global-gap)]',
+          'px-[var(--ui-footer-global-padding-x)]',
+          'bg-[var(--ui-footer-carousel-color)]',
+          className
         )}
+        {...props}
+      >
+        {/* boxLeft/boxRight are equal flex-1 growers (Figma's own structure) so
+            the dot indicator stays pinned dead-center regardless of whether
+            Back/Next/Close are present — a plain justify-between would let the
+            dots drift when a side slot is empty (state=first has no Back). */}
+        <div className="flex flex-1 items-center">
+          {state !== 'first' && (
+            <Button variant="secondary" onClick={scrollPrev}>
+              {backLabel}
+            </Button>
+          )}
+        </div>
+        <div
+          role="list"
+          aria-label={positionLabel}
+          className={cn('flex shrink-0 items-center', 'gap-[var(--ui-carousel-dialog-list-indicator-gap)]')}
+        >
+          {DOT_INDICES.map((index) => (
+            <span
+              key={index}
+              role="listitem"
+              aria-current={index === activeDot ? 'true' : undefined}
+              className={cn(
+                'flex size-8 items-center justify-center rounded-[var(--ui-button-icon-global-container-border-radius)]',
+                index === activeDot
+                  ? 'bg-[var(--ui-button-icon-global-container-color-active)]'
+                  : 'bg-transparent'
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className="size-[9.6px] rounded-full bg-[var(--ui-button-icon-global-icon-color-idle)]"
+              />
+            </span>
+          ))}
+        </div>
+        <div className="flex flex-1 items-center justify-end">
+          {state === 'last' ? (
+            <DialogClose render={<Button variant="default">{closeLabel}</Button>} />
+          ) : (
+            <Button variant="default" onClick={scrollNext}>
+              {nextLabel}
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 CarouselDialogFooter.displayName = 'CarouselDialogFooter';
 
-export { CarouselDialogFooter, type CarouselDialogFooterState };
+export { CarouselDialogFooter, type CarouselDialogFooterProps, type CarouselDialogFooterState };

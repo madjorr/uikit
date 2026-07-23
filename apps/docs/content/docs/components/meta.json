@@ -64,6 +64,8 @@
     "filter-search",
     "---Overlays---",
     "dialog",
+    "carousel-dialog",
+    "carousel-dialog-footer",
     "dropdown-menu",
     "popover",
     "tooltip",

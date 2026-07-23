@@ -5,7 +5,10 @@ import {
   CarouselContent,
   type CarouselProps,
 } from '../carousel';
-import { CarouselDialogFooter } from '../carousel-dialog-footer';
+import {
+  CarouselDialogFooter,
+  type CarouselDialogFooterProps,
+} from '../carousel-dialog-footer';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +39,14 @@ interface CarouselDialogBaseProps
   size?: DialogContentProps['size'];
   /** Forwarded to `<DialogContent>`. */
   className?: string;
+  /** Forwarded to the inner `<CarouselDialogFooter>`'s `positionLabel`. */
+  positionLabel?: CarouselDialogFooterProps['positionLabel'];
+  /** Forwarded to the inner `<CarouselDialogFooter>`'s `backLabel`. */
+  backLabel?: CarouselDialogFooterProps['backLabel'];
+  /** Forwarded to the inner `<CarouselDialogFooter>`'s `nextLabel`. */
+  nextLabel?: CarouselDialogFooterProps['nextLabel'];
+  /** Forwarded to the inner `<CarouselDialogFooter>`'s `closeLabel`. */
+  closeLabel?: CarouselDialogFooterProps['closeLabel'];
 }
 
 // There is no `DialogTitle` slot here (the popup's only content is the
@@ -57,6 +68,10 @@ function CarouselDialog({
   setApi,
   size,
   className,
+  positionLabel,
+  backLabel,
+  nextLabel,
+  closeLabel,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   ...dialogProps
@@ -71,7 +86,12 @@ function CarouselDialog({
       >
         <Carousel opts={opts} plugins={plugins} setApi={setApi}>
           <CarouselContent>{children}</CarouselContent>
-          <CarouselDialogFooter />
+          <CarouselDialogFooter
+            positionLabel={positionLabel}
+            backLabel={backLabel}
+            nextLabel={nextLabel}
+            closeLabel={closeLabel}
+          />
         </Carousel>
       </DialogContent>
     </Dialog>

@@ -50,6 +50,26 @@ contract:
         Accessible name via reference to an element id rendered inside a
         slide, forwarded to `DialogContent`. Prefer this over `aria-label`
         when the name is also visible on-screen.
+    - name: positionLabel
+      type: string
+      required: false
+      default: "'Slide position'"
+      description: Forwarded to `CarouselDialogFooter`'s `positionLabel` (see its own spec).
+    - name: backLabel
+      type: string
+      required: false
+      default: "'Back'"
+      description: Forwarded to `CarouselDialogFooter`'s `backLabel` (see its own spec).
+    - name: nextLabel
+      type: string
+      required: false
+      default: "'Next'"
+      description: Forwarded to `CarouselDialogFooter`'s `nextLabel` (see its own spec).
+    - name: closeLabel
+      type: string
+      required: false
+      default: "'Close'"
+      description: Forwarded to `CarouselDialogFooter`'s `closeLabel` (see its own spec).
 
   events:
     - name: setApi

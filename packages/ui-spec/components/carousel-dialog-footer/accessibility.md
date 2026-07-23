@@ -4,21 +4,21 @@
 
 ### Back / Next / Close (`back` / `next` / `close` parts)
 
-- Each is a native `<button>` (via `Button`) with a plain visible label
-  ("Back" / "Next" / "Close") that also serves as its accessible name — no
-  separate label prop is required.
+- Each is a native `<button>` (via `Button`) with a visible label (default
+  "Back" / "Next" / "Close", overridable via the `backLabel` / `nextLabel` /
+  `closeLabel` props — see `api.yaml`) that also serves as its accessible name.
 - `close` composes `Button` with `DialogClose` via Base UI's `render` prop,
   so it inherits `DialogClose`'s own dialog-closing behavior and any ARIA it
   contributes.
 
 ### Slide position indicator (`dots` part)
 
-| Attribute      | Value                   | Reason                                                |
-| -------------- | ----------------------- | ----------------------------------------------------- |
-| `role`         | `"list"` (container)    | Groups the 3 position slots                           |
-| `aria-label`   | `"Slide position"`      | Names the group for screen readers                    |
-| `role`         | `"listitem"` (each dot) | Identifies each slot as a list member                 |
-| `aria-current` | `"true"` (active slot)  | Marks which of the 3 slots reflects the current slide |
+| Attribute      | Value                                             | Reason                                                |
+| -------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| `role`         | `"list"` (container)                              | Groups the 3 position slots                           |
+| `aria-label`   | `positionLabel` prop (default `"Slide position"`) | Names the group for screen readers                    |
+| `role`         | `"listitem"` (each dot)                           | Identifies each slot as a list member                 |
+| `aria-current` | `"true"` (active slot)                            | Marks which of the 3 slots reflects the current slide |
 
 The dot glyph itself is `aria-hidden` — it is decorative; the position
 information is carried by `aria-current` on its container, not by the glyph.

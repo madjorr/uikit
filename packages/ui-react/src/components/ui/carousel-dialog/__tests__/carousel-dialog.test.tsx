@@ -103,4 +103,21 @@ describe('CarouselDialog', () => {
     await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
   });
+
+  it('forwards footer label overrides to CarouselDialogFooter', () => {
+    render(
+      <CarouselDialog
+        open
+        aria-label="Onboarding tour"
+        nextLabel="Suivant"
+        positionLabel="Position de la diapositive"
+      >
+        <Slides />
+      </CarouselDialog>
+    );
+    expect(screen.getByRole('button', { name: 'Suivant' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('list', { name: 'Position de la diapositive' })
+    ).toBeInTheDocument();
+  });
 });

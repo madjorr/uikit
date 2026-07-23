@@ -1,0 +1,86 @@
+---
+title: Carousel Dialog
+description: A modal, paged walkthrough — a Dialog wrapping a Carousel, with Back/Next/Close and a slide-position indicator.
+---
+
+import { DemoReact } from "@/components/DemoReact";
+import { CarouselDialogDemo } from "@/components/demos-react/carousel-dialog";
+
+## Usage
+
+```tsx
+import { CarouselDialog, CarouselItem } from '@acronis-platform/ui-react';
+```
+
+`CarouselDialog` composes a `Dialog` around a `Carousel`, rendering a
+`CarouselDialogFooter` (Back/Next/Close + a 3-dot position indicator) inside it
+so the footer can drive navigation from the Carousel's own context. Each
+`children` passed to `CarouselDialog` becomes one slide — the same shape as a
+plain `<Carousel>`'s children.
+
+There is no `DialogTitle` slot here (the popup's only content is the
+carousel), so exactly one of `aria-label`/`aria-labelledby` is **required** for
+the dialog to have an accessible name.
+
+`CarouselDialog` renders no trigger of its own — drive `open`/`onOpenChange`
+yourself, same as a controlled `Dialog`. `size` and `className` are forwarded
+to the underlying `DialogContent` (popup max-width and extra classes);
+`plugins` is forwarded to the inner `Carousel` verbatim (e.g. an Embla
+autoplay/wheel-gestures plugin).
+
+## Examples
+
+<DemoReact>
+  <CarouselDialogDemo />
+</DemoReact>
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<CarouselDialog open={open} onOpenChange={setOpen} aria-label="Product tour">
+  <CarouselItem>Welcome to the new dashboard.</CarouselItem>
+  <CarouselItem>Here's where your alerts live now.</CarouselItem>
+  <CarouselItem>You're all set.</CarouselItem>
+</CarouselDialog>;
+```
+
+Seeding the initial slide (e.g. from a URL param) and observing slide changes
+externally — `CarouselDialog` stays routing-agnostic, so a consumer wires
+`setApi` + `opts.startIndex` into their own router:
+
+```tsx
+<CarouselDialog
+  open={open}
+  onOpenChange={setOpen}
+  aria-label="Product tour"
+  opts={{ startIndex }}
+  setApi={(api) => api?.on('select', () => syncUrl(api.selectedScrollSnap()))}
+>
+  {/* … */}
+</CarouselDialog>
+```
+
+Localizing the footer's Back/Next/Close labels and the position indicator's
+accessible name — there's no i18n library in this repo, so the component
+takes these as props instead of baking in English text:
+
+```tsx
+<CarouselDialog
+  open={open}
+  onOpenChange={setOpen}
+  aria-label="Visite du produit"
+  backLabel="Précédent"
+  nextLabel="Suivant"
+  closeLabel="Fermer"
+  positionLabel="Position de la diapositive"
+>
+  {/* … */}
+</CarouselDialog>
+```
+
+## API Reference
+
+<AutoTypeTable
+  path="../../packages/ui-react/src/components/ui/carousel-dialog/carousel-dialog.docs.ts"
+  name="CarouselDialogProps"
+/>

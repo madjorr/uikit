@@ -1,0 +1,65 @@
+---
+title: Carousel Dialog Footer
+description: The Back/Next/Close action pair and 3-dot slide-position indicator composed inside a CarouselDialog.
+---
+
+import { DemoReact } from "@/components/DemoReact";
+import { CarouselDialogFooterDemo } from "@/components/demos-react/carousel-dialog-footer";
+
+## Usage
+
+```tsx
+import { CarouselDialogFooter } from '@acronis-platform/ui-react';
+```
+
+`CarouselDialogFooter` is the footer bar for a [`CarouselDialog`](/components/carousel-dialog):
+a Back/Next/Close action pair flanking a fixed three-dot slide-position
+indicator. It reads `canScrollPrev`/`canScrollNext`/`scrollPrev`/`scrollNext`
+from the ambient `<Carousel>` context and takes no `variant`/`state` prop —
+the row always reflects the Carousel's real position, always rendering
+exactly 3 dot slots regardless of slide count.
+
+Its `close` control assumes a `Dialog` ancestor (it composes `Button` with
+`DialogClose`). Since the `<Carousel>` context provider it depends on isn't
+part of the public API, you won't normally reach for `CarouselDialogFooter`
+directly — use `CarouselDialog`, which composes `Dialog` + `Carousel` +
+`CarouselDialogFooter` for you and forwards its label props (see below).
+
+## Examples
+
+<DemoReact>
+  <CarouselDialogFooterDemo />
+</DemoReact>
+
+## Parts
+
+| Part    | Element (default)                   | Purpose                                                                     |
+| ------- | ------------------------------------ | ---------------------------------------------------------------------------- |
+| `back`  | `button` (`Button`)                  | Scrolls to the earlier slide. Hidden on the first slide.                     |
+| `dots`  | `div`                                | 3-slot slide-position indicator; the active slot's container fills.         |
+| `next`  | `button` (`Button`)                  | Scrolls to the later slide. Hidden on the last slide.                        |
+| `close` | `button` (`Button` + `DialogClose`)  | Closes the ambient Dialog. Shown only on the last slide, in `next`'s place.  |
+
+## Localization
+
+There's no i18n library in this repo, so the footer's own visible/accessible
+text is overridable via props rather than baked in:
+
+```tsx
+<CarouselDialogFooter
+  backLabel="Précédent"
+  nextLabel="Suivant"
+  closeLabel="Fermer"
+  positionLabel="Position de la diapositive"
+/>
+```
+
+When used via `CarouselDialog`, pass the same props to it — they're forwarded
+straight through.
+
+## API Reference
+
+<AutoTypeTable
+  path="../../packages/ui-react/src/components/ui/carousel-dialog-footer/carousel-dialog-footer.tsx"
+  name="CarouselDialogFooterProps"
+/>
