@@ -6,7 +6,11 @@ export default {
   theme: {
     extend: {
       "backgroundColor": {
-        "dialog-container": "light-dark(rgb(244 245 245), rgb(24 25 27))"
+        "dialog-container": "light-dark(rgb(244 245 245), rgb(24 25 27))",
+        "dialog-header": "light-dark(rgb(255 255 255), rgb(31 32 34))"
+      },
+      "textColor": {
+        "dialog-header-title": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
         "dialog-header-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))"

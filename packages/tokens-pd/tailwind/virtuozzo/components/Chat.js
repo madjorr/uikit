@@ -9,6 +9,7 @@ export default {
         "chat-container": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
+        "chat-menu-item-hint": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "chat-menu-item-label": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
