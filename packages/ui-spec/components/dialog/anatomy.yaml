@@ -18,10 +18,10 @@ schematic: |
   |   | footer:                    [Cancel] [Confirm]       | |
   |   +-----------------------------------------------------+ |
   +===========================================================+
-     root    -> bg-muted (surface-secondary) body + shadow, rounded
-     header / footer -> bg-background (surface-primary) bars, border-border
+     root    -> --ui-dialog-container-* body + shadow, rounded
+     header / footer -> bg-background (surface-primary) bars, border-border (no Figma node yet)
      overlay -> var(--ui-background-backdrop-screen)
-     close   -> times icon, text-muted-foreground → hover text-foreground
+     close   -> times icon, --ui-button-icon-global-icon-color-idle (constant across states) → hover/active bg
 
 root:
   element: div

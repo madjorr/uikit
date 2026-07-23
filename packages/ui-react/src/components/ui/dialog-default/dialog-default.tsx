@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import { Button } from '../button';
 import { InputText } from '../input-text';
 import { Spinner } from '../spinner';
@@ -22,21 +21,15 @@ import {
 // drops a spinner overlay over the body + footer.
 //
 // Colors resolve to shipped semantic tokens via the bridged Tailwind names the
-// Dialog family already uses (bg-muted / bg-background / text-foreground /
-// border-border, the backdrop + focus tokens inside DialogContent /
-// DialogCloseButton) and the Button / InputText token tiers — nothing is
-// hand-authored. The loading scrim is surface-secondary at 95% alpha
-// (`bg-muted/95`), matching the design's translucent surface fill.
+// Dialog family already uses (text-foreground, the backdrop + focus tokens
+// inside DialogContent / DialogCloseButton) and the Button / InputText token
+// tiers — nothing is hand-authored. The loading scrim is surface-secondary at
+// 95% alpha (`bg-muted/95`), matching the design's translucent surface fill.
 //
-// TODO(design-tokens): the container / header / body / footer GEOMETRY below
-// (radius, widths, heights, paddings, gaps, divider widths) is hardcoded as
-// Tailwind utilities because no `--ui-dialog-*` / `--ui-footer-*` component
-// token tier exists in tokens-pd yet — the Figma node references
-// `components/Dialog/*` + `components/Footer/*` geometry variables that have no
-// `--ui-*` equivalent. This is a deliberate, tracked exception (colors +
-// typography ARE tokenized); replace these values with the tokens once a
-// Dialog/Footer tier ships. Mirrors the geometry already hardcoded in
-// `dialog.tsx`.
+// Container geometry/color comes from DialogContent's `--ui-dialog-container-*`
+// tokens (dialog.tsx). Header + footer geometry/color below resolve to the
+// `--ui-dialog-header-*` / `--ui-footer-*` tiers, reconciled against the
+// DialogDefault Figma node (6343:58898).
 
 export type DialogDefaultVariant =
   | 'default'
@@ -158,14 +151,14 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
           size={size}
           portal={portal}
           portalContainer={portalContainer}
-          className={cn('min-w-[256px]', className)}
+          className={className}
         >
-          <div className="flex h-16 items-center gap-4 border-b border-border bg-background px-4">
+          <div className="flex h-[var(--ui-dialog-header-height)] items-center gap-[var(--ui-dialog-header-gap)] border-b-[length:var(--ui-dialog-header-border-width)] border-[var(--ui-dialog-header-border-color)] bg-[var(--ui-dialog-header-color)] px-[var(--ui-dialog-header-padding-x)]">
             <DialogTitle>{content.title}</DialogTitle>
             <DialogCloseButton />
           </div>
 
-          <div className="flex min-h-18 flex-col justify-center gap-3 px-4 py-4">
+          <div className="flex min-h-[var(--ui-dialog-body-height-min)] flex-col justify-center gap-[var(--ui-dialog-body-gap)] px-4 py-[var(--ui-dialog-body-padding-y)]">
             {typeof bodyContent === 'string' ? (
               <p className="text-sm leading-6 text-foreground">{bodyContent}</p>
             ) : (
@@ -173,7 +166,7 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
             )}
           </div>
 
-          <div className="flex h-16 items-center justify-end gap-4 border-t border-border bg-background px-4">
+          <div className="flex h-[var(--ui-footer-global-height)] items-center justify-end gap-[var(--ui-footer-global-gap)] border-t-[length:var(--ui-footer-default-border-width)] border-[var(--ui-footer-default-border-color)] bg-[var(--ui-footer-default-color)] px-[var(--ui-footer-global-padding-x)]">
             {content.secondaryLabel && (
               <DialogClose
                 render={

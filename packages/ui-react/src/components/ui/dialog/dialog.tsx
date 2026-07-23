@@ -9,30 +9,34 @@ import { usePortalContainer } from '@/lib/portal-container';
 // Initial version ported from `@acronis-platform/shadcn-uikit`'s `dialog`
 // (packages/ui-legacy/src/components/ui/dialog.tsx). A modal overlay built on
 // the Base UI Dialog primitive (keyboard, focus trap, scroll lock, ARIA come
-// from Base UI). No `--ui-dialog-*` token tier exists yet, so this design-
-// pending v1 themes from the shared semantic tokens via bridged Tailwind names:
+// from Base UI). A `--ui-dialog-*` / `--ui-button-icon-*` token tier now covers
+// the container + close button (reconciled against the DialogDefault Figma node,
+// 6343:58898); the composable DialogHeader / DialogFooter / DialogBody parts
+// below are still un-reconciled (no Figma node of their own yet) and keep the
+// prior semantic-token approach:
 //   • overlay  -> var(--ui-background-backdrop-screen)   (legacy `bg-black/80`)
-//   • popup    -> bg-muted        = --ui-background-surface-secondary
+//   • popup    -> var(--ui-dialog-container-color) / var(--ui-dialog-container-border-radius)
 //   • header / footer -> bg-background = --ui-background-surface-primary (white
 //     bars over the muted body), divided by border-border
 //   • title    -> text-foreground / description -> text-muted-foreground
-//   • close    -> text-muted-foreground → hover text-foreground (replaces the
-//     legacy opacity hack), focus ring var(--ui-focus-primary)
+//   • close    -> var(--ui-button-icon-global-icon-color-*) (idle/hover/active
+//     share one blue in the default brand), bg via
+//     var(--ui-button-icon-global-container-color-*), focus ring var(--ui-focus-primary)
 // Enter/exit animations use `tw-animate-css` (imported in styles/index.css),
 // keyed to Base UI's data-[open] / data-[closed] state attributes — overlay
 // fades, popup fades + zooms. The `size` scale (max-width) mirrors the reference
-// design's six widths; until a `--ui-dialog-*` tier defines them, they are plain
-// max-width utilities. Reconcile against the real design with
-// `/figma-component Dialog <url> --update` once a mockup lands.
+// design's six widths; only `sm` (512px) has a Figma-defined token
+// (`--ui-dialog-container-size-sm`) so far — the rest stay plain max-width
+// utilities until the design ships them.
 
 // Popup width scale. `sm` (512px) is the default and matches the pre-size width.
 const dialogContentVariants = cva(
-  'fixed left-1/2 top-1/2 z-50 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg bg-muted text-foreground shadow-lg duration-200 data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95',
+  'fixed left-1/2 top-1/2 z-50 flex w-full min-w-[var(--ui-dialog-container-width-min)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--ui-dialog-container-border-radius)] bg-[var(--ui-dialog-container-color)] text-foreground shadow-lg duration-200 data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95',
   {
     variants: {
       size: {
         xs: 'max-w-[464px]',
-        sm: 'max-w-lg',
+        sm: 'max-w-[var(--ui-dialog-container-size-sm)]',
         md: 'max-w-2xl',
         lg: 'max-w-[832px]',
         xl: 'max-w-[992px]',
@@ -206,7 +210,7 @@ const DialogCloseButton = React.forwardRef<
   <DialogPrimitive.Close
     ref={ref}
     className={cn(
-      'rounded p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] disabled:pointer-events-none',
+      'rounded p-1 text-[var(--ui-button-icon-global-icon-color-idle)] transition-colors hover:bg-[var(--ui-button-icon-global-container-color-hover)] hover:text-[var(--ui-button-icon-global-icon-color-hover)] active:bg-[var(--ui-button-icon-global-container-color-active)] active:text-[var(--ui-button-icon-global-icon-color-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-focus-primary)] disabled:pointer-events-none disabled:text-[var(--ui-button-icon-global-icon-color-disabled)]',
       className
     )}
     {...props}

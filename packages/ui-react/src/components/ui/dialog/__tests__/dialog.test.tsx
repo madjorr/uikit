@@ -43,22 +43,26 @@ describe('Dialog', () => {
     expect(screen.getByText('Footer')).toBeInTheDocument();
   });
 
-  it('renders the close button as an accessible "Close" button on the muted token', () => {
+  it('renders the close button as an accessible "Close" button on the button-icon token', () => {
     render(<OpenDialog />);
     const close = screen.getByRole('button', { name: 'Close' });
     expect(close).toBeInTheDocument();
-    expect(close).toHaveClass('text-muted-foreground');
+    expect(close).toHaveClass('text-[var(--ui-button-icon-global-icon-color-idle)]');
   });
 
-  it('drives the popup surface from the bridged semantic tokens', () => {
+  it('drives the popup surface from the --ui-dialog-container-* tokens', () => {
     render(<OpenDialog />);
-    // No `--ui-dialog-*` tier yet — the popup body resolves to surface-secondary.
-    expect(screen.getByRole('dialog')).toHaveClass('bg-muted', 'text-foreground');
+    expect(screen.getByRole('dialog')).toHaveClass(
+      'bg-[var(--ui-dialog-container-color)]',
+      'text-foreground'
+    );
   });
 
-  it('defaults to the sm size (max-w-lg / 512px)', () => {
+  it('defaults to the sm size (--ui-dialog-container-size-sm / 512px)', () => {
     render(<OpenDialog />);
-    expect(screen.getByRole('dialog')).toHaveClass('max-w-lg');
+    expect(screen.getByRole('dialog')).toHaveClass(
+      'max-w-[var(--ui-dialog-container-size-sm)]'
+    );
   });
 
   it('applies a larger max-width via the size prop', () => {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -25,15 +24,12 @@ import {
 //
 // Colors resolve to shipped semantic tokens via the bridged Tailwind names the
 // Dialog family already uses (bg-muted / text-foreground, the backdrop token
-// inside DialogContent) — nothing is hand-authored.
-//
-// TODO(design-tokens): the container / body GEOMETRY below (radius, widths,
-// paddings, gaps, image height) is hardcoded as Tailwind utilities because no
-// `--ui-dialog-*` component token tier exists in tokens-pd yet — the Figma node
-// references `components/Dialog/*` geometry variables that have no `--ui-*`
-// equivalent. This is a deliberate, tracked exception (colors + typography ARE
-// tokenized); replace these values with the tokens once a Dialog tier ships.
-// Mirrors the geometry already hardcoded in `dialog.tsx` / `dialog-default.tsx`.
+// inside DialogContent) — nothing is hand-authored. Container geometry/color
+// comes from DialogContent's `--ui-dialog-container-*` tokens (dialog.tsx),
+// reconciled against the DialogWelcome Figma node (6353:6164). The body's
+// gap/padding/image-height are plain Tailwind utilities — the Figma node
+// references generic spacing primitives there, not a `--ui-dialog-body-*`
+// component token.
 
 type DialogRootProps = React.ComponentPropsWithoutRef<typeof Dialog>;
 
@@ -82,7 +78,7 @@ const DialogWelcome = React.forwardRef<HTMLDivElement, DialogWelcomeProps>(
           size={size}
           portal={portal}
           portalContainer={portalContainer}
-          className={cn('min-w-[256px]', className)}
+          className={className}
         >
           <div className="flex w-full flex-col gap-3 py-4">
             <div className="w-full px-4">

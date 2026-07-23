@@ -18,7 +18,7 @@ schematic: |
   |   |   description ................. (centered, 14px)    | |
   |   +-----------------------------------------------------+ |
   +===========================================================+
-     container -> bg-muted (surface-secondary), rounded, shadow
+     container -> --ui-dialog-container-*, rounded, shadow
      title / description -> text-foreground, centered
      (no footer — the carousel footer is a separate component)
 
@@ -34,8 +34,9 @@ root:
 parts:
   - id: container
     description: >-
-      The rounded surface card (the popup) that holds the body. Surface-secondary
-      fill with a shadow; min-width 256px, 512px wide.
+      The rounded surface card (the popup) that holds the body.
+      `--ui-dialog-container-color` fill with a shadow; min-width 256px, 512px
+      wide.
     element: div
   - id: image
     description: >-

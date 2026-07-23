@@ -15,10 +15,10 @@ schematic: |
   |   +-----------------------------------------------------+ |
   |   | loading-overlay (only when hasLoading): spinner     | |
   +===========================================================+
-     container -> bg-muted (surface-secondary), rounded, shadow
-     header / footer -> bg-background (surface-primary), border-border
+     container -> --ui-dialog-container-*, rounded, shadow
+     header / footer -> --ui-dialog-header-* / --ui-footer-*
      title / body    -> text-foreground
-     close-button    -> times icon, text-muted-foreground → hover foreground
+     close-button    -> times icon, --ui-button-icon-global-icon-color-idle (constant across states) → hover/active bg
      loading-overlay -> surface-secondary @ 95% scrim over body + footer
 
 root:
@@ -33,12 +33,13 @@ parts:
   - id: container
     description: >-
       The rounded surface card (the popup) that holds the header, body and
-      footer. Surface-secondary fill with a shadow; min-width 256px.
+      footer. `--ui-dialog-container-color` fill with a shadow; min-width
+      `--ui-dialog-container-width-min` (256px).
     element: div
   - id: header
     description: >-
-      Top bar holding the title and close button. Surface-primary bar with a
-      bottom divider.
+      Top bar holding the title and close button. `--ui-dialog-header-color`
+      bar with a bottom divider.
     element: div
   - id: title
     description: >-
@@ -57,9 +58,9 @@ parts:
     element: div
   - id: footer
     description: >-
-      Bottom action bar (right-aligned). Surface-primary bar with a top divider.
-      Holds a secondary (dismiss) button and a primary/destructive action;
-      `read-only` shows a single primary action.
+      Bottom action bar (right-aligned). `--ui-footer-default-color` bar with a
+      top divider. Holds a secondary (dismiss) button and a primary/destructive
+      action; `read-only` shows a single primary action.
     element: div
   - id: loading-overlay
     description: >-
