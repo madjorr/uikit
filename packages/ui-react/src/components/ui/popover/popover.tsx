@@ -7,15 +7,16 @@ import { usePortalContainer } from '@/lib/portal-container';
 // Ported from `@acronis-platform/shadcn-uikit`'s `popover`
 // (packages/ui-legacy/src/components/ui/popover.tsx). A floating panel anchored
 // to a trigger, built on the Base UI Popover primitive (positioning, focus
-// management, outside-press / Esc dismissal, ARIA come from Base UI). No
-// `--ui-popover-*` token tier exists yet, so this design-pending v1 themes from
-// the shared semantic tokens:
-//   • surface -> bg-background (--ui-background-surface-primary)  (legacy `bg-popover`)
-//   • text    -> text-foreground (--ui-text-on-surface-primary)  (legacy `text-popover-foreground`)
-//   • border  -> border-border (--ui-border-on-surface-border)   (legacy bare `border`)
+// management, outside-press / Esc dismissal, ARIA come from Base UI). Themed by
+// the `--ui-popover-*` tier (container chrome: color, border, radius, min/max
+// width) per Figma node 6364:17907. The optional `PopoverBody`/`PopoverFooter`
+// parts mirror that node's `Body` slot and `FooterDefault` recipe — `PopoverBody`
+// from `--ui-popover-body-*`, `PopoverFooter` from the shared `--ui-footer-*`
+// tier (also used by other components' default action-row footer). Text color
+// stays on the bridged semantic token (--ui-text-on-surface-primary), which the
+// design references directly rather than a Popover-specific token.
 // Enter/exit animations use `tw-animate-css` keyed to Base UI's data-[open] /
-// data-[closed] / data-[side] attributes. Reconcile (and a possible
-// `--ui-popover-*` tier) with `/figma-component Popover <url> --update`.
+// data-[closed] / data-[side] attributes.
 
 const Popover = PopoverPrimitive.Root;
 
@@ -75,7 +76,7 @@ const PopoverContent = React.forwardRef<
         <PopoverPrimitive.Popup
           ref={ref}
           className={cn(
-            'w-72 rounded-md border border-border bg-background p-4 text-foreground shadow-md outline-none',
+            'min-w-[var(--ui-popover-container-min-width)] max-w-[var(--ui-popover-container-max-width)] rounded-[var(--ui-popover-container-border-radius)] border-[length:var(--ui-popover-container-border-width)] border-solid border-[var(--ui-popover-container-border-color)] bg-[var(--ui-popover-container-color)] text-foreground outline-none',
             'duration-200 data-[open]:animate-in data-[closed]:animate-out data-[open]:fade-in-0 data-[closed]:fade-out-0 data-[open]:zoom-in-95 data-[closed]:zoom-out-95',
             'data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2',
             className
@@ -96,4 +97,49 @@ const PopoverContent = React.forwardRef<
 );
 PopoverContent.displayName = 'PopoverContent';
 
-export { Popover, PopoverTrigger, PopoverPortal, PopoverContent };
+/**
+ * Vertical-rhythm wrapper for a `PopoverContent`'s main content — the `Body`
+ * slot in the Figma node. Themed from `--ui-popover-body-*` (gap, padding-y);
+ * horizontal inset is a plain utility since the design has no dedicated
+ * component token for it.
+ */
+const PopoverBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'flex w-full flex-col gap-[var(--ui-popover-body-gap)] px-4 py-[var(--ui-popover-body-padding-y)]',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+PopoverBody.displayName = 'PopoverBody';
+
+/**
+ * Default action-row footer — the `FooterDefault` (`variant=default`) recipe
+ * from the Figma node. Themed from the shared `--ui-footer-*` tier.
+ */
+const PopoverFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'flex h-[var(--ui-footer-global-height)] w-full shrink-0 items-center justify-end gap-[var(--ui-footer-global-gap)] border-t-[length:var(--ui-footer-default-border-width)] border-solid border-[var(--ui-footer-default-border-color)] bg-[var(--ui-footer-default-color)] px-[var(--ui-footer-global-padding-x)]',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+PopoverFooter.displayName = 'PopoverFooter';
+
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverPortal,
+  PopoverContent,
+  PopoverBody,
+  PopoverFooter,
+};

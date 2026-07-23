@@ -9,16 +9,23 @@ import { PopoverDemo } from "@/components/demos-react/popover";
 ## Usage
 
 ```tsx
-import { Popover, PopoverTrigger, PopoverContent } from '@acronis-platform/ui-react';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverFooter,
+} from '@acronis-platform/ui-react';
 ```
 
 `Popover` is a compound component built on Base UI's Popover primitive
 (positioning, focus management, outside-press / Esc dismissal). `Popover` owns
 the open state; `PopoverTrigger` toggles and anchors it; `PopoverContent` is the
-portaled, positioned popup (`side` / `align` / `sideOffset`). This is a
-design-pending v1 themed from the shared semantic surface tokens
-(`bg-background` / `text-foreground` / `border-border`); a `--ui-popover-*` tier
-is pending a Figma pass.
+portaled, positioned popup (`side` / `align` / `sideOffset`), themed by the
+`--ui-popover-*` container tokens (color, border, radius, min/max width).
+`PopoverBody` and `PopoverFooter` are optional parts for the body-rhythm and
+default action-row footer recipe shown in Figma — themed by
+`--ui-popover-body-*` and the shared `--ui-footer-*` tier respectively.
 
 ## Examples
 
@@ -33,12 +40,27 @@ A popover with a heading and description:
 <Popover>
   <PopoverTrigger render={<Button variant="secondary">Open</Button>} />
   <PopoverContent>
-    <div className="grid gap-2">
+    <PopoverBody>
       <h4 className="font-medium leading-none">Dimensions</h4>
       <p className="text-sm text-muted-foreground">
         Set the dimensions for the layer.
       </p>
-    </div>
+    </PopoverBody>
+  </PopoverContent>
+</Popover>
+```
+
+With the default action-row footer (Cancel + Apply):
+
+```tsx
+<Popover>
+  <PopoverTrigger render={<Button variant="secondary">Open</Button>} />
+  <PopoverContent>
+    <PopoverBody>Drop any content into this slot.</PopoverBody>
+    <PopoverFooter>
+      <Button variant="secondary">Cancel</Button>
+      <Button>Apply</Button>
+    </PopoverFooter>
   </PopoverContent>
 </Popover>
 ```
@@ -75,6 +97,7 @@ a `portalContainer` so the popup inherits that scope's styles.
 
 `Popover` (root) accepts the Base UI Popover root props — `open` /
 `defaultOpen`, `onOpenChange`. `PopoverTrigger` and `PopoverPortal` wrap the
-matching Base UI parts. See the
+matching Base UI parts. `PopoverBody` and `PopoverFooter` accept the standard
+attributes of the `<div>` they render. See the
 [Base UI Popover docs](https://base-ui.com/react/components/popover) for the full
 prop surface.

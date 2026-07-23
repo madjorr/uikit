@@ -5,7 +5,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   Popover,
+  PopoverBody,
   PopoverContent,
+  PopoverFooter,
   PopoverTrigger,
 } from '../popover';
 
@@ -38,14 +40,67 @@ describe('Popover', () => {
     expect(screen.getByText('Dimensions')).toBeInTheDocument();
   });
 
-  it('themes the popup from the bridged semantic tokens', () => {
+  it('themes the popup from the --ui-popover-container-* tokens', () => {
     render(<DemoPopover defaultOpen />);
-    // No `--ui-popover-*` tier yet — the popup surface resolves to the shared tokens.
     expect(screen.getByTestId('popup')).toHaveClass(
-      'bg-background',
-      'text-foreground',
-      'border-border'
+      'bg-[var(--ui-popover-container-color)]',
+      'border-[var(--ui-popover-container-border-color)]',
+      'rounded-[var(--ui-popover-container-border-radius)]',
+      'min-w-[var(--ui-popover-container-min-width)]',
+      'max-w-[var(--ui-popover-container-max-width)]'
     );
+  });
+
+  it('renders PopoverBody with the --ui-popover-body-* rhythm tokens', () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent>
+          <PopoverBody data-testid="body">Content</PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
+    expect(screen.getByTestId('body')).toHaveClass(
+      'gap-[var(--ui-popover-body-gap)]',
+      'py-[var(--ui-popover-body-padding-y)]'
+    );
+  });
+
+  it('renders PopoverFooter with the --ui-footer-* chrome tokens', () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent>
+          <PopoverFooter data-testid="footer">
+            <button>Cancel</button>
+            <button>Apply</button>
+          </PopoverFooter>
+        </PopoverContent>
+      </Popover>
+    );
+    const footer = screen.getByTestId('footer');
+    expect(footer).toHaveClass(
+      'bg-[var(--ui-footer-default-color)]',
+      'h-[var(--ui-footer-global-height)]'
+    );
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument();
+  });
+
+  it('forwards the ref on PopoverBody and PopoverFooter', () => {
+    const bodyRef = createRef<HTMLDivElement>();
+    const footerRef = createRef<HTMLDivElement>();
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent>
+          <PopoverBody ref={bodyRef}>Content</PopoverBody>
+          <PopoverFooter ref={footerRef} />
+        </PopoverContent>
+      </Popover>
+    );
+    expect(bodyRef.current).toBeInstanceOf(HTMLElement);
+    expect(footerRef.current).toBeInstanceOf(HTMLElement);
   });
 
   it('fires onOpenChange and closes on Escape', async () => {

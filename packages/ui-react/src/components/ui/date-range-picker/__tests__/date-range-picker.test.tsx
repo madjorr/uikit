@@ -109,6 +109,15 @@ describe('DateRangePicker', () => {
     expect(reset).toBeDisabled();
   });
 
+  it('strips the popover max-width cap for the two-month calendar layout', async () => {
+    const user = userEvent.setup();
+    render(<DateRangePicker label="Period" onValueChange={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: 'Period' }));
+
+    expect(screen.getByRole('dialog')).toHaveClass('max-w-none');
+  });
+
   it('does not open when disabled', async () => {
     const user = userEvent.setup();
     render(<DateRangePicker label="Period" disabled onValueChange={() => {}} />);

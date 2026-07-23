@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Button } from '../../button';
-import { Popover, PopoverContent, PopoverTrigger } from '../popover';
+import { Popover, PopoverBody, PopoverContent, PopoverFooter, PopoverTrigger } from '../popover';
 
 const meta = {
   title: 'UI/Popover',
@@ -40,12 +40,12 @@ export const Default: Story = {
     <Popover defaultOpen>
       <PopoverTrigger render={<Button variant="secondary">Open popover</Button>} />
       <PopoverContent>
-        <div className="grid gap-2">
+        <PopoverBody>
           <h4 className="font-medium leading-none">Dimensions</h4>
           <p className="text-sm text-muted-foreground">
             Set the dimensions for the layer.
           </p>
-        </div>
+        </PopoverBody>
       </PopoverContent>
     </Popover>
   ),
@@ -56,15 +56,34 @@ export const WithActions: Story = {
     <Popover defaultOpen>
       <PopoverTrigger render={<Button variant="secondary">Filters</Button>} />
       <PopoverContent>
-        <div className="grid gap-3">
+        <PopoverBody>
           <p className="text-sm text-muted-foreground">
             Apply filters to the current view.
           </p>
-          <div className="flex justify-end gap-2">
-            <Button variant="ghost">Reset</Button>
-            <Button>Apply</Button>
-          </div>
-        </div>
+        </PopoverBody>
+        <PopoverFooter>
+          <Button variant="ghost">Reset</Button>
+          <Button>Apply</Button>
+        </PopoverFooter>
+      </PopoverContent>
+    </Popover>
+  ),
+};
+
+// The exact recipe shown by the Figma node: a text body plus the
+// `FooterDefault` (variant=default) action row — Cancel + Apply.
+export const WithFooter: Story = {
+  render: () => (
+    <Popover defaultOpen>
+      <PopoverTrigger render={<Button variant="secondary">Open popover</Button>} />
+      <PopoverContent>
+        <PopoverBody>
+          <p className="text-sm text-foreground">Drop any content into this slot.</p>
+        </PopoverBody>
+        <PopoverFooter>
+          <Button variant="secondary">Cancel</Button>
+          <Button>Apply</Button>
+        </PopoverFooter>
       </PopoverContent>
     </Popover>
   ),

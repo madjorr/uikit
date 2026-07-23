@@ -1,19 +1,32 @@
-// Figma Code Connect — status: NEEDS_FIGMA_URL
-// Ported from ui-legacy without a "ready for dev" Figma node. Popover is a
-// compositional overlay; the positioning props live on Base UI's Positioner, so
-// there are no enum property mappings to verify here — only the node URL is
-// missing. Replace 'FIGMA_NODE_URL' with the component-set link and flip the
-// status to COMPLETE via `/figma-component Popover <url> --update`, then validate
-// with `figma:connect`.
+// Figma Code Connect — status: COMPLETE
+// Mapped to the "Popover" component (node 6364:17907) in the ui-react Figma
+// file. Its only exposed property is the `Body` slot; the `FooterDefault`
+// (variant=default) footer is fixed content on this node, not a variant, so
+// the example reproduces it verbatim via `PopoverFooter` + two `Button`s.
+import * as React from 'react';
 import figma from '@figma/code-connect';
 
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Button } from '../button/button';
+import { Popover, PopoverBody, PopoverContent, PopoverFooter, PopoverTrigger } from './popover';
 
-figma.connect(Popover, 'FIGMA_NODE_URL', {
-  example: () => (
-    <Popover>
-      <PopoverTrigger>Open</PopoverTrigger>
-      <PopoverContent>Popover content</PopoverContent>
-    </Popover>
-  ),
-});
+figma.connect(
+  Popover,
+  'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/ui-react?node-id=6364-17907',
+  {
+    props: {
+      body: figma.children('Body'),
+    },
+    example: ({ body }: { body: React.ReactNode }) => (
+      <Popover>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent>
+          <PopoverBody>{body}</PopoverBody>
+          <PopoverFooter>
+            <Button variant="secondary">Cancel</Button>
+            <Button>Apply</Button>
+          </PopoverFooter>
+        </PopoverContent>
+      </Popover>
+    ),
+  }
+);
