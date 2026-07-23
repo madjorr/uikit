@@ -45,7 +45,9 @@ describe('Popover', () => {
     expect(screen.getByTestId('popup')).toHaveClass(
       'bg-[var(--ui-popover-container-color)]',
       'border-[var(--ui-popover-container-border-color)]',
-      'rounded-[var(--ui-popover-container-border-radius)]'
+      'rounded-[var(--ui-popover-container-border-radius)]',
+      'min-w-[var(--ui-popover-container-min-width)]',
+      'max-w-[var(--ui-popover-container-max-width)]'
     );
   });
 
