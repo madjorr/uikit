@@ -47,8 +47,15 @@ type CarouselDialogFooterState = 'first' | 'middle' | 'last';
 
 function getFooterState(
   canScrollPrev: boolean,
-  canScrollNext: boolean
+  canScrollNext: boolean,
+  slideCount: number
 ): CarouselDialogFooterState {
+  // A single slide can't scroll either direction, but it must still resolve
+  // to 'last' so the Close button renders — otherwise there's no reachable
+  // way to close the dialog (see accessibility.md).
+  if (slideCount <= 1) {
+    return 'last';
+  }
   if (!canScrollPrev) {
     return 'first';
   }
@@ -83,7 +90,7 @@ const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFoot
   ) => {
     const { canScrollPrev, canScrollNext, scrollPrev, scrollNext, selectedIndex, slideCount } =
       useCarousel();
-    const state = getFooterState(canScrollPrev, canScrollNext);
+    const state = getFooterState(canScrollPrev, canScrollNext, slideCount);
 
     if (
       process.env.NODE_ENV !== 'production' &&
@@ -118,7 +125,7 @@ const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFoot
             Back/Next/Close are present — a plain justify-between would let the
             dots drift when a side slot is empty (state=first has no Back). */}
         <div className="flex flex-1 items-center">
-          {state !== 'first' && (
+          {canScrollPrev && (
             <Button variant="secondary" onClick={scrollPrev}>
               {backLabel}
             </Button>

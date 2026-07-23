@@ -60,18 +60,21 @@ function renderLast(onOpenChange?: (open: boolean) => void) {
   );
 }
 
-// canScrollPrev/canScrollNext both false: a single-slide dialog, or the
-// pre-measurement instant before Embla's first `select`. getFooterState has
-// no dedicated case for this — it falls back to 'first', which is a correct
-// flash for a multi-slide dialog but, for a genuine single slide, leaves no
-// working Close (Next renders but scrollNext is a no-op with nothing to
-// scroll to). Asserted here as documented current behavior, not a fix.
+// canScrollPrev/canScrollNext both false: a single-slide dialog. getFooterState
+// special-cases slideCount <= 1 to 'last' so Close always renders — otherwise
+// there'd be no reachable way to close a single-slide dialog.
 function renderBothDisabled() {
   mockCarousel.canScrollPrev = false;
   mockCarousel.canScrollNext = false;
   mockCarousel.selectedIndex = 0;
   mockCarousel.slideCount = 1;
-  return render(<CarouselDialogFooter />);
+  return render(
+    <Dialog open>
+      <DialogContent>
+        <CarouselDialogFooter />
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function dotStates() {
@@ -118,7 +121,13 @@ describe('CarouselDialogFooter', () => {
     mockCarousel.canScrollNext = false;
     mockCarousel.selectedIndex = 0;
     mockCarousel.slideCount = 1;
-    render(<CarouselDialogFooter />);
+    render(
+      <Dialog open>
+        <DialogContent>
+          <CarouselDialogFooter />
+        </DialogContent>
+      </Dialog>
+    );
     expect(screen.getAllByRole('listitem')).toHaveLength(1);
     expect(dotStates()).toEqual([true]);
   });
@@ -145,11 +154,11 @@ describe('CarouselDialogFooter', () => {
     consoleError.mockRestore();
   });
 
-  it('both-disabled state (single slide): falls back to first, with no Close reachable', () => {
+  it('both-disabled state (single slide): resolves to last, with Close reachable', () => {
     renderBothDisabled();
     expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
     expect(dotStates()).toEqual([true]);
   });
 

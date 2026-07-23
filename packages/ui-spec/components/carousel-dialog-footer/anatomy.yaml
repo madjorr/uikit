@@ -24,10 +24,14 @@ parts:
   - id: back
     description: >-
       Scrolls to the earlier slide. A `Button` (`secondary` variant) calling
-      `scrollPrev()`. Hidden (not rendered) in state=first.
+      `scrollPrev()`. Hidden (not rendered) whenever there's no earlier slide
+      to scroll to (ambient Carousel context: canScrollPrev() === false) —
+      this is keyed directly to canScrollPrev, not to state=first, so a
+      single-slide Carousel (state=last, canScrollPrev() === false) also
+      hides it.
     element: button
     optional: true
-    visible_when: "state !== 'first'"
+    visible_when: 'canScrollPrev() === true'
   - id: dots
     description: >-
       The slide-position indicator. Renders one slot per real Carousel slide
@@ -77,7 +81,10 @@ states:
     kind: internal
     affects: [back, dots, next, close]
   - id: last
-    trigger: 'no later slide (ambient Carousel context: canScrollNext() === false)'
+    trigger: >-
+      no later slide (ambient Carousel context: canScrollNext() === false),
+      or a Carousel with exactly one slide — the single-slide case resolves
+      here (not to state=first) so Close is always reachable
     kind: internal
     affects: [back, dots, next, close]
   - id: hover

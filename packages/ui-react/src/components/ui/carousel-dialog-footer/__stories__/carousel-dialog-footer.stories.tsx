@@ -34,12 +34,11 @@ function FooterAtIndex({ startIndex }: { startIndex: number }) {
   );
 }
 
-// A single-slide dialog: canScrollPrev/canScrollNext are both false, a case
-// getFooterState has no dedicated branch for (see its own comment). It falls
-// back to the 'first' state, so this renders a non-disabled "Next" whose
-// scrollNext has nothing to scroll to, and no "Close" is ever reachable —
-// documented current behavior, not a fix. The dot indicator correctly
-// renders exactly 1 dot (one per real slide), not a fixed count.
+// A single-slide dialog: canScrollPrev/canScrollNext are both false, which
+// getFooterState special-cases to 'last' so Close renders (see its own
+// comment) instead of leaving no reachable way to close the dialog. The dot
+// indicator correctly renders exactly 1 dot (one per real slide), not a
+// fixed count.
 function SingleSlideFooter() {
   return (
     <Dialog open>

@@ -34,6 +34,15 @@ Scenario: Last slide
 ```
 
 ```gherkin
+Scenario: A single slide
+  Given a CarouselDialogFooter inside a Carousel with exactly one slide
+  Then no Back control is rendered
+  And the dot at index 0 is active
+  And no Next control is rendered
+  And a Close control is rendered in its place
+```
+
+```gherkin
 Scenario: The indicator matches the real slide count, within [1, 5]
   Given a Carousel with N slides (Embla's scrollSnapList().length), 1 <= N <= 5
   Then CarouselDialogFooter renders exactly N dot slots, one per slide

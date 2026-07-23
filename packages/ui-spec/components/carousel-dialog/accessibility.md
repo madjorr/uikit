@@ -63,5 +63,6 @@ controls and the position list (one item per real slide).
 - [ ] The dialog has an accessible name when `aria-label`/`aria-labelledby` is passed
 - [ ] Esc closes the dialog from anywhere inside it
 - [ ] ArrowLeft/ArrowRight scroll the Carousel when focus is inside it
-- [ ] The footer's Close control (last slide) closes the dialog
+- [ ] The footer's Close control (last slide, or the only slide when there is
+      exactly one) closes the dialog
 - [ ] Every rendered control is reachable via Tab and activatable via Enter/Space

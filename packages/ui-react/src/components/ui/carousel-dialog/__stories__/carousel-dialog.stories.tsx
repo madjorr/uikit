@@ -66,10 +66,9 @@ export const Default: Story = {
 };
 
 // A single-slide dialog (the enforced minimum): canScrollPrev/canScrollNext
-// are both false, so the footer falls back to its 'first' state (see
-// CarouselDialogFooter's own SingleSlide story) — a non-disabled Next with
-// nothing to scroll to, and no Close reachable. Documented current behavior,
-// not a fix. The dot indicator correctly renders exactly 1 dot.
+// are both false, so the footer resolves to its 'last' state (see
+// CarouselDialogFooter's own SingleSlide story) — no Back, no Next, and a
+// reachable Close. The dot indicator correctly renders exactly 1 dot.
 export const SingleSlide: Story = {
   render: () => (
     <CarouselDialog open aria-label="Onboarding tour">
