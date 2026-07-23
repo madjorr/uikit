@@ -9,10 +9,10 @@ import { DialogDemo } from "@/components/demos-react/dialog";
 ## Usage
 
 ```tsx
-import { DialogDefault } from '@acronis-platform/ui-react';
+import { Dialog } from '@acronis-platform/ui-react';
 ```
 
-`DialogDefault` is the sanctioned way to build a dialog. A single `variant` prop
+`Dialog` is the sanctioned way to build a dialog. A single `variant` prop
 selects one of seven canned use-cases — `default`, `rename`, `save changes`,
 `reset password`, `discard changes`, `accept`, `read-only` — each with its own
 title, body copy, and footer buttons, so product code doesn't hand-assemble the
@@ -22,6 +22,10 @@ internally on Base UI's Dialog primitive (focus trap, scroll lock,
 `Esc`/outside-press dismissal, and ARIA come from Base UI), but that primitive
 is not itself exported — if none of the seven variants fit your use case, raise
 it with the design system team rather than reaching for a lower-level API.
+
+An eighth `wide` variant is a legacy escape hatch — no canned preset, a
+fully custom `footer` — kept only for backward compatibility with pre-existing
+wider dialogs; prefer one of the seven canned variants for new work.
 
 ## Examples
 
@@ -34,28 +38,28 @@ A canned use-case, controlled open state:
 ```tsx
 const [open, setOpen] = useState(false);
 
-<DialogDefault variant="discard changes" open={open} onOpenChange={setOpen} />;
+<Dialog variant="discard changes" open={open} onOpenChange={setOpen} />;
 ```
 
 Override the body slot while keeping the header/footer chrome:
 
 ```tsx
-<DialogDefault variant="default" defaultOpen>
+<Dialog variant="default" defaultOpen>
   <p>Any custom body content.</p>
-</DialogDefault>
+</Dialog>
 ```
 
 Busy state:
 
 ```tsx
-<DialogDefault variant="save changes" hasLoading open />
+<Dialog variant="save changes" hasLoading open />
 ```
 
 Localize the canned copy — `title`, `secondaryLabel`, `primaryLabel`, and
 `closeLabel` all override the variant's default English string:
 
 ```tsx
-<DialogDefault
+<Dialog
   variant="discard changes"
   title="Modifications non enregistrées"
   secondaryLabel="Retour"
@@ -69,12 +73,34 @@ When the dialog renders inside an isolated container (e.g. a shadow root), pass 
 `portalContainer` so the popup inherits that scope's styles:
 
 ```tsx
-<DialogDefault portalContainer={mountNode}>{/* … */}</DialogDefault>
+<Dialog portalContainer={mountNode}>{/* … */}</Dialog>
+```
+
+Legacy `wide` variant — a free-form footer for pre-existing wider dialogs that
+don't fit one of the seven canned use-cases:
+
+```tsx
+import { Button, DialogClose } from '@acronis-platform/ui-react';
+
+<Dialog
+  variant="wide"
+  size="large"
+  title="Configure discovery agent"
+  open
+  footer={
+    <>
+      <DialogClose render={<Button variant="ghost">Cancel</Button>} />
+      <Button>Configure</Button>
+    </>
+  }
+>
+  <p>Any custom body content.</p>
+</Dialog>
 ```
 
 ## API Reference
 
 <AutoTypeTable
   path="../../packages/ui-react/src/components/ui/dialog/dialog.docs.ts"
-  name="DialogDefaultProps"
+  name="DialogProps"
 />

@@ -1,28 +1,31 @@
-// Figma Code Connect — Dialog: status NEEDS_FIGMA_URL, DialogDefault: COMPLETE
-// Dialog is a compositional overlay (no variant/size props) ported from
+// Figma Code Connect — DialogRoot: status NEEDS_FIGMA_URL, Dialog: COMPLETE
+// DialogRoot (the composable primitive) is internal-only and was ported from
 // ui-legacy without a "ready for dev" Figma node — only the node URL is
 // missing below. Replace 'FIGMA_NODE_URL' with the component-set link and
 // flip the status via `/figma-component Dialog <url> --update`.
-// DialogDefault is mapped to the "DialogDefault" component set in the
-// ui-react Figma file (node 6343:58898). Property names verified via
-// get_context_for_code_connect: `variant` (variant enum), `hasLoading`
-// (boolean), `DialogBody` (slot → children).
+// Dialog (the public component) is mapped to the "DialogDefault" component set
+// in the ui-react Figma file (node 6343:58898) — the code-facing name stays
+// `Dialog`; only the Figma component is named "DialogDefault". Property names
+// verified via get_context_for_code_connect: `variant` (variant enum),
+// `hasLoading` (boolean), `DialogBody` (slot → children). The `wide` variant
+// (legacy free-form footer, kept for backward compatibility) has no Figma
+// counterpart and is intentionally left out of the mapping below.
 import figma from '@figma/code-connect';
 
 import {
-  Dialog,
+  DialogRoot,
   DialogBody,
   DialogContent,
-  DialogDefault,
+  Dialog,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from './dialog';
 
-figma.connect(Dialog, 'FIGMA_NODE_URL', {
+figma.connect(DialogRoot, 'FIGMA_NODE_URL', {
   example: () => (
-    <Dialog defaultOpen>
+    <DialogRoot defaultOpen>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Title</DialogTitle>
@@ -32,12 +35,12 @@ figma.connect(Dialog, 'FIGMA_NODE_URL', {
         </DialogBody>
         <DialogFooter>Actions</DialogFooter>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
 });
 
 figma.connect(
-  DialogDefault,
+  Dialog,
   'https://www.figma.com/design/lrU3ydIyvPYQNE6ixdsKtJ/ui-react?node-id=6343-58898',
   {
     props: {
@@ -54,9 +57,9 @@ figma.connect(
       children: figma.children('DialogBody'),
     },
     example: ({ variant, hasLoading, children }) => (
-      <DialogDefault variant={variant} hasLoading={hasLoading} defaultOpen>
+      <Dialog variant={variant} hasLoading={hasLoading} defaultOpen>
         {children}
-      </DialogDefault>
+      </Dialog>
     ),
   }
 );

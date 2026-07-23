@@ -13,11 +13,11 @@ import { Spinner } from '../spinner';
 // Initial version ported from `@acronis-platform/shadcn-uikit`'s `dialog`
 // (packages/ui-legacy/src/components/ui/dialog.tsx). A modal overlay built on
 // the Base UI Dialog primitive (keyboard, focus trap, scroll lock, ARIA come
-// from Base UI). A `--ui-dialog-*` / `--ui-button-icon-*` token tier now covers
-// the container + close button (reconciled against the DialogDefault Figma node,
-// 6343:58898); the composable DialogHeader / DialogFooter / DialogBody parts
-// below are still un-reconciled (no Figma node of their own yet) and keep the
-// prior semantic-token approach:
+// from Base UI). A `--ui-dialog-*` / `--ui-button-icon-*` token tier covers the
+// container + close button (reconciled against the Figma "DialogDefault" node,
+// 6343:58898); the composable DialogRoot / DialogHeader / DialogFooter /
+// DialogBody parts below are internal-only (no public export, no Figma node of
+// their own) and keep the prior semantic-token approach:
 //   • overlay  -> var(--ui-background-backdrop-screen)   (legacy `bg-black/80`)
 //   • popup    -> var(--ui-dialog-container-color) / var(--ui-dialog-container-border-radius)
 //   • header / footer -> bg-background = --ui-background-surface-primary (white
@@ -28,14 +28,17 @@ import { Spinner } from '../spinner';
 //     var(--ui-button-icon-global-container-color-*), focus ring var(--ui-focus-primary)
 // Enter/exit animations use `tw-animate-css` (imported in styles/index.css),
 // keyed to Base UI's data-[open] / data-[closed] state attributes — overlay
-// fades, popup fades + zooms. `size` only has one value (`sm`, 512px) — the
-// one width with a Figma-defined token (`--ui-dialog-container-size-sm`); it
-// stays a cva axis (rather than a fixed value) so a design-shipped wider size
-// can be added later without an API change.
+// fades, popup fades + zooms. `size` has two values: `sm` (512px, the Figma
+// default, backed by `--ui-dialog-container-size-sm`) and `large` (832px) — the
+// latter predates the Figma node and has no token; it's kept as a plain
+// arbitrary value solely for backward compatibility with existing call sites
+// that need a wider popup (see the `Large` story).
 //
 // Dialog's composable primitive parts (this file) are internal-only — not
-// re-exported from the package root. `DialogDefault` below is the only
-// sanctioned public entry point; it's built on these parts internally.
+// re-exported from the package root. The public `Dialog` component below is
+// the sole sanctioned entry point; it's built on these parts internally. (In
+// Figma the matching component set is named "DialogDefault"; the code-facing
+// name stays `Dialog` — see dialog.figma.tsx.)
 
 const dialogContentVariants = cva(
   'fixed left-1/2 top-1/2 z-50 flex w-full min-w-[var(--ui-dialog-container-width-min)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--ui-dialog-container-border-radius)] bg-[var(--ui-dialog-container-color)] text-foreground shadow-lg duration-200 data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95',
@@ -43,6 +46,7 @@ const dialogContentVariants = cva(
     variants: {
       size: {
         sm: 'max-w-[var(--ui-dialog-container-size-sm)]',
+        large: 'max-w-[832px]',
       },
     },
     defaultVariants: {
@@ -51,7 +55,7 @@ const dialogContentVariants = cva(
   }
 );
 
-const Dialog = DialogPrimitive.Root;
+const DialogRoot = DialogPrimitive.Root;
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
@@ -77,7 +81,11 @@ DialogOverlay.displayName = 'DialogOverlay';
 export interface DialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Popup>,
     VariantProps<typeof dialogContentVariants> {
-  /** Popup max-width. Only `sm` (512px) is defined today. Defaults to `sm`. */
+  /**
+   * Popup max-width. `sm` (512px, default) is the Figma-defined size; `large`
+   * (832px) is a backward-compatibility size with no design token (see the
+   * `Large` story).
+   */
   size?: VariantProps<typeof dialogContentVariants>['size'];
   /**
    * Render the content inside a portal (default `true`). Base UI requires the
@@ -227,12 +235,15 @@ const DialogCloseButton = React.forwardRef<
 DialogCloseButton.displayName = 'DialogCloseButton';
 
 // A higher-level "recipe" built on top of the Dialog primitive parts above
-// (Dialog + DialogContent give the portal, backdrop, focus trap, scroll lock
-// and open state; DialogTitle wires the accessible name; DialogCloseButton /
-// DialogClose give the dismiss controls). It bakes in the seven Figma
-// "DialogDefault" use-cases (node 6343:58898): each `variant` picks a canned
-// title, body copy and footer buttons; `children` overrides only the body
-// slot; `hasLoading` drops a spinner overlay over the body + footer.
+// (DialogRoot + DialogContent give the portal, backdrop, focus trap, scroll
+// lock and open state; DialogTitle wires the accessible name; DialogCloseButton
+// / DialogClose give the dismiss controls). It bakes in the seven Figma
+// "DialogDefault" use-cases (node 6343:58898) plus one legacy `wide` escape
+// hatch kept for backward compatibility: each `variant` picks a canned title,
+// body copy and footer buttons; `children` overrides only the body slot;
+// `title` overrides only the title; `footer` overrides only the footer's
+// action content (the free-form escape hatch `wide` relies on); `hasLoading`
+// drops a spinner overlay over the body + footer.
 //
 // Colors resolve to shipped semantic tokens via the bridged Tailwind names the
 // Dialog family already uses (text-foreground, the backdrop + focus tokens
@@ -243,16 +254,17 @@ DialogCloseButton.displayName = 'DialogCloseButton';
 // Header + footer geometry/color resolve to the `--ui-dialog-header-*` /
 // `--ui-footer-*` tiers, reconciled against the DialogDefault Figma node.
 
-export type DialogDefaultVariant =
+export type DialogVariant =
   | 'default'
   | 'rename'
   | 'save changes'
   | 'reset password'
   | 'discard changes'
   | 'accept'
-  | 'read-only';
+  | 'read-only'
+  | 'wide';
 
-interface DialogDefaultVariantContent {
+interface DialogVariantContent {
   title: string;
   body: React.ReactNode;
   /** Secondary (dismiss) button label. Omitted when the variant has none. */
@@ -263,10 +275,7 @@ interface DialogDefaultVariantContent {
   primaryCloses?: boolean;
 }
 
-const DIALOG_DEFAULT_VARIANT_CONTENT: Record<
-  DialogDefaultVariant,
-  DialogDefaultVariantContent
-> = {
+const DIALOG_VARIANT_CONTENT: Record<DialogVariant, DialogVariantContent> = {
   default: {
     title: 'Dialog title',
     body: 'Drop any content into this slot.',
@@ -321,14 +330,27 @@ const DIALOG_DEFAULT_VARIANT_CONTENT: Record<
     primaryVariant: 'default',
     primaryCloses: true,
   },
+  // No Figma preset — a legacy, free-form escape hatch (see the `footer` prop
+  // and the `Large` story). These defaults only show if the caller overrides
+  // neither `footer` nor `primaryLabel`/`secondaryLabel`.
+  wide: {
+    title: 'Dialog title',
+    body: 'Drop any content into this slot.',
+    secondaryLabel: 'Cancel',
+    primaryLabel: 'Confirm',
+    primaryVariant: 'default',
+  },
 };
 
-type DialogDefaultRootProps = React.ComponentPropsWithoutRef<typeof Dialog>;
+type DialogRootProps = React.ComponentPropsWithoutRef<typeof DialogRoot>;
 
-export interface DialogDefaultProps
-  extends Omit<DialogDefaultRootProps, 'children'> {
-  /** Selects the canned title / body / footer preset. Defaults to `default`. */
-  variant?: DialogDefaultVariant;
+export interface DialogProps extends Omit<DialogRootProps, 'children'> {
+  /**
+   * Selects the canned title / body / footer preset. Defaults to `'default'`.
+   * `'wide'` is a legacy escape hatch (no canned preset) kept for backward
+   * compatibility — pair it with `size="large"` and the `footer` prop.
+   */
+  variant?: DialogVariant;
   /** Show a spinner overlay across the body + footer. */
   hasLoading?: boolean;
   /** Overrides the variant's default body content. */
@@ -338,14 +360,23 @@ export interface DialogDefaultProps
   /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this for a variant with no secondary button by default (e.g. `read-only`)
-   * also makes the button appear.
+   * also makes the button appear. Ignored when `footer` is provided.
    */
   secondaryLabel?: string;
-  /** Overrides the variant's default primary button label. */
+  /** Overrides the variant's default primary button label. Ignored when `footer` is provided. */
   primaryLabel?: string;
+  /**
+   * Replaces the footer's action content entirely with free-form buttons —
+   * the escape hatch the `wide` variant is meant to be paired with, for
+   * legacy call sites that don't fit one of the seven canned presets.
+   */
+  footer?: React.ReactNode;
   /** Overrides the close button's accessible name. Defaults to `'Close'`. */
   closeLabel?: string;
-  /** Popup max-width (forwarded to `DialogContent`). Defaults to `sm` (512px). */
+  /**
+   * Popup max-width (forwarded to `DialogContent`). Defaults to `'sm'`, or to
+   * `'large'` when `variant` is `'wide'`.
+   */
   size?: DialogContentProps['size'];
   /** Render inside a portal (forwarded to `DialogContent`). Defaults to `true`. */
   portal?: boolean;
@@ -355,7 +386,7 @@ export interface DialogDefaultProps
   className?: string;
 }
 
-const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
+const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
   (
     {
       variant = 'default',
@@ -364,8 +395,9 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
       title,
       secondaryLabel,
       primaryLabel,
+      footer,
       closeLabel,
-      size = 'sm',
+      size,
       portal,
       portalContainer,
       className,
@@ -373,17 +405,18 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
     },
     ref
   ) => {
-    const content = DIALOG_DEFAULT_VARIANT_CONTENT[variant];
+    const content = DIALOG_VARIANT_CONTENT[variant];
     const bodyContent = children ?? content.body;
     const titleText = title ?? content.title;
     const secondaryLabelText = secondaryLabel ?? content.secondaryLabel;
     const primaryLabelText = primaryLabel ?? content.primaryLabel;
+    const resolvedSize = size ?? (variant === 'wide' ? 'large' : 'sm');
 
     return (
-      <Dialog {...rootProps}>
+      <DialogRoot {...rootProps}>
         <DialogContent
           ref={ref}
-          size={size}
+          size={resolvedSize}
           portal={portal}
           portalContainer={portalContainer}
           className={className}
@@ -402,25 +435,29 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
           </div>
 
           <div className="flex h-[var(--ui-footer-global-height)] items-center justify-end gap-[var(--ui-footer-global-gap)] border-t-[length:var(--ui-footer-default-border-width)] border-[var(--ui-footer-default-border-color)] bg-[var(--ui-footer-default-color)] px-[var(--ui-footer-global-padding-x)]">
-            {secondaryLabelText && (
-              <DialogClose
-                render={
-                  <Button variant="secondary">{secondaryLabelText}</Button>
-                }
-              />
-            )}
-            {content.primaryCloses ? (
-              <DialogClose
-                render={
+            {footer ?? (
+              <>
+                {secondaryLabelText && (
+                  <DialogClose
+                    render={
+                      <Button variant="secondary">{secondaryLabelText}</Button>
+                    }
+                  />
+                )}
+                {content.primaryCloses ? (
+                  <DialogClose
+                    render={
+                      <Button variant={content.primaryVariant}>
+                        {primaryLabelText}
+                      </Button>
+                    }
+                  />
+                ) : (
                   <Button variant={content.primaryVariant}>
                     {primaryLabelText}
                   </Button>
-                }
-              />
-            ) : (
-              <Button variant={content.primaryVariant}>
-                {primaryLabelText}
-              </Button>
+                )}
+              </>
             )}
           </div>
 
@@ -430,14 +467,14 @@ const DialogDefault = React.forwardRef<HTMLDivElement, DialogDefaultProps>(
             </div>
           )}
         </DialogContent>
-      </Dialog>
+      </DialogRoot>
     );
   }
 );
-DialogDefault.displayName = 'DialogDefault';
+Dialog.displayName = 'Dialog';
 
 export {
-  Dialog,
+  DialogRoot,
   DialogPortal,
   DialogOverlay,
   DialogClose,
@@ -450,5 +487,5 @@ export {
   DialogBody,
   DialogDescription,
   dialogContentVariants,
-  DialogDefault,
+  Dialog,
 };

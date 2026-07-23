@@ -1,84 +1,105 @@
 # Dialog
 
-> **Internal-only.** Not exported from `@acronis-platform/ui-react`. This is
-> the composable primitive `DialogDefault` is built on — use
-> [`DialogDefault`](../dialog-default/README.md) instead. Documented here
-> because its source lives alongside `DialogDefault`'s
-> (`packages/ui-react/src/components/ui/dialog/`) and other internal code
-> (tests, Storybook VR coverage) still references it directly.
+A higher-level "recipe" dialog built on top of the DialogRoot primitive parts.
+One `variant` prop selects a ready-made title, body copy and footer for the
+seven most common dialog use-cases, so product code doesn't reassemble the
+same `DialogRoot` + `DialogHeader` + `DialogFooter` boilerplate each time. In
+Figma the matching component set is named "DialogDefault"; the code-facing
+name is `Dialog`.
 
-A modal overlay that interrupts the user to show focused content or request a
-decision. Composable from parts; built on the Base UI Dialog primitive.
-
-> **Status: draft (design-pending v1).** Ported from the legacy
-> `@acronis-platform/shadcn-uikit` `Dialog`. There is no `--ui-dialog-*` token
-> tier yet, so colors resolve to the shared semantic tokens. Enter/exit
-> animations use `tw-animate-css` (overlay fade, popup fade + zoom), keyed to
-> Base UI's open/closed state. Reconcile against Figma with
-> `/figma-component Dialog <url> --update` once a mockup lands.
+> **Status: draft (design-pending geometry).** Colors and typography resolve to
+> shipped semantic tokens, but there is no `--ui-dialog-*`/`--ui-footer-*` token
+> tier yet, so container/header/footer geometry (radius, widths, heights,
+> paddings, gaps, divider widths) is applied as plain Tailwind utilities — a
+> tracked exception, not an oversight. Reconcile with a Dialog/Footer tier once
+> the design team ships one. See `tokens.yaml`.
 
 ## When to use
 
-- Never directly — it has no public export. Use `DialogDefault`; if none of
-  its seven canned use-cases fit, that's a gap to raise with the design system
-  team (a new variant), not a reason to reach for this primitive.
+- One of the seven canned use-cases fits: `default`, `rename`, `save changes`,
+  `reset password`, `discard changes`, `accept`, `read-only`.
+- You want a consistent confirmation/decision dialog without hand-composing the
+  DialogRoot parts.
+- You have a legacy call site that needs a wider popup and fully custom footer
+  buttons — use `variant="wide"` (see below). This is a backward-compatibility
+  escape hatch, not a recommended pattern for new work.
+
+## When not to use
+
+- You need a bespoke layout or extra parts none of the seven variants (or the
+  `wide` escape hatch) cover — this is a gap to raise with the design system
+  team (the underlying `DialogRoot` primitive is internal-only, not a public
+  escape hatch).
+- For transient, non-blocking feedback — use a toast.
+- For contextual hints anchored to an element — use a tooltip or popover.
+
+## Variants
+
+| Variant           | Title              | Footer                                    |
+| ----------------- | ------------------ | ----------------------------------------- |
+| `default`         | Dialog title       | Cancel · Label                            |
+| `rename`          | Rename object name | Cancel · Rename (body: text field)        |
+| `save changes`    | Save changes       | Go back · Save                            |
+| `reset password`  | Reset password     | Cancel · Reset                            |
+| `discard changes` | Discard changes    | Go back · **Confirm** (destructive)       |
+| `accept`          | Accept object name | Cancel · Accept                           |
+| `read-only`       | License agreement  | Done (single primary action)              |
+| `wide`            | (caller-supplied)  | Free-form, via `footer` — no Figma preset |
 
 ## Parts
 
-| Part                             | Element (default)  | Purpose                                           |
-| -------------------------------- | ------------------ | ------------------------------------------------- |
-| `Dialog`                         | —                  | Root; owns the open state (Base UI `Root`).       |
-| `DialogTrigger`                  | `button`           | Opens the dialog.                                 |
-| `DialogContent`                  | `div[role=dialog]` | The portaled, centered popup (+ overlay).         |
-| `DialogHeader`                   | `div`              | Top bar; holds the title and close button.        |
-| `DialogTitle`                    | `h2`               | Accessible dialog name (`aria-labelledby`).       |
-| `DialogCloseButton`              | `button`           | Icon button that dismisses the dialog.            |
-| `DialogBody`                     | `div`              | Scrollable content region.                        |
-| `DialogDescription`              | `p`                | Supporting copy (`aria-describedby`).             |
-| `DialogFooter`                   | `div`              | Right-aligned action bar.                         |
-| `DialogClose`                    | `button`           | Closes the dialog; wrap a Button via `render`.    |
-| `DialogOverlay` / `DialogPortal` | —                  | Lower-level parts (`DialogContent` renders them). |
+| Part              | Element (default)  | Purpose                                              |
+| ----------------- | ------------------ | ---------------------------------------------------- |
+| `container`       | `div[role=dialog]` | The portaled, centered popup card.                   |
+| `header`          | `div`              | Top bar; title + close button.                       |
+| `title`           | `h2`               | Accessible dialog name (`aria-labelledby`).          |
+| `close-button`    | `button`           | Icon button that dismisses the dialog.               |
+| `body`            | `div`              | Variant copy or the `children` override.             |
+| `footer`          | `div`              | Right-aligned action bar; or the free-form `footer`. |
+| `loading-overlay` | `div`              | Spinner scrim shown while `hasLoading`.              |
 
-## Sizes
-
-`DialogContent` takes a `size` prop controlling the popup max-width. Only `sm`
-(512px, default) has a Figma-defined token (`--ui-dialog-container-size-sm`)
-today; it stays a variant axis so a wider size can be added later without an
-API change.
-
-## Example (internal usage only)
+## Example
 
 ```tsx
-// NOT a public import — './dialog' is an internal module path, shown here
-// only to document what DialogDefault composes internally.
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogCloseButton,
-  DialogBody,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from './dialog';
-import { Button } from '../button';
+import { Dialog } from '@acronis-platform/ui-react';
 
-<Dialog>
-  <DialogTrigger render={<Button variant="secondary">Open dialog</Button>} />
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Are you absolutely sure?</DialogTitle>
-      <DialogCloseButton />
-    </DialogHeader>
-    <DialogBody>
-      <DialogDescription>This action cannot be undone.</DialogDescription>
-    </DialogBody>
-    <DialogFooter>
+// Canned use-case, controlled open state
+<Dialog variant="discard changes" open={open} onOpenChange={setOpen} />;
+
+// Override the body slot (header + footer chrome preserved)
+<Dialog variant="default" defaultOpen>
+  <p>Any custom body content.</p>
+</Dialog>;
+
+// Busy state
+<Dialog variant="save changes" hasLoading open />;
+
+// Localize the canned copy (title/secondaryLabel/primaryLabel/closeLabel all
+// override the variant's default English string)
+<Dialog
+  variant="discard changes"
+  title="Modifications non enregistrées"
+  secondaryLabel="Retour"
+  primaryLabel="Confirmer"
+  closeLabel="Fermer"
+  open
+/>;
+
+// Legacy wide variant — free-form footer, kept for backward compatibility
+import { Button, DialogClose } from '@acronis-platform/ui-react';
+
+<Dialog
+  variant="wide"
+  size="large"
+  title="Configure discovery agent"
+  open
+  footer={
+    <>
       <DialogClose render={<Button variant="ghost">Cancel</Button>} />
-      <Button variant="destructive">Delete account</Button>
-    </DialogFooter>
-  </DialogContent>
+      <Button>Configure</Button>
+    </>
+  }
+>
+  <p>The discovery agent will obtain the neighbor IP addresses…</p>
 </Dialog>;
 ```

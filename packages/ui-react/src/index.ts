@@ -30,9 +30,9 @@ export * from './components/ui/data-table';
 export * from './components/ui/date-range-picker';
 export * from './components/ui/description-list';
 export {
-  DialogDefault,
-  type DialogDefaultProps,
-  type DialogDefaultVariant,
+  Dialog,
+  type DialogProps,
+  type DialogVariant,
 } from './components/ui/dialog';
 export * from './components/ui/dropdown-menu';
 export * from './components/ui/empty';

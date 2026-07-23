@@ -1,16 +1,16 @@
 import type * as React from 'react';
 
 // Curated prop surface for the docs `<AutoTypeTable>`. `DialogContentProps` and
-// `DialogDefaultProps` in dialog.tsx extend Base UI Dialog props, which expand
-// to a large, noisy table; this companion documents only the props callers set
+// `DialogProps` in dialog.tsx extend Base UI Dialog props, which expand to a
+// large, noisy table; this companion documents only the props callers set
 // directly. (The runtime types live in dialog.tsx; this file is never bundled.)
-// `DialogContentProps` is internal (Dialog isn't exported from the package
-// root) but stays documented here for engineers reading DialogDefault's source.
+// `DialogContentProps` is internal (DialogRoot isn't exported from the package
+// root) but stays documented here for engineers reading Dialog's source.
 
 /** Props for `DialogContent` — the portaled, centered dialog popup. */
 export interface DialogContentProps {
-  /** Popup max-width. Only `sm` (512px) is defined today. */
-  size?: 'sm';
+  /** Popup max-width. `sm` (512px, default) is the Figma-defined size; `large` (832px) is a legacy backward-compatibility size. */
+  size?: 'sm' | 'large';
   /**
    * Render the content inside a portal (default `true`). Disable only when you
    * supply your own `DialogPortal` ancestor (e.g. inline usage).
@@ -28,9 +28,13 @@ export interface DialogContentProps {
   children?: React.ReactNode;
 }
 
-/** Props for `DialogDefault` — the public, variant-driven dialog recipe. */
-export interface DialogDefaultProps {
-  /** Selects the canned title / body / footer preset. Defaults to `'default'`. */
+/** Props for `Dialog` — the public, variant-driven dialog recipe. */
+export interface DialogProps {
+  /**
+   * Selects the canned title / body / footer preset. Defaults to `'default'`.
+   * `'wide'` is a legacy escape hatch (no canned preset) kept for backward
+   * compatibility — pair it with `size="large"` and the `footer` prop.
+   */
   variant?:
     | 'default'
     | 'rename'
@@ -38,7 +42,8 @@ export interface DialogDefaultProps {
     | 'reset password'
     | 'discard changes'
     | 'accept'
-    | 'read-only';
+    | 'read-only'
+    | 'wide';
   /** Show a spinner overlay across the body + footer. */
   hasLoading?: boolean;
   /** Overrides the variant's default body content. */
@@ -48,15 +53,21 @@ export interface DialogDefaultProps {
   /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this on a variant with no secondary button by default (e.g. `read-only`)
-   * also makes the button appear.
+   * also makes the button appear. Ignored when `footer` is provided.
    */
   secondaryLabel?: string;
-  /** Overrides the variant's default primary button label. */
+  /** Overrides the variant's default primary button label. Ignored when `footer` is provided. */
   primaryLabel?: string;
+  /**
+   * Replaces the footer's action content entirely with free-form buttons —
+   * the escape hatch the `wide` variant is meant to be paired with, for
+   * legacy call sites that don't fit one of the seven canned presets.
+   */
+  footer?: React.ReactNode;
   /** Overrides the close button's accessible name. Defaults to `'Close'`. */
   closeLabel?: string;
-  /** Popup max-width. Only `sm` (512px) is defined today. */
-  size?: 'sm';
+  /** Popup max-width. Defaults to `'sm'`, or to `'large'` when `variant` is `'wide'`. */
+  size?: 'sm' | 'large';
   /** Render inside a portal (default `true`). */
   portal?: boolean;
   /** Portal container. Pass a shadow-root mount for isolated-style previews. */

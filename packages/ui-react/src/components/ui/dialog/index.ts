@@ -1,5 +1,5 @@
 export {
-  Dialog,
+  DialogRoot,
   DialogPortal,
   DialogOverlay,
   DialogClose,
@@ -12,9 +12,9 @@ export {
   DialogBody,
   DialogDescription,
   dialogContentVariants,
-  DialogDefault,
+  Dialog,
   type DialogContentProps,
   type DialogCloseButtonProps,
-  type DialogDefaultProps,
-  type DialogDefaultVariant,
+  type DialogProps,
+  type DialogVariant,
 } from './dialog';
