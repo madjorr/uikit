@@ -5,10 +5,13 @@ status: draft
 category: overlays
 description: >-
   A modal, paged walkthrough: a Dialog wrapping a Carousel, with a
-  CarouselDialogFooter (Back/Next/Close + a 3-dot position indicator) driving
-  navigation and closing on the last slide. No single Figma node backs this
-  composite — only its footer does (see CarouselDialogFooter); the dialog
-  chrome itself stays on Dialog's own pre-existing no-Figma-node bypass.
+  CarouselDialogFooter (Back/Next/Close + a one-dot-per-slide position
+  indicator) driving navigation and closing on the last slide. Accepts
+  between 1 and 5 `<CarouselItem>` children — fewer is dev-warned, more than
+  5 is dev-warned and only the first 5 are rendered. No single Figma node
+  backs this composite — only its footer does (see CarouselDialogFooter);
+  the dialog chrome itself stays on Dialog's own pre-existing no-Figma-node
+  bypass.
 since: 0.58.0
 dependencies:
   components:

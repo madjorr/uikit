@@ -7,13 +7,15 @@ import { CarouselDialogFooter } from '../carousel-dialog-footer';
 
 // Embla reports zero-size scroll snaps under jsdom/happy-dom regardless of
 // slide count (see Carousel's own tests, which work around this with
-// `opts.loop`), so canScrollPrev/canScrollNext can't be driven through real
-// navigation here. CarouselDialogFooter's contract is "reads these four
-// values from useCarousel()" — mocking that hook tests exactly that contract,
-// independent of Embla's DOM measurement.
+// `opts.loop`), so canScrollPrev/canScrollNext/selectedIndex/slideCount can't
+// be driven through real navigation here. CarouselDialogFooter's contract is
+// "reads these values from useCarousel()" — mocking that hook tests exactly
+// that contract, independent of Embla's DOM measurement.
 const mockCarousel = {
   canScrollPrev: false,
   canScrollNext: false,
+  selectedIndex: 0,
+  slideCount: 3,
   scrollPrev: vi.fn(),
   scrollNext: vi.fn(),
 };
@@ -25,6 +27,8 @@ vi.mock('../../carousel', () => ({
 beforeEach(() => {
   mockCarousel.canScrollPrev = false;
   mockCarousel.canScrollNext = false;
+  mockCarousel.selectedIndex = 0;
+  mockCarousel.slideCount = 3;
   mockCarousel.scrollPrev = vi.fn();
   mockCarousel.scrollNext = vi.fn();
 });
@@ -32,18 +36,21 @@ beforeEach(() => {
 function renderFirst() {
   mockCarousel.canScrollPrev = false;
   mockCarousel.canScrollNext = true;
+  mockCarousel.selectedIndex = 0;
   return render(<CarouselDialogFooter />);
 }
 
 function renderMiddle() {
   mockCarousel.canScrollPrev = true;
   mockCarousel.canScrollNext = true;
+  mockCarousel.selectedIndex = 1;
   return render(<CarouselDialogFooter />);
 }
 
 function renderLast(onOpenChange?: (open: boolean) => void) {
   mockCarousel.canScrollPrev = true;
   mockCarousel.canScrollNext = false;
+  mockCarousel.selectedIndex = 2;
   return render(
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent>
@@ -56,12 +63,14 @@ function renderLast(onOpenChange?: (open: boolean) => void) {
 // canScrollPrev/canScrollNext both false: a single-slide dialog, or the
 // pre-measurement instant before Embla's first `select`. getFooterState has
 // no dedicated case for this — it falls back to 'first', which is a correct
-// flash for a 3+ slide dialog but, for a genuine single slide, leaves no
+// flash for a multi-slide dialog but, for a genuine single slide, leaves no
 // working Close (Next renders but scrollNext is a no-op with nothing to
 // scroll to). Asserted here as documented current behavior, not a fix.
 function renderBothDisabled() {
   mockCarousel.canScrollPrev = false;
   mockCarousel.canScrollNext = false;
+  mockCarousel.selectedIndex = 0;
+  mockCarousel.slideCount = 1;
   return render(<CarouselDialogFooter />);
 }
 
@@ -94,9 +103,24 @@ describe('CarouselDialogFooter', () => {
     expect(dotStates()).toEqual([false, false, true]);
   });
 
-  it('always renders exactly 3 dot slots', () => {
-    renderMiddle();
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+  it('renders one dot per slide, not a fixed count', () => {
+    mockCarousel.canScrollPrev = true;
+    mockCarousel.canScrollNext = true;
+    mockCarousel.selectedIndex = 3;
+    mockCarousel.slideCount = 5;
+    render(<CarouselDialogFooter />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    expect(dotStates()).toEqual([false, false, false, true, false]);
+  });
+
+  it('renders exactly 1 dot for a single-slide carousel', () => {
+    mockCarousel.canScrollPrev = false;
+    mockCarousel.canScrollNext = false;
+    mockCarousel.selectedIndex = 0;
+    mockCarousel.slideCount = 1;
+    render(<CarouselDialogFooter />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(dotStates()).toEqual([true]);
   });
 
   it('both-disabled state (single slide): falls back to first, with no Close reachable', () => {
@@ -104,7 +128,7 @@ describe('CarouselDialogFooter', () => {
     expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
-    expect(dotStates()).toEqual([true, false, false]);
+    expect(dotStates()).toEqual([true]);
   });
 
   it('calls scrollPrev when Back is activated', async () => {

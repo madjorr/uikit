@@ -26,7 +26,7 @@ Same as Carousel's own spec: the track is `role="region"` /
 ### Footer
 
 See `CarouselDialogFooter`'s own `accessibility.md` — its Back/Next/Close
-controls and the 3-item position list.
+controls and the position list (one item per real slide).
 
 ---
 

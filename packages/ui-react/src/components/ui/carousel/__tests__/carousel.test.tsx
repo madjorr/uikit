@@ -9,6 +9,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  useCarousel,
 } from '../carousel';
 
 function BasicCarousel(props: React.ComponentProps<typeof Carousel> = {}) {
@@ -89,5 +90,31 @@ describe('Carousel', () => {
     const setApi = vi.fn();
     render(<BasicCarousel setApi={setApi} />);
     expect(setApi).toHaveBeenCalled();
+  });
+
+  it('exposes the real slide count and selected index through context', async () => {
+    const user = userEvent.setup();
+    let context: { selectedIndex: number; slideCount: number } | undefined;
+    function ContextProbe() {
+      context = useCarousel();
+      return null;
+    }
+    // `loop: true` for the same reason as the "advances to the next slide"
+    // test above — deterministic navigation despite jsdom's zero-size layout.
+    render(
+      <Carousel opts={{ loop: true }}>
+        <CarouselContent>
+          <CarouselItem>Slide 1</CarouselItem>
+          <CarouselItem>Slide 2</CarouselItem>
+          <CarouselItem>Slide 3</CarouselItem>
+        </CarouselContent>
+        <ContextProbe />
+        <CarouselNext />
+      </Carousel>
+    );
+    expect(context?.slideCount).toBe(3);
+    expect(context?.selectedIndex).toBe(0);
+    await user.click(screen.getByRole('button', { name: 'Next slide' }));
+    expect(context?.selectedIndex).toBe(1);
   });
 });

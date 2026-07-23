@@ -11,7 +11,7 @@ the Carousel's real position.
 Scenario: First slide
   Given a CarouselDialogFooter inside a Carousel on its first slide
   Then no Back control is rendered
-  And the first of the 3 dots is active
+  And the dot at index 0 is active
   And a Next control is rendered, calling scrollNext() on activation
 ```
 
@@ -20,7 +20,7 @@ Scenario: A middle slide
   Given a CarouselDialogFooter inside a Carousel on a slide that is neither
         first nor last
   Then a Back control is rendered, calling scrollPrev() on activation
-  And the second of the 3 dots is active
+  And the dot at the Carousel's real selectedScrollSnap() index is active
   And a Next control is rendered, calling scrollNext() on activation
 ```
 
@@ -28,15 +28,15 @@ Scenario: A middle slide
 Scenario: Last slide
   Given a CarouselDialogFooter inside a Carousel on its last slide
   Then a Back control is rendered, calling scrollPrev() on activation
-  And the third of the 3 dots is active
+  And the dot at the last index is active
   And no Next control is rendered
   And a Close control is rendered in its place
 ```
 
 ```gherkin
-Scenario: The indicator never grows or shrinks with slide count
-  Given a Carousel with any number of slides (not just 3)
-  Then CarouselDialogFooter always renders exactly 3 dot slots
+Scenario: The indicator always matches the real slide count
+  Given a Carousel with N slides (Embla's scrollSnapList().length)
+  Then CarouselDialogFooter renders exactly N dot slots, one per slide
 ```
 
 ## Closing

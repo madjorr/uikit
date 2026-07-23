@@ -12,7 +12,7 @@ contract:
       type: string
       required: false
       default: "'Slide position'"
-      description: Accessible name (`aria-label`) for the 3-dot slide-position indicator (`dots` part).
+      description: Accessible name (`aria-label`) for the slide-position indicator (`dots` part).
     - name: backLabel
       type: string
       required: false

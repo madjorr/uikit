@@ -42,11 +42,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Renders `count` slides — the footer's position indicator always renders
-// exactly 3 dot slots regardless of `count` (see CarouselDialogFooter's own
-// behavior.md); these stories vary the total to exercise that invariant
-// across boundary counts (2 slides never reach a "middle" state; 11
-// exercises a much larger range).
+// Renders `count` slides — the footer's position indicator renders one dot
+// per slide, matching CarouselDialog's own enforced [1, 5] slide range (see
+// CarouselDialogFooter's behavior.md); these stories vary the total to
+// exercise that range's boundaries (2 slides never reach a "middle" state).
 function slides(count: number) {
   return Array.from({ length: count }, (_, index) => (
     <CarouselItem
@@ -66,10 +65,11 @@ export const Default: Story = {
   ),
 };
 
-// A single-slide dialog: canScrollPrev/canScrollNext are both false, so the
-// footer falls back to its 'first' state (see CarouselDialogFooter's own
-// SingleSlide story) — a non-disabled Next with nothing to scroll to, and no
-// Close reachable. Documented current behavior, not a fix.
+// A single-slide dialog (the enforced minimum): canScrollPrev/canScrollNext
+// are both false, so the footer falls back to its 'first' state (see
+// CarouselDialogFooter's own SingleSlide story) — a non-disabled Next with
+// nothing to scroll to, and no Close reachable. Documented current behavior,
+// not a fix. The dot indicator correctly renders exactly 1 dot.
 export const SingleSlide: Story = {
   render: () => (
     <CarouselDialog open aria-label="Onboarding tour">
@@ -97,12 +97,33 @@ export const FourSlides: Story = {
   ),
 };
 
-// A large slide count — the dot indicator still renders exactly 3 slots, not
-// 11, and not the (incorrect) current-slide-out-of-11 count.
-export const ElevenSlides: Story = {
+// The enforced maximum (5 slides), seeded at the first slide: no Back, a
+// 5-dot indicator with the first dot active, Next shown.
+export const FirstSlide: Story = {
   render: () => (
-    <CarouselDialog open aria-label="Onboarding tour" opts={{ startIndex: 5 }}>
-      {slides(11)}
+    <CarouselDialog open aria-label="Onboarding tour">
+      {slides(5)}
+    </CarouselDialog>
+  ),
+};
+
+// The enforced maximum (5 slides), seeded at the last slide: Back shown, a
+// 5-dot indicator with the last dot active, Close in place of Next.
+export const LastSlide: Story = {
+  render: () => (
+    <CarouselDialog open aria-label="Onboarding tour" opts={{ startIndex: 4 }}>
+      {slides(5)}
+    </CarouselDialog>
+  ),
+};
+
+// More than 5 slides is out of range — CarouselDialog renders only the
+// first MAX_SLIDES (5) and dev-warns (see the browser console), rather than
+// growing the dot indicator without bound.
+export const TooManySlides: Story = {
+  render: () => (
+    <CarouselDialog open aria-label="Onboarding tour">
+      {slides(8)}
     </CarouselDialog>
   ),
 };

@@ -45,8 +45,23 @@ CarouselDialog bakes in no routing itself — a consumer wires `setApi` +
 
 ```gherkin
 Scenario: Children are the slides
-  Given a CarouselDialog with N `<CarouselItem>` children
+  Given a CarouselDialog with N `<CarouselItem>` children, 1 <= N <= 5
   Then each becomes one slide, wrapped in the Carousel's content track
+  And the footer's dot indicator renders exactly N dots
+```
+
+```gherkin
+Scenario: Too many slides
+  Given a CarouselDialog with more than 5 `<CarouselItem>` children
+  Then only the first 5 reach the Carousel (and the footer's dot indicator)
+  And a development-mode console warning is logged
+```
+
+```gherkin
+Scenario: Too few slides
+  Given a CarouselDialog with fewer than 1 `<CarouselItem>` child
+  Then a development-mode console warning is logged
+  And nothing is clamped (there is nothing to add)
 ```
 
 ```gherkin

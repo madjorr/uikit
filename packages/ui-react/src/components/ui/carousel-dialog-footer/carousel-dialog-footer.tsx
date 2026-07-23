@@ -15,16 +15,24 @@ import { useCarousel } from '../carousel';
 // like Carousel's own previous-disabled/next-disabled internal state.
 //
 // The Back/Next/Close buttons are ui-react's Button (secondary / default);
-// each dot's glyph is a plain filled circle (Figma's own dot SVGs are
-// pixel-identical circles, fill #1763CF) sized via the shared
-// --ui-button-icon-* tier — idle and active dots share the SAME glyph color,
-// only the container differs (transparent vs. the active fill). The bar's own
-// geometry and fill come from the Footer tier and the dot gap from the
-// Carousel tier — Figma's own "unset" placeholder for the bar fill resolved
-// to a literal transparent in tokens-pd, so no separate design decision was
-// needed there.
-const DOT_COUNT = 3;
-const DOT_INDICES = Array.from({ length: DOT_COUNT }, (_, index) => index);
+// each dot is a plain filled circle whose OWN color carries the active/idle
+// distinction (confirmed via Figma screenshot: the active dot's circle is
+// solid --ui-button-icon-global-icon-color-active, idle circles are the
+// dimmer --ui-button-icon-global-icon-color-disabled — there is no
+// surrounding container box/fill, unlike a real ButtonIcon). The 16px outer
+// span is a non-visual hit-box matching Figma's own CircleSmall bounding box
+// (a 9.6px circle inset 3.2px on every side) so the flex gap token measures
+// the same effective spacing Figma shows. The bar's own geometry and fill
+// come from the Footer tier and the dot gap from the Carousel tier —
+// Figma's own "unset" placeholder for the bar fill resolved to a literal
+// transparent in tokens-pd, so no separate design decision was needed there.
+//
+// Figma's own default preview shows 3 dots, but the dots row (ListIndicator)
+// is a `children`-overridable slot in the design, not a fixed 3-step
+// indicator — so the rendered dot count tracks the ambient Carousel's real
+// slide count (Embla's `scrollSnapList().length`), and the active dot tracks
+// its real `selectedScrollSnap()`, instead of collapsing every slide count
+// onto the 3-variant first/middle/last row.
 
 type CarouselDialogFooterState = 'first' | 'middle' | 'last';
 
@@ -42,7 +50,7 @@ function getFooterState(
 }
 
 interface CarouselDialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Accessible name for the 3-dot slide-position indicator. */
+  /** Accessible name for the slide-position indicator. */
   positionLabel?: string;
   /** Label for the "scroll to previous slide" control. */
   backLabel?: string;
@@ -64,9 +72,13 @@ const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFoot
     },
     ref
   ) => {
-    const { canScrollPrev, canScrollNext, scrollPrev, scrollNext } = useCarousel();
+    const { canScrollPrev, canScrollNext, scrollPrev, scrollNext, selectedIndex, slideCount } =
+      useCarousel();
     const state = getFooterState(canScrollPrev, canScrollNext);
-    const activeDot = state === 'first' ? 0 : state === 'last' ? 2 : 1;
+    const dotIndices = React.useMemo(
+      () => Array.from({ length: slideCount }, (_, index) => index),
+      [slideCount]
+    );
 
     return (
       <div
@@ -97,21 +109,21 @@ const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFoot
           aria-label={positionLabel}
           className={cn('flex shrink-0 items-center', 'gap-[var(--ui-carousel-dialog-list-indicator-gap)]')}
         >
-          {DOT_INDICES.map((index) => (
+          {dotIndices.map((index) => (
             <span
               key={index}
               role="listitem"
-              aria-current={index === activeDot ? 'true' : undefined}
-              className={cn(
-                'flex size-8 items-center justify-center rounded-[var(--ui-button-icon-global-container-border-radius)]',
-                index === activeDot
-                  ? 'bg-[var(--ui-button-icon-global-container-color-active)]'
-                  : 'bg-transparent'
-              )}
+              aria-current={index === selectedIndex ? 'true' : undefined}
+              className="flex size-4 items-center justify-center"
             >
               <span
                 aria-hidden="true"
-                className="size-[9.6px] rounded-full bg-[var(--ui-button-icon-global-icon-color-idle)]"
+                className={cn(
+                  'size-[9.6px] rounded-full',
+                  index === selectedIndex
+                    ? 'bg-[var(--ui-button-icon-global-icon-color-active)]'
+                    : 'bg-[var(--ui-button-icon-global-icon-color-disabled)]'
+                )}
               />
             </span>
           ))}

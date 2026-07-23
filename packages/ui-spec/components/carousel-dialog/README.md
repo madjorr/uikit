@@ -1,8 +1,9 @@
 # CarouselDialog
 
 A modal, paged walkthrough: a `Dialog` wrapping a `Carousel`, with a
-`CarouselDialogFooter` (Back/Next/Close + a 3-dot position indicator) driving
-navigation and closing on the last slide.
+`CarouselDialogFooter` (Back/Next/Close + a one-dot-per-slide position
+indicator) driving navigation and closing on the last slide. Accepts between
+1 and 5 slides.
 
 > **Status: draft.** No single Figma node backs this composite — only its
 > footer does (see `CarouselDialogFooter`). The dialog chrome itself stays on
@@ -20,6 +21,17 @@ navigation and closing on the last slide.
   agnostic; wire it yourself via `setApi` + `opts.startIndex`.
 - No autoplay, no looping — this v1 supports neither (not requested; no
   design to size the tradeoff).
+- For more than 5 steps — CarouselDialog caps at 5 slides (dev-warns and
+  renders only the first 5 beyond that); split a longer flow into multiple
+  dialogs or steps instead.
+
+## Slide count
+
+`children` must resolve to between 1 and 5 `<CarouselItem>`s — the footer's
+dot indicator renders exactly one dot per slide, so an unbounded count would
+grow the indicator without bound. Outside that range CarouselDialog logs a
+development-mode console warning; above 5 it also renders only the first 5
+children, dropping the rest.
 
 ## Parts
 

@@ -11,24 +11,19 @@ source: '@acronis-platform/tokens-pd'
 
 tokens:
   - {
-      name: --ui-button-icon-global-container-color-active,
+      name: --ui-button-icon-global-icon-color-active,
       affects: dots,
-      description: Active dot's container fill (32px box). Idle dots use a transparent container — no dedicated idle-container token exists or is needed.,
+      description: The active dot's own circle fill; unlike a real ButtonIcon there is no surrounding container box/fill.,
     }
   - {
-      name: --ui-button-icon-global-icon-color-idle,
+      name: --ui-button-icon-global-icon-color-disabled,
       affects: dots,
-      description: Every dot's glyph color — idle AND active dots share this one token; only the container differs.,
-    }
-  - {
-      name: --ui-button-icon-global-container-border-radius,
-      affects: dots,
-      description: Corner radius of each dot's 32px container box.,
+      description: Every idle dot's own circle fill (a dimmer tone than the active dot) — reused from ButtonIcon's disabled tone; dots themselves are never disabled/interactive.,
     }
   - {
       name: --ui-carousel-dialog-list-indicator-gap,
       affects: dots,
-      description: Gap between the 3 dot slots.,
+      description: Gap between the dot slots' 16px hit-boxes (not their 9.6px circles).,
     }
   - {
       name: --ui-footer-global-height,

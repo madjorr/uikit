@@ -13,15 +13,16 @@
 
 ### Slide position indicator (`dots` part)
 
-| Attribute      | Value                                             | Reason                                                |
-| -------------- | ------------------------------------------------- | ----------------------------------------------------- |
-| `role`         | `"list"` (container)                              | Groups the 3 position slots                           |
-| `aria-label`   | `positionLabel` prop (default `"Slide position"`) | Names the group for screen readers                    |
-| `role`         | `"listitem"` (each dot)                           | Identifies each slot as a list member                 |
-| `aria-current` | `"true"` (active slot)                            | Marks which of the 3 slots reflects the current slide |
+| Attribute      | Value                                             | Reason                                                    |
+| -------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| `role`         | `"list"` (container)                              | Groups the position slots (one per real slide)            |
+| `aria-label`   | `positionLabel` prop (default `"Slide position"`) | Names the group for screen readers                        |
+| `role`         | `"listitem"` (each dot)                           | Identifies each slot as a list member                     |
+| `aria-current` | `"true"` (active slot)                            | Marks which slot reflects the real `selectedScrollSnap()` |
 
-The dot glyph itself is `aria-hidden` — it is decorative; the position
-information is carried by `aria-current` on its container, not by the glyph.
+The visible circle inside each slot is `aria-hidden` — it is decorative; the
+position information is carried by `aria-current` on the `listitem` slot,
+not by the circle's own color.
 
 ---
 
@@ -41,8 +42,8 @@ to that slide).
 ## Screen Reader Requirements
 
 1. Back/Next/Close announce their own visible label as their accessible name.
-2. The position indicator announces as a list of 3 items, with the current
-   one marked via `aria-current`.
+2. The position indicator announces as a list of items (one per real slide),
+   with the current one marked via `aria-current`.
 3. Closing the dialog is a normal Base UI dialog-close interaction — the
    receiving Dialog owns any close announcement.
 
@@ -51,17 +52,18 @@ to that slide).
 ## Color and Contrast
 
 Back/Next/Close inherit `Button`'s own contrast guarantees (its spec owns the
-full state-token set). The dots' active-container vs. idle-container
-distinction is a fill-only signal — see `tokens.yaml` for the two tokens
-involved; both are drawn from the already-audited `ButtonIcon` tier.
+full state-token set). The dots' active-vs-idle distinction is a color-only
+signal on each circle itself (solid vs. dimmer tone) — see `tokens.yaml` for
+the two tokens involved; both are drawn from the already-audited `ButtonIcon`
+tier.
 
 ---
 
 ## Testing Checklist
 
-- [ ] First state: no Back button; Next button present; dot 1 marked current
-- [ ] Middle state: Back and Next both present; dot 2 marked current
-- [ ] Last state: Back and Close present, no Next; dot 3 marked current
-- [ ] Exactly 3 `listitem` dots are rendered regardless of slide count
+- [ ] First state: no Back button; Next button present; dot at index 0 marked current
+- [ ] Middle state: Back and Next both present; dot at the current index marked current
+- [ ] Last state: Back and Close present, no Next; dot at the last index marked current
+- [ ] The number of `listitem` dots always equals the real slide count
 - [ ] Activating Close (last state) closes the ambient Dialog
 - [ ] All rendered controls are reachable via Tab and activatable via Enter/Space

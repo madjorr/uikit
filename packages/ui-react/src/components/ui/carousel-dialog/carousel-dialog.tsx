@@ -25,6 +25,15 @@ import {
 // Step-position-in-URL sync is deliberately NOT baked in here — `setApi` and
 // `opts.startIndex` are exposed so a consumer can seed/read the current slide
 // externally (e.g. from their own router).
+//
+// Slide count is bounded to [MIN_SLIDES, MAX_SLIDES]: below the minimum there
+// is nothing sensible to render (dev-warned, left to the caller to fix); above
+// the maximum, only the first MAX_SLIDES children reach the Carousel — this
+// keeps the footer's dot indicator (one dot per real Embla slide, see
+// CarouselDialogFooter) from growing without bound.
+const MIN_SLIDES = 1;
+const MAX_SLIDES = 5;
+
 interface CarouselDialogBaseProps
   extends Omit<React.ComponentPropsWithoutRef<typeof Dialog>, 'children'> {
   /** One `<CarouselItem>` per slide — same shape as `<Carousel>`'s own children. */
@@ -76,6 +85,15 @@ function CarouselDialog({
   'aria-labelledby': ariaLabelledBy,
   ...dialogProps
 }: CarouselDialogProps) {
+  const slides = React.Children.toArray(children);
+
+  if (process.env.NODE_ENV !== 'production' && (slides.length < MIN_SLIDES || slides.length > MAX_SLIDES)) {
+    console.error(
+      `CarouselDialog: expected between ${MIN_SLIDES} and ${MAX_SLIDES} slides, received ${slides.length}.` +
+        (slides.length > MAX_SLIDES ? ` Rendering only the first ${MAX_SLIDES}.` : '')
+    );
+  }
+
   return (
     <Dialog {...dialogProps}>
       <DialogContent
@@ -85,7 +103,7 @@ function CarouselDialog({
         aria-labelledby={ariaLabelledBy}
       >
         <Carousel opts={opts} plugins={plugins} setApi={setApi}>
-          <CarouselContent>{children}</CarouselContent>
+          <CarouselContent>{slides.slice(0, MAX_SLIDES)}</CarouselContent>
           <CarouselDialogFooter
             positionLabel={positionLabel}
             backLabel={backLabel}

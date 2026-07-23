@@ -15,6 +15,8 @@ import { CarouselDialog } from '../carousel-dialog';
 const mockCarousel = {
   canScrollPrev: false,
   canScrollNext: false,
+  selectedIndex: 0,
+  slideCount: 3,
   scrollPrev: vi.fn(),
   scrollNext: vi.fn(),
 };
@@ -27,6 +29,8 @@ vi.mock('../../carousel', async () => {
 beforeEach(() => {
   mockCarousel.canScrollPrev = false;
   mockCarousel.canScrollNext = false;
+  mockCarousel.selectedIndex = 0;
+  mockCarousel.slideCount = 3;
   mockCarousel.scrollPrev = vi.fn();
   mockCarousel.scrollNext = vi.fn();
 });
@@ -95,6 +99,7 @@ describe('CarouselDialog', () => {
     const onOpenChange = vi.fn();
     mockCarousel.canScrollPrev = true;
     mockCarousel.canScrollNext = false;
+    mockCarousel.selectedIndex = 2;
     render(
       <CarouselDialog open aria-label="Onboarding tour" onOpenChange={onOpenChange}>
         <Slides />
@@ -119,5 +124,47 @@ describe('CarouselDialog', () => {
     expect(
       screen.getByRole('list', { name: 'Position de la diapositive' })
     ).toBeInTheDocument();
+  });
+
+  it('renders only the first 5 slides and warns when given more than 5', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <CarouselDialog open aria-label="Onboarding tour">
+        {Array.from({ length: 7 }, (_, index) => (
+          <CarouselItem key={index}>Slide {index + 1}</CarouselItem>
+        ))}
+      </CarouselDialog>
+    );
+    expect(screen.getAllByRole('group')).toHaveLength(5);
+    expect(screen.getByText('Slide 5')).toBeInTheDocument();
+    expect(screen.queryByText('Slide 6')).not.toBeInTheDocument();
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining('expected between 1 and 5 slides, received 7')
+    );
+    consoleError.mockRestore();
+  });
+
+  it('warns when given fewer than 1 slide', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <CarouselDialog open aria-label="Onboarding tour">
+        {[]}
+      </CarouselDialog>
+    );
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining('expected between 1 and 5 slides, received 0')
+    );
+    consoleError.mockRestore();
+  });
+
+  it('does not warn when given a slide count within [1, 5]', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <CarouselDialog open aria-label="Onboarding tour">
+        <Slides />
+      </CarouselDialog>
+    );
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 });

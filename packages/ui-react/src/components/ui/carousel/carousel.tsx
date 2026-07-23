@@ -37,6 +37,10 @@ interface CarouselContextProps {
   scrollNext: () => void;
   canScrollPrev: boolean;
   canScrollNext: boolean;
+  /** Current 0-based scroll snap, from Embla's `selectedScrollSnap()`. */
+  selectedIndex: number;
+  /** Total scroll snaps, from Embla's `scrollSnapList().length`. */
+  slideCount: number;
 }
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -62,6 +66,8 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [slideCount, setSlideCount] = React.useState(0);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -70,6 +76,8 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
       setCanScrollPrev(api.canScrollPrev());
       setCanScrollNext(api.canScrollNext());
+      setSelectedIndex(api.selectedScrollSnap());
+      setSlideCount(api.scrollSnapList().length);
     }, []);
 
     const scrollPrev = React.useCallback(() => {
@@ -126,6 +134,8 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          selectedIndex,
+          slideCount,
         }}
       >
         <div

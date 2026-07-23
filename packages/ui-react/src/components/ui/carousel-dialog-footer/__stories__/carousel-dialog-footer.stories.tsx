@@ -38,7 +38,8 @@ function FooterAtIndex({ startIndex }: { startIndex: number }) {
 // getFooterState has no dedicated branch for (see its own comment). It falls
 // back to the 'first' state, so this renders a non-disabled "Next" whose
 // scrollNext has nothing to scroll to, and no "Close" is ever reachable —
-// documented current behavior, not a fix.
+// documented current behavior, not a fix. The dot indicator correctly
+// renders exactly 1 dot (one per real slide), not a fixed count.
 function SingleSlideFooter() {
   return (
     <Dialog open>
@@ -55,10 +56,12 @@ function SingleSlideFooter() {
 }
 
 // Renders `count` slides, seeded at `startIndex` — the position indicator
-// always renders exactly 3 dot slots regardless of `count` (see
-// behavior.md's "never grows or shrinks with slide count" scenario); these
-// stories vary the total to exercise that invariant across boundary counts
-// (2 slides never reach a "middle" state; 11 exercises a much larger range).
+// renders one dot per real slide and marks the real `selectedScrollSnap()`
+// active (see behavior.md); these stories vary the total to exercise that
+// across boundary counts. CarouselDialogFooter itself has no slide-count
+// cap — pairing it directly with a bare `<Carousel>` (bypassing
+// `<CarouselDialog>`, which enforces the 1–5 slide range) is only done here
+// to demonstrate the footer's own contract in isolation.
 function FooterWithSlideCount({ count, startIndex }: { count: number; startIndex: number }) {
   return (
     <Dialog open>
@@ -113,8 +116,8 @@ export const FourSlides: Story = {
   render: () => <FooterWithSlideCount count={4} startIndex={1} />,
 };
 
-// A large slide count — the dot indicator still renders exactly 3 slots, not
-// 11, and not the (incorrect) current-slide-out-of-11 count.
+// A large slide count, bypassing CarouselDialog's 1–5 cap on purpose — the
+// dot indicator scales to match: 11 dots, the 6th active.
 export const ElevenSlides: Story = {
   render: () => <FooterWithSlideCount count={11} startIndex={5} />,
 };

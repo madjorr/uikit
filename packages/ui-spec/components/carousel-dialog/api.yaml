@@ -8,7 +8,11 @@ contract:
       required: true
       description: >-
         One `<CarouselItem>` per slide — the same shape as `<Carousel>`'s own
-        children. Wrapped internally in a `CarouselContent` track.
+        children. Wrapped internally in a `CarouselContent` track. Must
+        resolve to between 1 and 5 slides: fewer than 1 is dev-warned (nothing
+        sensible to render); more than 5 is dev-warned and only the first 5
+        reach the Carousel, so the footer's dot indicator never grows
+        unbounded.
     - name: opts
       type: EmblaOptionsType
       required: false
