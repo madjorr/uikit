@@ -34,9 +34,23 @@ Scenario: Last slide
 ```
 
 ```gherkin
-Scenario: The indicator always matches the real slide count
-  Given a Carousel with N slides (Embla's scrollSnapList().length)
+Scenario: The indicator matches the real slide count, within [1, 5]
+  Given a Carousel with N slides (Embla's scrollSnapList().length), 1 <= N <= 5
   Then CarouselDialogFooter renders exactly N dot slots, one per slide
+```
+
+```gherkin
+Scenario: Too many slides
+  Given a Carousel with more than 5 slides (e.g. used standalone, bypassing
+        CarouselDialog's own children slice)
+  Then CarouselDialogFooter renders only the first 5 dot slots
+  And a development-mode console warning is logged
+```
+
+```gherkin
+Scenario: Too few slides
+  Given a Carousel with fewer than 1 slide
+  Then a development-mode console warning is logged
 ```
 
 ## Closing

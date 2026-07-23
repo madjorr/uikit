@@ -33,6 +33,15 @@ import { useCarousel } from '../carousel';
 // slide count (Embla's `scrollSnapList().length`), and the active dot tracks
 // its real `selectedScrollSnap()`, instead of collapsing every slide count
 // onto the 3-variant first/middle/last row.
+//
+// The indicator owns the same [1, 5] slide range CarouselDialog enforces on
+// its children (kept in sync with CarouselDialog's own MIN_SLIDES/MAX_SLIDES)
+// — enforced again at this level because the footer is also usable
+// standalone, paired directly with a bare `<Carousel>` that bypasses
+// CarouselDialog's slice.
+
+const MIN_SLIDES = 1;
+const MAX_SLIDES = 5;
 
 type CarouselDialogFooterState = 'first' | 'middle' | 'last';
 
@@ -75,8 +84,19 @@ const CarouselDialogFooter = React.forwardRef<HTMLDivElement, CarouselDialogFoot
     const { canScrollPrev, canScrollNext, scrollPrev, scrollNext, selectedIndex, slideCount } =
       useCarousel();
     const state = getFooterState(canScrollPrev, canScrollNext);
+
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      (slideCount < MIN_SLIDES || slideCount > MAX_SLIDES)
+    ) {
+      console.error(
+        `CarouselDialogFooter: expected between ${MIN_SLIDES} and ${MAX_SLIDES} slides, received ${slideCount}.` +
+          (slideCount > MAX_SLIDES ? ` Rendering only ${MAX_SLIDES} dots.` : '')
+      );
+    }
+
     const dotIndices = React.useMemo(
-      () => Array.from({ length: slideCount }, (_, index) => index),
+      () => Array.from({ length: Math.min(slideCount, MAX_SLIDES) }, (_, index) => index),
       [slideCount]
     );
 

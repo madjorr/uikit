@@ -56,12 +56,11 @@ function SingleSlideFooter() {
 }
 
 // Renders `count` slides, seeded at `startIndex` — the position indicator
-// renders one dot per real slide and marks the real `selectedScrollSnap()`
-// active (see behavior.md); these stories vary the total to exercise that
-// across boundary counts. CarouselDialogFooter itself has no slide-count
-// cap — pairing it directly with a bare `<Carousel>` (bypassing
-// `<CarouselDialog>`, which enforces the 1–5 slide range) is only done here
-// to demonstrate the footer's own contract in isolation.
+// renders one dot per real slide (capped at 5) and marks the real
+// `selectedScrollSnap()` active (see behavior.md); these stories vary the
+// total to exercise that across boundary counts. Pairing the footer directly
+// with a bare `<Carousel>` (bypassing `<CarouselDialog>`) is only done here
+// to demonstrate the footer's own [1, 5] contract in isolation.
 function FooterWithSlideCount({ count, startIndex }: { count: number; startIndex: number }) {
   return (
     <Dialog open>
@@ -116,10 +115,13 @@ export const FourSlides: Story = {
   render: () => <FooterWithSlideCount count={4} startIndex={1} />,
 };
 
-// A large slide count, bypassing CarouselDialog's 1–5 cap on purpose — the
-// dot indicator scales to match: 11 dots, the 6th active.
-export const ElevenSlides: Story = {
-  render: () => <FooterWithSlideCount count={11} startIndex={5} />,
+// A slide count above the footer's own enforced maximum, paired directly
+// with a bare `<Carousel>` (bypassing `<CarouselDialog>`'s children slice) —
+// the dot indicator still caps at 5 (the first active) and a development-mode
+// console warning is logged, exactly like CarouselDialog's own TooManySlides
+// story.
+export const TooManySlides: Story = {
+  render: () => <FooterWithSlideCount count={11} startIndex={0} />,
 };
 
 // Demonstrates that Back/Next/Close and the position list's accessible name

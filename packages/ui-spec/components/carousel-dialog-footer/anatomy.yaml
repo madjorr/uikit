@@ -31,7 +31,9 @@ parts:
   - id: dots
     description: >-
       The slide-position indicator. Renders one slot per real Carousel slide
-      (Embla's `scrollSnapList().length`), with the slot at the real
+      (Embla's `scrollSnapList().length`), capped to 5 (a development-mode
+      console warning is logged outside the [1, 5] range — the same range
+      CarouselDialog enforces on its children), with the slot at the real
       `selectedScrollSnap()` index marked active — Figma's own default
       preview shows 3 dots, but the row is a `children`-overridable slot in
       the design, not a fixed 3-step indicator. Each slot is a 16px hit-box

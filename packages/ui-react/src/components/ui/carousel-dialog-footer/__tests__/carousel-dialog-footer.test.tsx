@@ -123,6 +123,28 @@ describe('CarouselDialogFooter', () => {
     expect(dotStates()).toEqual([true]);
   });
 
+  it('caps the dot indicator at 5 and warns when the ambient slide count exceeds 5', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockCarousel.canScrollPrev = true;
+    mockCarousel.canScrollNext = true;
+    mockCarousel.selectedIndex = 7;
+    mockCarousel.slideCount = 11;
+    render(<CarouselDialogFooter />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining('expected between 1 and 5 slides, received 11')
+    );
+    consoleError.mockRestore();
+  });
+
+  it('does not warn when the ambient slide count is within [1, 5]', () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockCarousel.slideCount = 5;
+    render(<CarouselDialogFooter />);
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
   it('both-disabled state (single slide): falls back to first, with no Close reachable', () => {
     renderBothDisabled();
     expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();

@@ -30,7 +30,10 @@ import {
 // is nothing sensible to render (dev-warned, left to the caller to fix); above
 // the maximum, only the first MAX_SLIDES children reach the Carousel — this
 // keeps the footer's dot indicator (one dot per real Embla slide, see
-// CarouselDialogFooter) from growing without bound.
+// CarouselDialogFooter) from growing without bound. CarouselDialogFooter
+// enforces the same [MIN_SLIDES, MAX_SLIDES] range on its own dot count —
+// kept in sync with the literals here — for its standalone (non-CarouselDialog)
+// usage, where this slice never runs.
 const MIN_SLIDES = 1;
 const MAX_SLIDES = 5;
 
