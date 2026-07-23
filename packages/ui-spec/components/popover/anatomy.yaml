@@ -8,9 +8,13 @@ schematic: |
        ▲ (anchored to the trigger, side/align)
   +-------------------------------------+
   | root: <div role="dialog"> (popup)   |
-  |   arbitrary content                 |
+  |   body: arbitrary content           |
+  |   ------------------------------    |
+  |   footer: action row (optional)     |
   +-------------------------------------+
-     root -> bg-background / text-foreground / border-border + shadow-md
+     root   -> --ui-popover-container-* (color, border, radius, min/max-width)
+     body   -> --ui-popover-body-* (gap, padding-y) — optional PopoverBody wrapper
+     footer -> --ui-footer-* (default recipe: color, border-top, height, gap, padding-x)
      enter/exit: fade + zoom + slide-from-side (data-[open]/[closed]/[side])
 
 root:
@@ -18,8 +22,9 @@ root:
   role: dialog
   description: >-
     The floating popup panel (Base UI `Popover.Popup`), positioned relative to
-    the trigger and portaled. A bordered, rounded surface with a shadow; receives
-    focus when opened and is dismissed by outside-press or Esc.
+    the trigger and portaled. A bordered, rounded surface; receives focus when
+    opened and is dismissed by outside-press or Esc. Holds arbitrary content —
+    typically a `body` and, for the action-recipe pattern, a `footer`.
 
 parts:
   - id: trigger
@@ -27,6 +32,21 @@ parts:
       The control that toggles the popover (Base UI `Popover.Trigger`).
       Polymorphic via `render` — usually a Button. Anchors the popup.
     element: button
+  - id: body
+    description: >-
+      Optional vertical-rhythm wrapper for the popup's main content
+      (`PopoverBody`) — a flex column with a themed gap and vertical padding.
+      Consumers may render content directly in `root` instead when this
+      rhythm isn't needed.
+    element: div
+    optional: true
+  - id: footer
+    description: >-
+      Optional default action-row footer (`PopoverFooter`) — the
+      `FooterDefault` (variant=default) recipe: a top-bordered bar with
+      end-aligned actions (e.g. Cancel / Apply buttons).
+    element: div
+    optional: true
 
 layout:
   type: flex

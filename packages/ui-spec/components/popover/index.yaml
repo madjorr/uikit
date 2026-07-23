@@ -1,11 +1,16 @@
 spec_version: '1.0'
 component: Popover
 name: popover
-status: draft
+status: ready
 category: overlays
 description: >-
   A floating panel anchored to a trigger, shown on demand for secondary content
   or quick actions. Built on the Base UI Popover primitive (positioning, focus
   management, outside-press / Esc dismissal). Ported from the legacy shadcn-uikit
-  `Popover`; themed by the shared semantic tokens (no `--ui-popover-*` tier yet).
+  `Popover`; container chrome themed by the `--ui-popover-*` tier, with optional
+  `PopoverBody`/`PopoverFooter` parts for the body-rhythm and default action-row
+  recipe shown in Figma.
 since: 0.12.0
+figma:
+  node: '6364-17907'
+  codeConnect: packages/ui-react/src/components/ui/popover/popover.figma.tsx

@@ -28,7 +28,8 @@ and ARIA wiring.
 
 ## Contrast
 
-- The popup uses `--ui-text-on-surface-primary` on `--ui-background-surface-primary`
-  with a `--ui-border-on-surface-border` border — meeting WCAG AA in light and
-  dark. Re-verify against the final palette once a `--ui-popover-*` tier and Figma
-  reference exist.
+- The popup uses `--ui-text-on-surface-primary` text on `--ui-popover-container-color`
+  with a `--ui-popover-container-border-color` border — meeting WCAG AA in light
+  and dark. The default footer (`PopoverFooter`) uses `--ui-footer-default-color`
+  with a `--ui-footer-default-border-color` top border; its action buttons carry
+  their own contrast guarantees (see the Button spec).

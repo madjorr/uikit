@@ -3,11 +3,11 @@
 A floating panel anchored to a trigger, shown on demand for secondary content or
 quick actions. Built on the Base UI Popover primitive.
 
-> **Status: draft (design-pending v1).** Ported from the legacy
-> `@acronis-platform/shadcn-uikit` `Popover`. No `--ui-popover-*` token tier yet,
-> so the popup uses the shared semantic surface tokens (`bg-background` /
-> `text-foreground` / `border-border`); enter/exit animations use `tw-animate-css`.
-> Reconcile with `/figma-component Popover <url> --update` once a mockup lands.
+> Ported from the legacy `@acronis-platform/shadcn-uikit` `Popover`. Container
+> chrome is themed by the `--ui-popover-*` tier; the optional `PopoverBody` /
+> `PopoverFooter` parts (body rhythm, default action-row footer) are themed by
+> `--ui-popover-body-*` and the shared `--ui-footer-*` tier. Enter/exit
+> animations use `tw-animate-css`.
 
 ## When to use
 
@@ -28,6 +28,8 @@ quick actions. Built on the Base UI Popover primitive.
 | `PopoverTrigger` | `button`           | Toggles and anchors the popover.               |
 | `PopoverContent` | `div[role=dialog]` | The portaled, positioned popup panel.          |
 | `PopoverPortal`  | —                  | Lower-level portal (`PopoverContent` uses it). |
+| `PopoverBody`    | `div`              | Optional vertical-rhythm wrapper for content.  |
+| `PopoverFooter`  | `div`              | Optional default action-row footer.            |
 
 ## Example
 
@@ -36,20 +38,35 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  PopoverBody,
   Button,
 } from '@acronis-platform/ui-react';
 
 <Popover>
   <PopoverTrigger render={<Button variant="secondary">Open</Button>} />
   <PopoverContent side="bottom" align="center">
-    <div className="grid gap-2">
+    <PopoverBody>
       <h4 className="font-medium leading-none">Dimensions</h4>
       <p className="text-sm text-muted-foreground">
         Set the dimensions for the layer.
       </p>
-    </div>
+    </PopoverBody>
   </PopoverContent>
 </Popover>;
+```
+
+With the default action-row footer (the Figma "Popover" recipe — Cancel + Apply):
+
+```tsx
+import { PopoverFooter } from '@acronis-platform/ui-react';
+
+<PopoverContent>
+  <PopoverBody>Drop any content into this slot.</PopoverBody>
+  <PopoverFooter>
+    <Button variant="secondary">Cancel</Button>
+    <Button>Apply</Button>
+  </PopoverFooter>
+</PopoverContent>;
 ```
 
 For an isolated container (e.g. a shadow root), pass `portalContainer` so the

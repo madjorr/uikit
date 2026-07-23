@@ -4,4 +4,6 @@ export {
   PopoverPortal,
   PopoverContent,
   type PopoverContentProps,
+  PopoverBody,
+  PopoverFooter,
 } from './popover';

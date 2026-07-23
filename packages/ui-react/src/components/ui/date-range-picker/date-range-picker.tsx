@@ -197,7 +197,7 @@ const DateRangePicker = React.forwardRef<
             />
           }
         />
-        <PopoverContent align="start" className="w-auto p-0">
+        <PopoverContent align="start" className="w-auto max-w-none p-0">
           <Calendar
             mode="range"
             numberOfMonths={2}

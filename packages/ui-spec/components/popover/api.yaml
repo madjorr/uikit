@@ -43,6 +43,15 @@ contract:
       description: >-
         A `trigger` plus the popover `content` (the root popup), which holds
         arbitrary content — text, fields, actions.
+    - name: body
+      description: >-
+        Optional vertical-rhythm wrapper for the popup's main content
+        (`PopoverBody`); a themed gap + vertical padding around whatever is
+        passed in.
+    - name: footer
+      description: >-
+        Optional default action-row footer (`PopoverFooter`) holding one or
+        more actions (e.g. Cancel / Apply buttons), end-aligned.
 
   methods: []
 
@@ -51,14 +60,20 @@ adapters:
     component: Popover
     status: implemented
     import: >-
-      import { Popover, PopoverTrigger, PopoverContent } from
-      '@acronis-platform/ui-react'
+      import { Popover, PopoverTrigger, PopoverContent, PopoverBody,
+      PopoverFooter } from '@acronis-platform/ui-react'
     example: |
       <Popover>
         <PopoverTrigger render={<Button variant="secondary">Open</Button>} />
         <PopoverContent side="bottom" align="center">
-          <h4>Dimensions</h4>
-          <p>Set the dimensions for the layer.</p>
+          <PopoverBody>
+            <h4>Dimensions</h4>
+            <p>Set the dimensions for the layer.</p>
+          </PopoverBody>
+          <PopoverFooter>
+            <Button variant="secondary">Cancel</Button>
+            <Button>Apply</Button>
+          </PopoverFooter>
         </PopoverContent>
       </Popover>
 
