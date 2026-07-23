@@ -4385,7 +4385,7 @@
         "platforms": ["PD"],
         "values": {
           "dark": { "colorSpace": "hsl", "components": [300, 50.82, 11.96] },
-          "light": { "colorSpace": "hsl", "components": [0, 0, 100] }
+          "light": { "colorSpace": "hsl", "components": [300, 80, 98.04] }
         }
       },
       "1": {
