@@ -11,6 +11,9 @@ export default {
         "input-search-box-idle": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
+        "input-search-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
+        "input-search-hover": "light-dark(rgb(24 25 27), rgb(244 245 245))",
+        "input-search-idle": "light-dark(rgb(24 25 27), rgb(244 245 245))",
         "input-search-placeholder-disabled": "light-dark(rgb(175 178 182), rgb(85 89 94))",
         "input-search-placeholder-hover": "light-dark(rgb(109 114 120), rgb(109 114 120))",
         "input-search-placeholder-idle": "light-dark(rgb(109 114 120), rgb(109 114 120))",

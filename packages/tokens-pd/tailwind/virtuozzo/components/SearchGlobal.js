@@ -9,6 +9,7 @@ export default {
         "search-global-box": "light-dark(rgb(255 255 255), rgb(31 32 34))"
       },
       "textColor": {
+        "search-global-placeholoder": "light-dark(rgb(130 23 130), rgb(250 209 250))",
         "search-global-shortcut": "light-dark(rgb(109 114 120), rgb(109 114 120))"
       },
       "fill": {
