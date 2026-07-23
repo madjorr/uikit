@@ -14,7 +14,8 @@ export default {
         "button-group-global-value": "light-dark(rgb(24 25 27), rgb(244 245 245))"
       },
       "borderColor": {
-        "button-group-global-container-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))"
+        "button-group-global-container-border-color": "light-dark(rgb(215 217 219), rgb(61 63 67))",
+        "button-group-global-separator": "light-dark(rgb(215 217 219), rgb(61 63 67))"
       },
       "fontFamily": {
         "button-group-global-value-text-style": "Inter, system-ui, sans-serif"
