@@ -44,6 +44,23 @@ describe('DialogFooterDefault', () => {
     ).toBeInTheDocument();
   });
 
+  it('is mutually exclusive: description takes precedence when both are given', () => {
+    render(
+      <DialogFooterDefault
+        description="Some context about this action"
+        link={<Link href="#">Learn more</Link>}
+      >
+        <Button>Save</Button>
+      </DialogFooterDefault>
+    );
+    expect(
+      screen.getByText('Some context about this action')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Learn more' })
+    ).not.toBeInTheDocument();
+  });
+
   it('forwards the ref', () => {
     const ref = createRef<HTMLDivElement>();
     render(<DialogFooterDefault ref={ref} />);

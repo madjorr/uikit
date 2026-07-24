@@ -1,5 +1,5 @@
 // Figma Code Connect — status: COMPLETE
-// The Figma "FooterDefault" component set's `variant` (default / withDecription
+// The Figma "FooterDefault" component set's `variant` (default / withDescription
 // / withLink) is structural, not a React prop — `DialogFooterDefault` derives it
 // from which slot (`description` / `link`) is passed. Each variant is pinned to
 // its own instance node, mirroring the breadcrumb pattern for structural parts.

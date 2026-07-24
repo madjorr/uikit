@@ -3,7 +3,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 // A bottom action bar (panel/dialog/sheet footer), themed by the `--ui-footer-*`
-// tier. The Figma component's `variant` (default / withDecription / withLink) is
+// tier. The Figma component's `variant` (default / withDescription / withLink) is
 // structural, not a separate prop — it follows from which optional slot is
 // passed, mirroring how `Breadcrumb`'s "current page" is a different part
 // rather than a duplicated state prop. `description` and `link` are mutually
@@ -33,13 +33,14 @@ const DialogFooterDefault = React.forwardRef<HTMLDivElement, DialogFooterDefault
         )}
         {...props}
       >
-        {description !== undefined && (
+        {description !== undefined ? (
           <p className="min-w-0 flex-1 truncate text-sm leading-6 text-foreground">
             {description}
           </p>
-        )}
-        {link !== undefined && (
-          <div className="flex h-8 min-w-0 flex-1 items-center">{link}</div>
+        ) : (
+          link !== undefined && (
+            <div className="flex h-8 min-w-0 flex-1 items-center">{link}</div>
+          )
         )}
         {children}
       </div>
