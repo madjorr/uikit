@@ -30,6 +30,15 @@ contract:
       description: >-
         Overrides the variant's default title, for localization or copy
         changes.
+    - name: objectName
+      type: string
+      required: false
+      description: >-
+        The real name of the object being acted on (e.g. a file or resource
+        name). Interpolated into the `rename`/`discard changes`/`accept`
+        variants' canned title/body in place of the generic placeholder text
+        (e.g. `rename` → "Rename {objectName}" and the field's prefilled
+        value); ignored by variants that don't reference an object name.
     - name: secondaryLabel
       type: string
       required: false
@@ -117,6 +126,9 @@ adapters:
       <Dialog variant="default" defaultOpen>
         <p>Any custom content.</p>
       </Dialog>
+
+      {/* Interpolate the real object name into the canned title/body */}
+      <Dialog variant="rename" objectName="Q3 Report.xlsx" open onOpenChange={setOpen} />
 
       {/* Legacy wide variant — free-form footer, kept for backward compatibility */}
       <Dialog variant="wide" size="large" title="Configure discovery agent" open

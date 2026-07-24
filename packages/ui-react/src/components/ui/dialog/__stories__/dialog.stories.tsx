@@ -88,6 +88,12 @@ const meta = {
       description: "Overrides the variant's default title.",
       table: { type: { summary: 'string' }, category: 'Content' },
     },
+    objectName: {
+      control: 'text',
+      description:
+        "The real name of the object being acted on. Interpolated into the rename/discard changes/accept variants' canned title/body in place of the generic placeholder; ignored by other variants.",
+      table: { type: { summary: 'string' }, category: 'Content' },
+    },
     secondaryLabel: {
       control: 'text',
       description:
@@ -137,6 +143,15 @@ export const Default: Story = {
 
 export const Rename: Story = {
   render: () => <Dialog variant="rename" defaultOpen />,
+};
+
+// `objectName` interpolates the real object's name into the rename/discard
+// changes/accept variants' canned title/body, in place of the generic
+// "object name" placeholder — no need to override title/children by hand.
+export const WithObjectName: Story = {
+  render: () => (
+    <Dialog variant="rename" objectName="Q3 Report.xlsx" defaultOpen />
+  ),
 };
 
 export const SaveChanges: Story = {

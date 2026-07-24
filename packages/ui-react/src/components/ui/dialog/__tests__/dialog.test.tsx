@@ -161,6 +161,34 @@ describe('Dialog', () => {
     );
   });
 
+  it('lets objectName interpolate the rename variant title and field value', () => {
+    render(<Dialog open variant="rename" objectName="Q3 Report.xlsx" />);
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Rename Q3 Report.xlsx')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Object name' })).toHaveValue(
+      'Q3 Report.xlsx'
+    );
+  });
+
+  it('lets objectName interpolate the discard changes variant body', () => {
+    render(<Dialog open variant="discard changes" objectName="Q3 Report.xlsx" />);
+    expect(screen.getByText('Q3 Report.xlsx')).toBeInTheDocument();
+    expect(screen.queryByText('Object name')).not.toBeInTheDocument();
+  });
+
+  it('lets objectName interpolate the accept variant title', () => {
+    render(<Dialog open variant="accept" objectName="terms-v2.pdf" />);
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Accept terms-v2.pdf')).toBeInTheDocument();
+  });
+
+  it('ignores objectName for variants that have no placeholder to interpolate', () => {
+    render(<Dialog open variant="default" objectName="should not appear" />);
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Dialog title')).toBeInTheDocument();
+    expect(screen.queryByText('should not appear')).not.toBeInTheDocument();
+  });
+
   it('renders read-only with a single primary action and no secondary button', () => {
     render(<Dialog open variant="read-only" />);
     expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument();

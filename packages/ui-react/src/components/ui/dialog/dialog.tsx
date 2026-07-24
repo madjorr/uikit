@@ -265,8 +265,14 @@ export type DialogVariant =
   | 'wide';
 
 interface DialogVariantContent {
-  title: string;
-  body: React.ReactNode;
+  /**
+   * The variant's canned title. A function receives `objectName` (falls back
+   * to its own placeholder default when omitted) for variants whose title
+   * embeds the acted-on object's name.
+   */
+  title: string | ((objectName?: string) => string);
+  /** Same `objectName` interpolation as `title`, for body copy/fields that embed it. */
+  body: React.ReactNode | ((objectName?: string) => React.ReactNode);
   /** Secondary (dismiss) button label. Omitted when the variant has none. */
   secondaryLabel?: string;
   primaryLabel: string;
@@ -284,8 +290,12 @@ const DIALOG_VARIANT_CONTENT: Record<DialogVariant, DialogVariantContent> = {
     primaryVariant: 'default',
   },
   rename: {
-    title: 'Rename object name',
-    body: <InputText aria-label="Object name" defaultValue="Current name" />,
+    title: (objectName = 'object name') => `Rename ${objectName}`,
+    // `objectName` prefills the field with the real current name; the field's
+    // accessible name ("Object name") is separate — it's the label, not the value.
+    body: (objectName = 'Current name') => (
+      <InputText aria-label="Object name" defaultValue={objectName} />
+    ),
     secondaryLabel: 'Cancel',
     primaryLabel: 'Rename',
     primaryVariant: 'default',
@@ -306,10 +316,10 @@ const DIALOG_VARIANT_CONTENT: Record<DialogVariant, DialogVariantContent> = {
   },
   'discard changes': {
     title: 'Discard changes',
-    body: (
+    body: (objectName = 'Object name') => (
       <p className="text-sm leading-6 text-foreground">
         Are you sure you want to discard the unsaved changes to{' '}
-        <strong className="font-semibold">Object name</strong>?
+        <strong className="font-semibold">{objectName}</strong>?
       </p>
     ),
     secondaryLabel: 'Go back',
@@ -317,7 +327,7 @@ const DIALOG_VARIANT_CONTENT: Record<DialogVariant, DialogVariantContent> = {
     primaryVariant: 'destructive',
   },
   accept: {
-    title: 'Accept object name',
+    title: (objectName = 'object name') => `Accept ${objectName}`,
     body: 'Click Accept to confirm that you have read, understood, and agree to the terms and conditions below.',
     secondaryLabel: 'Cancel',
     primaryLabel: 'Accept',
@@ -358,6 +368,13 @@ export interface DialogProps extends Omit<DialogRootProps, 'children'> {
   /** Overrides the variant's default title. */
   title?: string;
   /**
+   * The real name of the object being acted on (e.g. a file or resource
+   * name). Interpolated into the `rename`/`discard changes`/`accept`
+   * variants' canned title/body in place of the generic placeholder text;
+   * ignored by variants that don't reference an object name.
+   */
+  objectName?: string;
+  /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this for a variant with no secondary button by default (e.g. `read-only`)
    * also makes the button appear. Ignored when `footer` is provided.
@@ -393,6 +410,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       hasLoading = false,
       children,
       title,
+      objectName,
       secondaryLabel,
       primaryLabel,
       footer,
@@ -406,8 +424,12 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
     ref
   ) => {
     const content = DIALOG_VARIANT_CONTENT[variant];
-    const bodyContent = children ?? content.body;
-    const titleText = title ?? content.title;
+    const resolvedTitle =
+      typeof content.title === 'function' ? content.title(objectName) : content.title;
+    const resolvedBody =
+      typeof content.body === 'function' ? content.body(objectName) : content.body;
+    const bodyContent = children ?? resolvedBody;
+    const titleText = title ?? resolvedTitle;
     const secondaryLabelText = secondaryLabel ?? content.secondaryLabel;
     const primaryLabelText = primaryLabel ?? content.primaryLabel;
     const resolvedSize = size ?? (variant === 'wide' ? 'large' : 'sm');

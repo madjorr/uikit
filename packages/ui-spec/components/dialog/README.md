@@ -46,6 +46,10 @@ name is `Dialog`.
 | `read-only`       | License agreement  | Done (single primary action)              |
 | `wide`            | (caller-supplied)  | Free-form, via `footer` — no Figma preset |
 
+`rename`, `discard changes`, and `accept`'s canned title/body embed a generic
+"object name" placeholder — pass `objectName` to interpolate the real name
+(e.g. a file name) instead of overriding `title`/`children` by hand.
+
 ## Parts
 
 | Part              | Element (default)  | Purpose                                              |
@@ -83,6 +87,15 @@ import { Dialog } from '@acronis-platform/ui-react';
   primaryLabel="Confirmer"
   closeLabel="Fermer"
   open
+/>;
+
+// Interpolate the real object name into the rename/discard changes/accept
+// variants' canned title/body, instead of the generic placeholder text
+<Dialog
+  variant="rename"
+  objectName="Q3 Report.xlsx"
+  open
+  onOpenChange={setOpen}
 />;
 
 // Legacy wide variant — free-form footer, kept for backward compatibility

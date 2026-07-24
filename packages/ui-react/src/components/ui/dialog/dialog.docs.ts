@@ -51,6 +51,13 @@ export interface DialogProps {
   /** Overrides the variant's default title. */
   title?: string;
   /**
+   * The real name of the object being acted on (e.g. a file or resource
+   * name). Interpolated into the `rename`/`discard changes`/`accept`
+   * variants' canned title/body in place of the generic placeholder text;
+   * ignored by variants that don't reference an object name.
+   */
+  objectName?: string;
+  /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this on a variant with no secondary button by default (e.g. `read-only`)
    * also makes the button appear. Ignored when `footer` is provided.

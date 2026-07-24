@@ -69,6 +69,15 @@ Localize the canned copy — `title`, `secondaryLabel`, `primaryLabel`, and
 />
 ```
 
+`rename`, `discard changes`, and `accept` embed a generic "object name"
+placeholder in their canned title/body. Pass `objectName` to interpolate the
+real name (e.g. a file being renamed) instead of overriding `title`/`children`
+by hand:
+
+```tsx
+<Dialog variant="rename" objectName="Q3 Report.xlsx" open onOpenChange={setOpen} />
+```
+
 When the dialog renders inside an isolated container (e.g. a shadow root), pass a
 `portalContainer` so the popup inherits that scope's styles:
 

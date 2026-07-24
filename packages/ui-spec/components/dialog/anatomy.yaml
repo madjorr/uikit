@@ -47,6 +47,8 @@ parts:
     description: >-
       The dialog's accessible name (Base UI `Dialog.Title`), wired to
       `aria-labelledby`. Set per variant; freely overridable via `title`.
+      `rename`/`accept` interpolate `objectName` into their canned title
+      (e.g. "Rename {objectName}") when no `title` override is given.
     element: h2
   - id: close-button
     description: >-
@@ -57,6 +59,9 @@ parts:
     description: >-
       Content region between the header and footer. Renders the variant's canned
       copy (or the `rename` text field) unless `children` is provided.
+      `rename`/`discard changes` interpolate `objectName` into their canned
+      body (the field's prefilled value, or the bolded object name) when no
+      `children` override is given.
     element: div
   - id: footer
     description: >-

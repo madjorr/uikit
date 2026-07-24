@@ -48,6 +48,23 @@ Scenario: Children override the canned body
   And the header title and footer buttons are unchanged
 ```
 
+## Object name interpolation
+
+```gherkin
+Scenario: objectName replaces the generic placeholder
+  Given a Dialog with variant = "rename" and objectName = "Q3 Report.xlsx"
+  When it opens
+  Then the title reads "Rename Q3 Report.xlsx"
+  And the body's text field is prefilled with "Q3 Report.xlsx"
+```
+
+```gherkin
+Scenario: objectName is ignored by variants with no placeholder
+  Given a Dialog with variant = "default" and objectName provided
+  When it opens
+  Then the canned title and body render unchanged
+```
+
 ## Footer override
 
 ```gherkin
