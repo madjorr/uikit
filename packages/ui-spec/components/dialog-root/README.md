@@ -31,12 +31,12 @@ decision. Composable from parts; built on the Base UI Dialog primitive.
 | `DialogRoot`                     | —                  | Root; owns the open state (Base UI `Root`).       |
 | `DialogTrigger`                  | `button`           | Opens the dialog.                                 |
 | `DialogContent`                  | `div[role=dialog]` | The portaled, centered popup (+ overlay).         |
-| `DialogHeader`                   | `div`              | Top bar; holds the title and close button.        |
+| `DialogHeaderRoot`               | `div`              | Top bar; holds the title and close button.        |
 | `DialogTitle`                    | `h2`               | Accessible dialog name (`aria-labelledby`).       |
 | `DialogCloseButton`              | `button`           | Icon button that dismisses the dialog.            |
-| `DialogBody`                     | `div`              | Scrollable content region.                        |
+| `DialogBodyRoot`                 | `div`              | Scrollable content region.                        |
 | `DialogDescription`              | `p`                | Supporting copy (`aria-describedby`).             |
-| `DialogFooter`                   | `div`              | Right-aligned action bar.                         |
+| `DialogFooterRoot`               | `div`              | Right-aligned action bar.                         |
 | `DialogClose`                    | `button`           | Closes the dialog; wrap a Button via `render`.    |
 | `DialogOverlay` / `DialogPortal` | —                  | Lower-level parts (`DialogContent` renders them). |
 
@@ -56,12 +56,12 @@ import {
   DialogRoot,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
+  DialogHeaderRoot,
   DialogTitle,
   DialogCloseButton,
-  DialogBody,
+  DialogBodyRoot,
   DialogDescription,
-  DialogFooter,
+  DialogFooterRoot,
   DialogClose,
 } from './dialog';
 import { Button } from '../button';
@@ -69,17 +69,17 @@ import { Button } from '../button';
 <DialogRoot>
   <DialogTrigger render={<Button variant="secondary">Open dialog</Button>} />
   <DialogContent>
-    <DialogHeader>
+    <DialogHeaderRoot>
       <DialogTitle>Are you absolutely sure?</DialogTitle>
       <DialogCloseButton />
-    </DialogHeader>
-    <DialogBody>
+    </DialogHeaderRoot>
+    <DialogBodyRoot>
       <DialogDescription>This action cannot be undone.</DialogDescription>
-    </DialogBody>
-    <DialogFooter>
+    </DialogBodyRoot>
+    <DialogFooterRoot>
       <DialogClose render={<Button variant="ghost">Cancel</Button>} />
       <Button variant="destructive">Delete account</Button>
-    </DialogFooter>
+    </DialogFooterRoot>
   </DialogContent>
 </DialogRoot>;
 ```

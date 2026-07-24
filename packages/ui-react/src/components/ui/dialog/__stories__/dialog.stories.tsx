@@ -40,6 +40,25 @@ const meta = {
         category: 'State',
       },
     },
+    hasHeader: {
+      control: 'boolean',
+      description:
+        'Show the header (title + close button). When false, the title still renders off-screen so the dialog keeps an accessible name.',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+        category: 'Appearance',
+      },
+    },
+    hasFooter: {
+      control: 'boolean',
+      description: 'Show the footer (action buttons).',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'true' },
+        category: 'Appearance',
+      },
+    },
     size: {
       control: 'select',
       options: ['sm', 'large'],
@@ -184,6 +203,44 @@ export const CustomContent: Story = {
       <p className="text-sm leading-6 text-foreground">
         Any custom body content can be dropped into the slot, replacing the
         preset copy while keeping the header and footer chrome.
+      </p>
+    </Dialog>
+  ),
+};
+
+// `hasHeader`/`hasFooter` (both default true) hide the header/footer chrome
+// entirely — beyond the strict Figma DialogDefault contract, which always
+// shows both. The title still renders off-screen when the header is hidden,
+// so the dialog keeps an accessible name.
+export const NoHeader: Story = {
+  render: () => (
+    <Dialog variant="default" hasHeader={false} defaultOpen>
+      <p className="text-sm leading-6 text-foreground">
+        No header bar — no visible title, no close button. Escape or the
+        footer actions still dismiss the dialog.
+      </p>
+    </Dialog>
+  ),
+};
+
+export const NoFooter: Story = {
+  render: () => (
+    <Dialog variant="default" hasFooter={false} defaultOpen>
+      <p className="text-sm leading-6 text-foreground">
+        No footer bar — no action buttons. The header&apos;s close button is
+        the only way to dismiss the dialog.
+      </p>
+    </Dialog>
+  ),
+};
+
+export const NoHeaderNoFooter: Story = {
+  render: () => (
+    <Dialog variant="default" hasHeader={false} hasFooter={false} defaultOpen>
+      <p className="text-sm leading-6 text-foreground">
+        Body-only dialog — no header, no footer. Dismiss with Escape or an
+        outside press; the dialog still has an accessible name from the
+        off-screen title.
       </p>
     </Dialog>
   ),

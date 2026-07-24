@@ -85,6 +85,17 @@ When the dialog renders inside an isolated container (e.g. a shadow root), pass 
 <Dialog portalContainer={mountNode}>{/* … */}</Dialog>
 ```
 
+Hide the header and/or footer chrome for a body-only dialog. Both default to
+`true`; this is beyond the strict Figma contract (all seven canned variants
+always show both). When the header is hidden, the title still renders
+off-screen so the dialog keeps an accessible name:
+
+```tsx
+<Dialog hasHeader={false} open>
+  <p>Body-only content — no title bar, no close button.</p>
+</Dialog>
+```
+
 Legacy `wide` variant — a free-form footer for pre-existing wider dialogs that
 don't fit one of the seven canned use-cases:
 

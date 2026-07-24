@@ -23,7 +23,26 @@ contract:
       default: false
       description: >-
         Shows a spinner overlay across the body + footer (inset from just below
-        the header to the bottom).
+        the header to the bottom, or from the very top when `hasHeader` is
+        `false`).
+    - name: hasHeader
+      type: boolean
+      required: false
+      default: true
+      description: >-
+        Shows the header (title + close button). When `false`, the title is
+        still rendered off-screen so the dialog keeps an accessible name — only
+        the visible bar and close button are omitted. Beyond the strict Figma
+        contract (all seven canned variants always show the header) — a
+        ui-react-only extension, like `wide`/`size="large"`.
+    - name: hasFooter
+      type: boolean
+      required: false
+      default: true
+      description: >-
+        Shows the footer (action buttons). Beyond the strict Figma contract
+        (all seven canned variants always show the footer) — a ui-react-only
+        extension, like `wide`/`size="large"`.
     - name: title
       type: string
       required: false
@@ -129,6 +148,11 @@ adapters:
 
       {/* Interpolate the real object name into the canned title/body */}
       <Dialog variant="rename" objectName="Q3 Report.xlsx" open onOpenChange={setOpen} />
+
+      {/* Hide the header and/or footer chrome (beyond the Figma contract) */}
+      <Dialog hasHeader={false} open>
+        <p>Body-only content — no title bar, no close button.</p>
+      </Dialog>
 
       {/* Legacy wide variant — free-form footer, kept for backward compatibility */}
       <Dialog variant="wide" size="large" title="Configure discovery agent" open

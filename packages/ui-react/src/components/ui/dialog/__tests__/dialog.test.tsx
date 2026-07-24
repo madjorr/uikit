@@ -6,13 +6,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { Button } from '../../button';
 import {
   Dialog,
-  DialogBody,
+  DialogBodyRoot,
   DialogClose,
   DialogCloseButton,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
+  DialogFooterRoot,
+  DialogHeaderRoot,
   DialogRoot,
   DialogTitle,
   DialogTrigger,
@@ -25,14 +25,14 @@ function OpenDialog(props: { open?: boolean } = {}) {
   return (
     <DialogRoot open={props.open ?? true}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeaderRoot>
           <DialogTitle>Delete account</DialogTitle>
           <DialogCloseButton />
-        </DialogHeader>
-        <DialogBody>
+        </DialogHeaderRoot>
+        <DialogBodyRoot>
           <DialogDescription>This action cannot be undone.</DialogDescription>
-        </DialogBody>
-        <DialogFooter>Footer</DialogFooter>
+        </DialogBodyRoot>
+        <DialogFooterRoot>Footer</DialogFooterRoot>
       </DialogContent>
     </DialogRoot>
   );
@@ -250,6 +250,44 @@ describe('Dialog', () => {
   it('does not render the loading overlay by default', () => {
     render(<Dialog open />);
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('renders the header and footer by default', () => {
+    render(<Dialog open />);
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Label' })).toBeInTheDocument();
+  });
+
+  it('hides the header (and its close button) when hasHeader is false, but keeps the dialog accessible name', () => {
+    render(<Dialog open hasHeader={false} />);
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog', { name: 'Dialog title' })
+    ).toBeInTheDocument();
+    // The footer is still there — only the header is hidden.
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+  });
+
+  it('hides the footer (and its actions) when hasFooter is false', () => {
+    render(<Dialog open hasFooter={false} />);
+    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Label' })).not.toBeInTheDocument();
+    // The header is still there — only the footer is hidden.
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('renders neither header nor footer when both are false, keeping only the body and an accessible name', () => {
+    render(<Dialog open hasHeader={false} hasFooter={false} />);
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Label' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog', { name: 'Dialog title' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Drop any content into this slot.')
+    ).toBeInTheDocument();
   });
 
   it('dismisses via the secondary button and emits open-change', async () => {

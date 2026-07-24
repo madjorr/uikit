@@ -7,8 +7,8 @@ component: DialogRoot
 # button by the `--ui-button-icon-global-*` tokens (reconciled against the
 # Figma "DialogDefault" node, 6343:58898, which instantiates a ButtonIcon for
 # the close control). `size="large"` (832px) has no token — a legacy
-# backward-compatibility value, not listed below. The composable DialogHeader /
-# DialogFooter parts below have no Figma node of their own yet, so they still
+# backward-compatibility value, not listed below. The composable DialogHeaderRoot /
+# DialogFooterRoot parts below have no Figma node of their own yet, so they still
 # consume the shared *semantic* tokens (via the bridged Tailwind names
 # bg-background / text-foreground / text-muted-foreground / border-border).
 # Replace those with the `--ui-dialog-header-*` / `--ui-footer-*` tiers once
@@ -44,7 +44,7 @@ tokens:
   - {
       name: --ui-background-surface-primary,
       affects: header,
-      description: 'DialogHeader / DialogFooter surface (bridged as `bg-background`; no Figma node yet)',
+      description: 'DialogHeaderRoot / DialogFooterRoot surface (bridged as `bg-background`; no Figma node yet)',
     }
   - {
       name: --ui-text-on-surface-primary,
@@ -59,7 +59,7 @@ tokens:
   - {
       name: --ui-border-on-surface-border,
       affects: header,
-      description: 'DialogHeader / DialogFooter divider (bridged as `border-border`; no Figma node yet)',
+      description: 'DialogHeaderRoot / DialogFooterRoot divider (bridged as `border-border`; no Figma node yet)',
     }
   - {
       name: --ui-button-icon-global-icon-color-idle,

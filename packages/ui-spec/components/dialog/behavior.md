@@ -84,6 +84,39 @@ Scenario: The loading overlay covers body and footer
   And it is hidden when hasLoading is false
 ```
 
+## Header and footer optionality
+
+```gherkin
+Scenario: Hiding the header keeps the dialog's accessible name
+  Given a Dialog with hasHeader = false
+  When it opens
+  Then the visible title bar and close button are not rendered
+  And the dialog still has an accessible name (the title renders off-screen)
+```
+
+```gherkin
+Scenario: Hiding the footer removes its actions
+  Given a Dialog with hasFooter = false
+  When it opens
+  Then no secondary/primary/footer-override content is rendered
+```
+
+```gherkin
+Scenario: Hiding both leaves only the body
+  Given a Dialog with hasHeader = false and hasFooter = false
+  When it opens
+  Then only the body content is visible
+  And the dialog still has an accessible name
+```
+
+```gherkin
+Scenario: The loading overlay adapts to a hidden header
+  Given a Dialog with hasHeader = false and hasLoading = true
+  When it opens
+  Then the spinner overlay covers from the very top of the popup, not from
+  below a (non-existent) header
+```
+
 ## Opening & closing
 
 ```gherkin

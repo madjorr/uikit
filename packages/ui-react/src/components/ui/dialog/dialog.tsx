@@ -15,9 +15,11 @@ import { Spinner } from '../spinner';
 // the Base UI Dialog primitive (keyboard, focus trap, scroll lock, ARIA come
 // from Base UI). A `--ui-dialog-*` / `--ui-button-icon-*` token tier covers the
 // container + close button (reconciled against the Figma "DialogDefault" node,
-// 6343:58898); the composable DialogRoot / DialogHeader / DialogFooter /
-// DialogBody parts below are internal-only (no public export, no Figma node of
-// their own) and keep the prior semantic-token approach:
+// 6343:58898); the composable DialogRoot / DialogHeaderRoot / DialogFooterRoot
+// / DialogBodyRoot parts below are internal-only (no public export, no Figma
+// node of their own) and keep the prior semantic-token approach — not to be
+// confused with the recipe-local `DialogHeader`/`DialogBody` further down,
+// which back the public `Dialog` and are reconciled against Figma:
 //   • overlay  -> var(--ui-background-backdrop-screen)   (legacy `bg-black/80`)
 //   • popup    -> var(--ui-dialog-container-color) / var(--ui-dialog-container-border-radius)
 //   • header / footer -> bg-background = --ui-background-surface-primary (white
@@ -145,7 +147,7 @@ const DialogContent = React.forwardRef<
 );
 DialogContent.displayName = 'DialogContent';
 
-const DialogHeader = React.forwardRef<
+const DialogHeaderRoot = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -158,9 +160,9 @@ const DialogHeader = React.forwardRef<
     {...props}
   />
 ));
-DialogHeader.displayName = 'DialogHeader';
+DialogHeaderRoot.displayName = 'DialogHeaderRoot';
 
-const DialogFooter = React.forwardRef<
+const DialogFooterRoot = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -173,15 +175,15 @@ const DialogFooter = React.forwardRef<
     {...props}
   />
 ));
-DialogFooter.displayName = 'DialogFooter';
+DialogFooterRoot.displayName = 'DialogFooterRoot';
 
-const DialogBody = React.forwardRef<
+const DialogBodyRoot = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn('flex-1 overflow-auto p-6', className)} {...props} />
 ));
-DialogBody.displayName = 'DialogBody';
+DialogBodyRoot.displayName = 'DialogBodyRoot';
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -234,6 +236,44 @@ const DialogCloseButton = React.forwardRef<
 ));
 DialogCloseButton.displayName = 'DialogCloseButton';
 
+// The recipe-specific header: title + close button, reconciled against the
+// Figma "DialogHeader" node (4220:3516) via the `--ui-dialog-header-*` tier.
+// Local to this file (not exported) — distinct from the generic, unstyled
+// `DialogHeaderRoot` composable primitive above.
+interface DialogHeaderProps {
+  title: string;
+  closeLabel?: string;
+}
+
+function DialogHeader({ title, closeLabel }: DialogHeaderProps) {
+  return (
+    <div className="flex h-[var(--ui-dialog-header-height)] items-center gap-[var(--ui-dialog-header-gap)] border-b-[length:var(--ui-dialog-header-border-width)] border-[var(--ui-dialog-header-border-color)] bg-[var(--ui-dialog-header-color)] px-[var(--ui-dialog-header-padding-x)]">
+      <DialogTitle>{title}</DialogTitle>
+      <DialogCloseButton closeLabel={closeLabel} />
+    </div>
+  );
+}
+
+// The recipe-specific body: the variant's canned copy (or the `children`
+// override), reconciled against the Figma DialogDefault node via the
+// `--ui-dialog-body-*` tier. Local to this file — distinct from the generic
+// `DialogBodyRoot` composable primitive above.
+interface DialogBodyProps {
+  children: React.ReactNode;
+}
+
+function DialogBody({ children }: DialogBodyProps) {
+  return (
+    <div className="flex min-h-[var(--ui-dialog-body-height-min)] flex-col justify-center gap-[var(--ui-dialog-body-gap)] px-4 py-[var(--ui-dialog-body-padding-y)]">
+      {typeof children === 'string' ? (
+        <p className="text-sm leading-6 text-foreground">{children}</p>
+      ) : (
+        children
+      )}
+    </div>
+  );
+}
+
 // A higher-level "recipe" built on top of the Dialog primitive parts above
 // (DialogRoot + DialogContent give the portal, backdrop, focus trap, scroll
 // lock and open state; DialogTitle wires the accessible name; DialogCloseButton
@@ -243,7 +283,11 @@ DialogCloseButton.displayName = 'DialogCloseButton';
 // body copy and footer buttons; `children` overrides only the body slot;
 // `title` overrides only the title; `footer` overrides only the footer's
 // action content (the free-form escape hatch `wide` relies on); `hasLoading`
-// drops a spinner overlay over the body + footer.
+// drops a spinner overlay over the body + footer. `hasHeader`/`hasFooter`
+// (both default `true`) hide the header/footer chrome entirely — a
+// ui-react-only extension beyond the Figma DialogDefault contract, which
+// always shows both; the title stays rendered off-screen when the header is
+// hidden so the dialog keeps an accessible name.
 //
 // Colors resolve to shipped semantic tokens via the bridged Tailwind names the
 // Dialog family already uses (text-foreground, the backdrop + focus tokens
@@ -363,6 +407,20 @@ export interface DialogProps extends Omit<DialogRootProps, 'children'> {
   variant?: DialogVariant;
   /** Show a spinner overlay across the body + footer. */
   hasLoading?: boolean;
+  /**
+   * Show the header (title + close button). Defaults to `true`. When `false`,
+   * the title is still rendered off-screen so the dialog keeps an accessible
+   * name — only the visible bar and close button are omitted. Beyond the
+   * strict Figma contract (all seven `DialogDefault` variants always show the
+   * header); a ui-react-only extension, like `wide`/`size="large"`.
+   */
+  hasHeader?: boolean;
+  /**
+   * Show the footer (action buttons). Defaults to `true`. Beyond the strict
+   * Figma contract (all seven `DialogDefault` variants always show the
+   * footer); a ui-react-only extension, like `wide`/`size="large"`.
+   */
+  hasFooter?: boolean;
   /** Overrides the variant's default body content. */
   children?: React.ReactNode;
   /** Overrides the variant's default title. */
@@ -408,6 +466,8 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
     {
       variant = 'default',
       hasLoading = false,
+      hasHeader = true,
+      hasFooter = true,
       children,
       title,
       objectName,
@@ -443,48 +503,51 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
           portalContainer={portalContainer}
           className={className}
         >
-          <div className="flex h-[var(--ui-dialog-header-height)] items-center gap-[var(--ui-dialog-header-gap)] border-b-[length:var(--ui-dialog-header-border-width)] border-[var(--ui-dialog-header-border-color)] bg-[var(--ui-dialog-header-color)] px-[var(--ui-dialog-header-padding-x)]">
-            <DialogTitle>{titleText}</DialogTitle>
-            <DialogCloseButton closeLabel={closeLabel} />
-          </div>
+          {hasHeader ? (
+            <DialogHeader title={titleText} closeLabel={closeLabel} />
+          ) : (
+            // Header hidden, but the dialog still needs an accessible name.
+            <DialogTitle className="sr-only">{titleText}</DialogTitle>
+          )}
 
-          <div className="flex min-h-[var(--ui-dialog-body-height-min)] flex-col justify-center gap-[var(--ui-dialog-body-gap)] px-4 py-[var(--ui-dialog-body-padding-y)]">
-            {typeof bodyContent === 'string' ? (
-              <p className="text-sm leading-6 text-foreground">{bodyContent}</p>
-            ) : (
-              bodyContent
-            )}
-          </div>
+          <DialogBody>{bodyContent}</DialogBody>
 
-          <div className="flex h-[var(--ui-footer-global-height)] items-center justify-end gap-[var(--ui-footer-global-gap)] border-t-[length:var(--ui-footer-default-border-width)] border-[var(--ui-footer-default-border-color)] bg-[var(--ui-footer-default-color)] px-[var(--ui-footer-global-padding-x)]">
-            {footer ?? (
-              <>
-                {secondaryLabelText && (
-                  <DialogClose
-                    render={
-                      <Button variant="secondary">{secondaryLabelText}</Button>
-                    }
-                  />
-                )}
-                {content.primaryCloses ? (
-                  <DialogClose
-                    render={
-                      <Button variant={content.primaryVariant}>
-                        {primaryLabelText}
-                      </Button>
-                    }
-                  />
-                ) : (
-                  <Button variant={content.primaryVariant}>
-                    {primaryLabelText}
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
+          {hasFooter && (
+            <div className="flex h-[var(--ui-footer-global-height)] items-center justify-end gap-[var(--ui-footer-global-gap)] border-t-[length:var(--ui-footer-default-border-width)] border-[var(--ui-footer-default-border-color)] bg-[var(--ui-footer-default-color)] px-[var(--ui-footer-global-padding-x)]">
+              {footer ?? (
+                <>
+                  {secondaryLabelText && (
+                    <DialogClose
+                      render={
+                        <Button variant="secondary">{secondaryLabelText}</Button>
+                      }
+                    />
+                  )}
+                  {content.primaryCloses ? (
+                    <DialogClose
+                      render={
+                        <Button variant={content.primaryVariant}>
+                          {primaryLabelText}
+                        </Button>
+                      }
+                    />
+                  ) : (
+                    <Button variant={content.primaryVariant}>
+                      {primaryLabelText}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
 
           {hasLoading && (
-            <div className="absolute inset-x-0 bottom-0 top-16 flex items-center justify-center bg-muted/95">
+            <div
+              className={cn(
+                'absolute inset-x-0 bottom-0 flex items-center justify-center bg-muted/95',
+                hasHeader ? 'top-[var(--ui-dialog-header-height)]' : 'top-0'
+              )}
+            >
               <Spinner size="xl" />
             </div>
           )}
@@ -503,10 +566,10 @@ export {
   DialogCloseButton,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogFooter,
+  DialogHeaderRoot,
+  DialogFooterRoot,
   DialogTitle,
-  DialogBody,
+  DialogBodyRoot,
   DialogDescription,
   dialogContentVariants,
   Dialog,

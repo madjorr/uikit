@@ -23,6 +23,9 @@ name is `Dialog`.
 - You have a legacy call site that needs a wider popup and fully custom footer
   buttons — use `variant="wide"` (see below). This is a backward-compatibility
   escape hatch, not a recommended pattern for new work.
+- You need a body-only dialog with no title bar and/or no action bar — set
+  `hasHeader`/`hasFooter` to `false`. Both default to `true`; this is beyond
+  the strict Figma contract (all seven canned variants always show both).
 
 ## When not to use
 
@@ -97,6 +100,11 @@ import { Dialog } from '@acronis-platform/ui-react';
   open
   onOpenChange={setOpen}
 />;
+
+// Hide the header and/or footer chrome (beyond the Figma contract)
+<Dialog hasHeader={false} open>
+  <p>Body-only content — no title bar, no close button.</p>
+</Dialog>;
 
 // Legacy wide variant — free-form footer, kept for backward compatibility
 import { Button, DialogClose } from '@acronis-platform/ui-react';

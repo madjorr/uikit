@@ -10,11 +10,15 @@ management and keyboard handling (via `DialogContent`/`DialogTitle`/
 - **Name.** Every variant renders a `DialogTitle`, wired to the popup via
   `aria-labelledby`, so the dialog always has an accessible name.
 - The close button exposes an accessible name ("Close") via an `sr-only` label
-  alongside the icon, and is present in every variant.
+  alongside the icon, and is present whenever the header is shown (the
+  default). Setting `hasHeader = false` removes the header bar, and with it
+  the close button — the dialog is then dismissed via `Escape` or a
+  caller-supplied action instead.
 - The loading overlay's spinner carries `role="status"` with an accessible name
   ("Loading") so the busy state is announced.
-- The `rename` variant's text field must be given an accessible name by the
-  consumer (the field renders without a visible label in the design).
+- The `rename` variant's text field has a built-in accessible name
+  (`aria-label="Object name"`) — the field renders without a visible label in
+  the design, so the component supplies the label itself.
 - The `wide` variant's `footer` override is free-form — the caller is
   responsible for giving each action button an accessible name (e.g. visible
   label text), the same as any other Button usage.
@@ -39,7 +43,3 @@ management and keyboard handling (via `DialogContent`/`DialogTitle`/
   `--ui-background-surface-secondary` container and `--ui-background-surface-primary`
   header/footer in light and dark themes. The close button shows a
   `--ui-focus-primary` ring on keyboard focus.
-- **Design-pending geometry.** Colors and typography are tokenized, but the
-  container/header/footer geometry has no dedicated `--ui-dialog-*`/
-  `--ui-footer-*` tier yet (see tokens.yaml) — re-verify layout against the final
-  tokens once that tier ships.

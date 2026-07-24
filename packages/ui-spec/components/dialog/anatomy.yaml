@@ -7,11 +7,11 @@ schematic: |
   +===========================================================+
   |  root/container: <div role="dialog"> (centered popup card) |
   |   +-----------------------------------------------------+ |
-  |   | header:  title .................... close-button(×) | |
+  |   | header (optional, hasHeader): title ....... close(×) | |
   |   +-----------------------------------------------------+ |
   |   | body:  variant copy / children slot                 | |
   |   +-----------------------------------------------------+ |
-  |   | footer:  [secondary] [primary/destructive] / free-form| |
+  |   | footer (optional, hasFooter): [secondary] [primary]  | |
   |   +-----------------------------------------------------+ |
   |   | loading-overlay (only when hasLoading): spinner     | |
   +===========================================================+
@@ -41,20 +41,29 @@ parts:
   - id: header
     description: >-
       Top bar holding the title and close button. `--ui-dialog-header-color`
-      bar with a bottom divider.
+      bar with a bottom divider. Hidden when `hasHeader` is `false` — the
+      title still renders off-screen so the dialog keeps an accessible name.
+      Beyond the strict Figma contract (always shown in all seven canned
+      variants); a ui-react-only extension.
     element: div
+    optional: true
   - id: title
     description: >-
       The dialog's accessible name (Base UI `Dialog.Title`), wired to
       `aria-labelledby`. Set per variant; freely overridable via `title`.
       `rename`/`accept` interpolate `objectName` into their canned title
-      (e.g. "Rename {objectName}") when no `title` override is given.
+      (e.g. "Rename {objectName}") when no `title` override is given. Always
+      rendered — visibly inside `header`, or `sr-only` when `hasHeader` is
+      `false` — so the dialog keeps an accessible name either way.
     element: h2
   - id: close-button
     description: >-
       Icon button (Base UI `Dialog.Close` + a times icon) that dismisses the
-      dialog. Labelled "Close" for screen readers. Present in every variant.
+      dialog. Labelled "Close" for screen readers. Present in every variant
+      when `hasHeader` is `true` (the default); omitted along with the rest of
+      `header` when `hasHeader` is `false`.
     element: button
+    optional: true
   - id: body
     description: >-
       Content region between the header and footer. Renders the variant's canned
@@ -69,13 +78,17 @@ parts:
       top divider. Holds a secondary (dismiss) button and a primary/destructive
       action for the seven canned variants (`read-only` shows a single primary
       action); the `footer` prop replaces this with free-form content — the
-      escape hatch the legacy `wide` variant is meant to be paired with.
+      escape hatch the legacy `wide` variant is meant to be paired with. Hidden
+      entirely when `hasFooter` is `false`. Beyond the strict Figma contract
+      (always shown in all seven canned variants); a ui-react-only extension.
     element: div
+    optional: true
   - id: loading-overlay
     description: >-
-      Absolutely-positioned scrim covering the body + footer (from just below
-      the header to the bottom) with a centered spinner. Rendered only while
-      `hasLoading` is set.
+      Absolutely-positioned scrim covering the body + footer with a centered
+      spinner, inset from just below the header to the bottom — or from the
+      very top when `hasHeader` is `false`. Rendered only while `hasLoading`
+      is set.
     element: div
     optional: true
 
@@ -111,6 +124,16 @@ states:
     kind: prop
     prop: hasLoading
     affects: [loading-overlay]
+  - id: header-hidden
+    trigger: hasHeader is false
+    kind: prop
+    prop: hasHeader
+    affects: [header, close-button, loading-overlay]
+  - id: footer-hidden
+    trigger: hasFooter is false
+    kind: prop
+    prop: hasFooter
+    affects: [footer]
   - {
       id: open,
       trigger: 'internal open === true (data-[open])',

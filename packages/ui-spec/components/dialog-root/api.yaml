@@ -80,17 +80,17 @@ adapters:
       <DialogRoot>
         <DialogTrigger render={<Button variant="secondary">Open</Button>} />
         <DialogContent>
-          <DialogHeader>
+          <DialogHeaderRoot>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogCloseButton />
-          </DialogHeader>
-          <DialogBody>
+          </DialogHeaderRoot>
+          <DialogBodyRoot>
             <DialogDescription>This action cannot be undone.</DialogDescription>
-          </DialogBody>
-          <DialogFooter>
+          </DialogBodyRoot>
+          <DialogFooterRoot>
             <DialogClose render={<Button variant="ghost">Cancel</Button>} />
             <Button variant="destructive">Delete</Button>
-          </DialogFooter>
+          </DialogFooterRoot>
         </DialogContent>
       </DialogRoot>
 

@@ -8,18 +8,20 @@
 // `Dialog`; only the Figma component is named "DialogDefault". Property names
 // verified via get_context_for_code_connect: `variant` (variant enum),
 // `hasLoading` (boolean), `DialogBody` (slot → children). The `wide` variant
-// (legacy free-form footer, kept for backward compatibility) has no Figma
-// counterpart and is intentionally left out of the mapping below.
+// and the `hasHeader`/`hasFooter`/`objectName` props (legacy free-form
+// footer, header/footer optionality, object-name interpolation — all kept
+// for backward compatibility / beyond the strict contract) have no Figma
+// counterpart and are intentionally left out of the mapping below.
 import figma from '@figma/code-connect';
 
 import {
   DialogRoot,
-  DialogBody,
+  DialogBodyRoot,
   DialogContent,
   Dialog,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
+  DialogFooterRoot,
+  DialogHeaderRoot,
   DialogTitle,
 } from './dialog';
 
@@ -27,13 +29,13 @@ figma.connect(DialogRoot, 'FIGMA_NODE_URL', {
   example: () => (
     <DialogRoot defaultOpen>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeaderRoot>
           <DialogTitle>Title</DialogTitle>
-        </DialogHeader>
-        <DialogBody>
+        </DialogHeaderRoot>
+        <DialogBodyRoot>
           <DialogDescription>Description</DialogDescription>
-        </DialogBody>
-        <DialogFooter>Actions</DialogFooter>
+        </DialogBodyRoot>
+        <DialogFooterRoot>Actions</DialogFooterRoot>
       </DialogContent>
     </DialogRoot>
   ),

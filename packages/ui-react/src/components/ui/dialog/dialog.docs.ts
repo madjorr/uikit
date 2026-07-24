@@ -46,6 +46,14 @@ export interface DialogProps {
     | 'wide';
   /** Show a spinner overlay across the body + footer. */
   hasLoading?: boolean;
+  /**
+   * Show the header (title + close button). Defaults to `true`. When `false`,
+   * the title is still rendered off-screen so the dialog keeps an accessible
+   * name — only the visible bar and close button are omitted.
+   */
+  hasHeader?: boolean;
+  /** Show the footer (action buttons). Defaults to `true`. */
+  hasFooter?: boolean;
   /** Overrides the variant's default body content. */
   children?: React.ReactNode;
   /** Overrides the variant's default title. */
