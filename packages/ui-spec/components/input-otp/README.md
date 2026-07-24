@@ -6,8 +6,10 @@ label/description — a `Field` wrapper composes those around it.
 
 ## When to use
 
-- Entering a fixed-length numeric (or short alphanumeric) one-time code, with
-  auto-advance between digits and paste support.
+- Entering a fixed-length numeric one-time code (e.g. an SMS/authenticator
+  code), with auto-advance between digits and paste support. Input is
+  digit-only — a non-digit keystroke is rejected and non-digit characters are
+  stripped from a paste.
 
 ## When not to use
 

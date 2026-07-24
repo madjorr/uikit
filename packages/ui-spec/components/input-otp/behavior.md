@@ -38,6 +38,17 @@ until the value drops below `length` and reaches it again.
 slot, extra characters beyond `length` are discarded, and focus lands on the
 last filled slot (or the last slot).
 
+## Validation
+
+**Given** a slot with focus
+**When** a non-digit character is typed
+**Then** the keystroke is rejected — the slot's value and focus are unchanged.
+
+**Given** a slot with focus
+**When** text containing non-digit characters is pasted
+**Then** only the digit characters are distributed across the slots; all
+other characters (letters, symbols, whitespace) are discarded.
+
 ## Error / disabled
 
 **Given** `error`

@@ -10,7 +10,11 @@ import { cn } from '@/lib/utils';
 // code distributes it across the slots from the focused one onward. `error`
 // reddens every box (via `--ui-input-otp-box-border-color-error`); there is no
 // disabled treatment in the design, so `disabled` falls back to the generic
-// `disabled:opacity-50` convention used elsewhere in this package.
+// `disabled:opacity-50` convention used elsewhere in this package. OTP codes
+// are numeric-only by design (SMS/authenticator codes): `inputMode="numeric"`
+// and `pattern="[0-9]*"` are mobile-keyboard hints only, so both typed and
+// pasted input are also filtered to digits in JS — a non-digit keystroke is
+// rejected outright and non-digit characters are stripped from a paste.
 export interface InputOTPProps
   extends Omit<
     React.ComponentPropsWithoutRef<'div'>,
@@ -39,6 +43,13 @@ export interface InputOTPProps
 const defaultSlotAriaLabel = (index: number, length: number) =>
   `Digit ${index} of ${length}`;
 
+const DIGIT_PATTERN = /^[0-9]$/;
+
+// Fixed-length per-slot array, not a derived dense string — a slot's
+// position must survive edits to other slots (see `commitSlots`).
+const toSlots = (value: string, length: number): string[] =>
+  Array.from({ length }, (_, index) => value[index] ?? '');
+
 const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
   (
     {
@@ -56,25 +67,28 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
     },
     ref
   ) => {
-    const [internalValue, setInternalValue] = React.useState(
-      defaultValue ?? ''
+    const [internalSlots, setInternalSlots] = React.useState(() =>
+      toSlots(defaultValue ?? '', length)
     );
     const isControlled = value != null;
-    const currentValue = (isControlled ? value : internalValue).slice(
-      0,
-      length
-    );
+    const slots = isControlled ? toSlots(value, length) : internalSlots;
     const slotRefs = React.useRef<Array<HTMLInputElement | null>>([]);
     const completedRef = React.useRef(false);
 
-    const commitValue = (next: string) => {
-      const clipped = next.slice(0, length);
-      if (!isControlled) setInternalValue(clipped);
-      onChange?.(clipped);
-      if (clipped.length === length) {
+    // `nextSlots` is the source of truth — each index keeps its own slot's
+    // character regardless of whether earlier slots are filled. The joined
+    // string handed to `onChange`/`onComplete` is a derived value; only
+    // `nextSlots.every(...)` can tell whether every slot has been filled,
+    // since a joined string with a blank slot collapses indistinguishably
+    // from a shorter one.
+    const commitSlots = (nextSlots: string[]) => {
+      if (!isControlled) setInternalSlots(nextSlots);
+      const joined = nextSlots.join('');
+      onChange?.(joined);
+      if (nextSlots.every((char) => char !== '')) {
         if (!completedRef.current) {
           completedRef.current = true;
-          onComplete?.(clipped);
+          onComplete?.(joined);
         }
       } else {
         completedRef.current = false;
@@ -95,9 +109,10 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
 
     const handleSlotChange = (index: number, raw: string) => {
       const char = raw.slice(-1);
-      const chars = currentValue.split('');
-      chars[index] = char;
-      commitValue(chars.join(''));
+      if (char !== '' && !DIGIT_PATTERN.test(char)) return;
+      const nextSlots = [...slots];
+      nextSlots[index] = char;
+      commitSlots(nextSlots);
       if (char && index < length - 1) focusSlot(index + 1);
     };
 
@@ -105,11 +120,11 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
       index: number,
       event: React.KeyboardEvent<HTMLInputElement>
     ) => {
-      if (event.key === 'Backspace' && !currentValue[index] && index > 0) {
+      if (event.key === 'Backspace' && !slots[index] && index > 0) {
         event.preventDefault();
-        const chars = currentValue.split('');
-        chars[index - 1] = '';
-        commitValue(chars.join(''));
+        const nextSlots = [...slots];
+        nextSlots[index - 1] = '';
+        commitSlots(nextSlots);
         focusSlot(index - 1);
       } else if (event.key === 'ArrowLeft' && index > 0) {
         event.preventDefault();
@@ -124,17 +139,17 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
       index: number,
       event: React.ClipboardEvent<HTMLInputElement>
     ) => {
-      const text = event.clipboardData.getData('text').replace(/\s/g, '');
+      const text = event.clipboardData.getData('text').replace(/\D/g, '');
       if (!text) return;
       event.preventDefault();
-      const chars = currentValue.split('');
+      const nextSlots = [...slots];
       let cursor = index;
       for (const char of text) {
         if (cursor >= length) break;
-        chars[cursor] = char;
+        nextSlots[cursor] = char;
         cursor += 1;
       }
-      commitValue(chars.join(''));
+      commitSlots(nextSlots);
       focusSlot(Math.min(cursor, length - 1));
     };
 
@@ -156,9 +171,10 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
             }}
             type="text"
             inputMode="numeric"
+            pattern="[0-9]*"
             autoComplete="one-time-code"
             maxLength={1}
-            value={currentValue[index] ?? ''}
+            value={slots[index]}
             placeholder={String(index + 1)}
             disabled={disabled}
             aria-label={slotAriaLabel(index + 1, length)}

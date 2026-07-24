@@ -37,6 +37,94 @@ export interface InputPasswordProps
   hidePasswordLabel?: string;
 }
 
+interface InputPasswordLabelProps {
+  htmlFor: string;
+  disabled?: boolean;
+  required?: boolean;
+  children: React.ReactNode;
+}
+
+function InputPasswordLabel({
+  htmlFor,
+  disabled,
+  required,
+  children,
+}: InputPasswordLabelProps) {
+  return (
+    <label
+      htmlFor={htmlFor}
+      className={cn(
+        'flex gap-[var(--ui-input-password-global-container-label-gap)] text-sm leading-4',
+        disabled
+          ? 'text-[var(--ui-input-password-global-label-color-disabled)]'
+          : 'text-[var(--ui-input-password-global-label-color-idle)]'
+      )}
+    >
+      {children}
+      {required && (
+        <span
+          aria-hidden="true"
+          className="text-[var(--ui-input-password-global-required-color)]"
+        >
+          *
+        </span>
+      )}
+    </label>
+  );
+}
+
+interface InputPasswordMessageProps {
+  id: string;
+  hasError: boolean;
+  disabled?: boolean;
+  children: React.ReactNode;
+}
+
+function InputPasswordMessage({
+  id,
+  hasError,
+  disabled,
+  children,
+}: InputPasswordMessageProps) {
+  return (
+    <p
+      id={id}
+      className={cn(
+        'text-xs leading-4',
+        hasError
+          ? 'text-[var(--ui-input-password-error-msg-error-color)]'
+          : disabled
+            ? 'text-[var(--ui-input-password-normal-description-color-disabled)]'
+            : 'text-[var(--ui-input-password-normal-description-color-idle)]'
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+// The box's border/background/focus-ring classes branch on `hasError` and
+// `disabled` independently, so inlining it is a 3-way nested ternary. Pulled
+// out as a pure function so the branches can be unit-tested directly.
+export function getInputPasswordBoxClassName(
+  hasError: boolean,
+  disabled?: boolean
+) {
+  return cn(
+    'flex h-[var(--ui-input-password-global-box-height)] items-center gap-[var(--ui-input-password-global-box-gap)] rounded-[var(--ui-input-password-global-box-border-radius)] border-[length:var(--ui-input-password-global-box-border-width)] px-[var(--ui-input-password-global-box-padding-x)] py-[var(--ui-input-password-global-box-padding-y)] transition-colors',
+    hasError
+      ? 'border-[var(--ui-input-password-error-msg-box-border-color-idle)] bg-[var(--ui-input-password-global-box-color-idle)] has-[:focus-visible]:border-[var(--ui-input-password-error-msg-box-border-color-hover)] has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-[var(--ui-focus-error)]'
+      : cn(
+          'border-[var(--ui-input-password-normal-box-border-color-idle)] bg-[var(--ui-input-password-global-box-color-idle)]',
+          !disabled &&
+            'hover:border-[var(--ui-input-password-normal-box-border-color-hover)] hover:bg-[var(--ui-input-password-global-box-color-hover)]',
+          'has-[:focus-visible]:border-[var(--ui-input-password-normal-box-border-color-hover)] has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-[var(--ui-focus-primary)]'
+        ),
+    disabled &&
+      'cursor-not-allowed border-[var(--ui-input-password-normal-box-border-color-disabled)] bg-[var(--ui-input-password-global-box-color-disabled)]'
+  );
+}
+
 const InputPassword = React.forwardRef<HTMLInputElement, InputPasswordProps>(
   (
     {
@@ -65,42 +153,12 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputPasswordProps>(
     return (
       <div className="flex w-full min-w-[var(--ui-input-password-global-container-width-min)] flex-col gap-[var(--ui-input-password-global-container-gap)]">
         {label != null && label !== '' && (
-          <label
-            htmlFor={inputId}
-            className={cn(
-              'flex gap-[var(--ui-input-password-global-container-label-gap)] text-sm leading-4',
-              disabled
-                ? 'text-[var(--ui-input-password-global-label-color-disabled)]'
-                : 'text-[var(--ui-input-password-global-label-color-idle)]'
-            )}
-          >
+          <InputPasswordLabel htmlFor={inputId} disabled={disabled} required={required}>
             {label}
-            {required && (
-              <span
-                aria-hidden="true"
-                className="text-[var(--ui-input-password-global-required-color)]"
-              >
-                *
-              </span>
-            )}
-          </label>
+          </InputPasswordLabel>
         )}
 
-        <div
-          className={cn(
-            'flex h-[var(--ui-input-password-global-box-height)] items-center gap-[var(--ui-input-password-global-box-gap)] rounded-[var(--ui-input-password-global-box-border-radius)] border-[length:var(--ui-input-password-global-box-border-width)] px-[var(--ui-input-password-global-box-padding-x)] py-[var(--ui-input-password-global-box-padding-y)] transition-colors',
-            hasError
-              ? 'border-[var(--ui-input-password-error-msg-box-border-color-idle)] bg-[var(--ui-input-password-global-box-color-idle)] has-[:focus-visible]:border-[var(--ui-input-password-error-msg-box-border-color-hover)] has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-[var(--ui-focus-error)]'
-              : cn(
-                  'border-[var(--ui-input-password-normal-box-border-color-idle)] bg-[var(--ui-input-password-global-box-color-idle)]',
-                  !disabled &&
-                    'hover:border-[var(--ui-input-password-normal-box-border-color-hover)] hover:bg-[var(--ui-input-password-global-box-color-hover)]',
-                  'has-[:focus-visible]:border-[var(--ui-input-password-normal-box-border-color-hover)] has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-[var(--ui-focus-primary)]'
-                ),
-            disabled &&
-              'cursor-not-allowed border-[var(--ui-input-password-normal-box-border-color-disabled)] bg-[var(--ui-input-password-global-box-color-disabled)]'
-          )}
-        >
+        <div className={getInputPasswordBoxClassName(hasError, disabled)}>
           <input
             ref={ref}
             id={inputId}
@@ -131,19 +189,9 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputPasswordProps>(
         </div>
 
         {hasMessage && (
-          <p
-            id={messageId}
-            className={cn(
-              'text-xs leading-4',
-              hasError
-                ? 'text-[var(--ui-input-password-error-msg-error-color)]'
-                : disabled
-                  ? 'text-[var(--ui-input-password-normal-description-color-disabled)]'
-                  : 'text-[var(--ui-input-password-normal-description-color-idle)]'
-            )}
-          >
+          <InputPasswordMessage id={messageId} hasError={hasError} disabled={disabled}>
             {message}
-          </p>
+          </InputPasswordMessage>
         )}
       </div>
     );

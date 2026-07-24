@@ -9,9 +9,13 @@
 - **Keyboard:** digits type normally; ArrowLeft/ArrowRight move focus between
   slots; Backspace on an empty slot moves back and clears the previous one.
   Standard Tab/Shift+Tab also move between slots.
-- **Autofill:** each slot carries `autocomplete="one-time-code"` and
-  `inputMode="numeric"` so browsers/password managers can offer OTP autofill
-  and mobile keyboards default to numeric.
+- **Autofill:** each slot carries `autocomplete="one-time-code"`,
+  `inputMode="numeric"`, and `pattern="[0-9]*"` so browsers/password managers
+  can offer OTP autofill and mobile keyboards default to numeric.
+- **Numeric-only:** `inputMode`/`pattern` are keyboard hints only, not
+  enforcement — both typed and pasted input are filtered to digits in JS. A
+  non-digit keystroke is rejected outright; non-digit characters are stripped
+  from a paste.
 - **Error:** `error` sets `aria-invalid="true"` on every slot; the message
   itself is expected to live in a wrapping `Field` (not part of this bare
   component), same as `Input`.

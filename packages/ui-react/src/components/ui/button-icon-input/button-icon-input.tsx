@@ -61,7 +61,10 @@ const ButtonIconInput = React.forwardRef<
     ref,
     defaultTagName: 'button',
     props: mergeProps<'button'>(
-      { className: cn(buttonIconInputVariants({ variant, className })) },
+      {
+        type: 'button',
+        className: cn(buttonIconInputVariants({ variant, className })),
+      },
       props
     ),
   });

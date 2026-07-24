@@ -113,4 +113,27 @@ describe('ButtonIconInput', () => {
       'cursor-pointer'
     );
   });
+
+  it('defaults to type="button" so it cannot submit an enclosing form', () => {
+    render(
+      <ButtonIconInput aria-label="Show password">
+        <Icon />
+      </ButtonIconInput>
+    );
+    expect(
+      screen.getByRole('button', { name: 'Show password' })
+    ).toHaveAttribute('type', 'button');
+  });
+
+  it('honors an explicit type override', () => {
+    render(
+      <ButtonIconInput aria-label="Submit" type="submit">
+        <Icon />
+      </ButtonIconInput>
+    );
+    expect(screen.getByRole('button', { name: 'Submit' })).toHaveAttribute(
+      'type',
+      'submit'
+    );
+  });
 });

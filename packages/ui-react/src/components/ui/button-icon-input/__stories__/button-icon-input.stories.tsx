@@ -1,12 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import {
+  EyeIcon,
+  TimesIcon,
+} from '@acronis-platform/icons-react/stroke-mono';
 
-import { ButtonIconInput } from '../button-icon-input';
+import { ButtonIconInput, type ButtonIconInputProps } from '../button-icon-input';
 
-const EyeIcon = () => (
-  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-    <path d="M22 13c-2.1454-2.4958-5.8766-5-10.0092-5C7.9139 8 4.1575 10.4619 2 12.8739" />
-    <path d="M12 17c2.2091 0 4-1.7909 4-4s-1.7909-4-4-4-4 1.7909-4 4 1.7909 4 4 4" />
-  </svg>
+// The two real-world consumers of this button: `InputPassword`'s
+// show/hide toggle (`EyeIcon`) and `InputText`'s clear button (`TimesIcon`).
+// Every story renders both side by side so they can be compared directly.
+const IconPair = (props: Omit<ButtonIconInputProps, 'aria-label' | 'children'>) => (
+  <div className="flex items-center gap-3">
+    <ButtonIconInput aria-label="Show password" {...props}>
+      <EyeIcon />
+    </ButtonIconInput>
+    <ButtonIconInput aria-label="Clear" {...props}>
+      <TimesIcon />
+    </ButtonIconInput>
+  </div>
 );
 
 const meta = {
@@ -57,8 +68,7 @@ const meta = {
     },
   },
   args: {
-    'aria-label': 'Show password',
-    children: <EyeIcon />,
+    variant: 'normal',
   },
 } satisfies Meta<typeof ButtonIconInput>;
 
@@ -67,48 +77,24 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: { variant: 'normal' },
+  render: (args) => <IconPair {...args} />,
 };
 
 export const Error: Story = {
   args: { variant: 'error' },
+  render: (args) => <IconPair {...args} />,
 };
 
 export const Disabled: Story = {
   args: { disabled: true },
+  render: (args) => <IconPair {...args} />,
 };
 
 export const Variants: Story = {
   render: () => (
-    <div className="flex items-center gap-3">
-      <ButtonIconInput aria-label="Show password">
-        <EyeIcon />
-      </ButtonIconInput>
-      <ButtonIconInput aria-label="Show password" variant="error">
-        <EyeIcon />
-      </ButtonIconInput>
-    </div>
-  ),
-};
-
-export const States: Story = {
-  render: () => (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <ButtonIconInput aria-label="Show password">
-          <EyeIcon />
-        </ButtonIconInput>
-        <ButtonIconInput aria-label="Show password" disabled>
-          <EyeIcon />
-        </ButtonIconInput>
-      </div>
-      <div className="flex items-center gap-3">
-        <ButtonIconInput aria-label="Show password" variant="error">
-          <EyeIcon />
-        </ButtonIconInput>
-        <ButtonIconInput aria-label="Show password" variant="error" disabled>
-          <EyeIcon />
-        </ButtonIconInput>
-      </div>
+      <IconPair variant="normal" />
+      <IconPair variant="error" />
     </div>
   ),
 };

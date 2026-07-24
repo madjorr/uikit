@@ -1,9 +1,9 @@
-import { createRef } from 'react';
+import { createRef, type FormEvent } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { InputPassword } from '../input-password';
+import { getInputPasswordBoxClassName, InputPassword } from '../input-password';
 
 describe('InputPassword', () => {
   it('renders a labelled password input associated via htmlFor/id', () => {
@@ -87,5 +87,73 @@ describe('InputPassword', () => {
     render(<InputPassword label="Password" onChange={onChange} />);
     await userEvent.type(screen.getByLabelText('Password'), 'a');
     expect(onChange).toHaveBeenCalled();
+  });
+
+  it('does not submit an enclosing form when the toggle is clicked', async () => {
+    const onSubmit = vi.fn((event: FormEvent) => event.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <InputPassword label="Password" />
+      </form>
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+});
+
+describe('getInputPasswordBoxClassName', () => {
+  it('applies the idle border/background and hover/focus tokens by default', () => {
+    const className = getInputPasswordBoxClassName(false, false);
+    expect(className).toContain(
+      'border-[var(--ui-input-password-normal-box-border-color-idle)]'
+    );
+    expect(className).toContain(
+      'hover:border-[var(--ui-input-password-normal-box-border-color-hover)]'
+    );
+    expect(className).toContain(
+      'has-[:focus-visible]:ring-[var(--ui-focus-primary)]'
+    );
+    expect(className).not.toContain('cursor-not-allowed');
+    expect(className).not.toContain(
+      'border-[var(--ui-input-password-error-msg-box-border-color-idle)]'
+    );
+  });
+
+  it('drops the hover tokens and applies the disabled treatment when disabled', () => {
+    const className = getInputPasswordBoxClassName(false, true);
+    expect(className).not.toContain('hover:border-');
+    expect(className).not.toContain('hover:bg-');
+    expect(className).toContain('cursor-not-allowed');
+    expect(className).toContain(
+      'border-[var(--ui-input-password-normal-box-border-color-disabled)]'
+    );
+    // The disabled border color is the final, merged winner over the idle one.
+    expect(className).not.toContain(
+      'border-[var(--ui-input-password-normal-box-border-color-idle)]'
+    );
+  });
+
+  it('applies the error border/background and focus-ring tokens, not the normal/hover ones', () => {
+    const className = getInputPasswordBoxClassName(true, false);
+    expect(className).toContain(
+      'border-[var(--ui-input-password-error-msg-box-border-color-idle)]'
+    );
+    expect(className).toContain(
+      'has-[:focus-visible]:ring-[var(--ui-focus-error)]'
+    );
+    expect(className).not.toContain('hover:border-');
+    expect(className).not.toContain('cursor-not-allowed');
+  });
+
+  it('layers the disabled treatment on top of the error tokens when both are set', () => {
+    const className = getInputPasswordBoxClassName(true, true);
+    expect(className).toContain('cursor-not-allowed');
+    expect(className).toContain(
+      'border-[var(--ui-input-password-normal-box-border-color-disabled)]'
+    );
+    // Disabled has no dedicated error focus-ring override, so the error one survives.
+    expect(className).toContain(
+      'has-[:focus-visible]:ring-[var(--ui-focus-error)]'
+    );
   });
 });
