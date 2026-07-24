@@ -113,6 +113,16 @@ const meta = {
         "The real name of the object being acted on. Interpolated into the rename/discard changes/accept variants' canned title/body in place of the generic placeholder; ignored by other variants.",
       table: { type: { summary: 'string' }, category: 'Content' },
     },
+    objectNameLabel: {
+      control: 'text',
+      description:
+        "Overrides the accessible name of the rename variant's text field. Ignored by every other variant.",
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: "'Object name'" },
+        category: 'Content',
+      },
+    },
     secondaryLabel: {
       control: 'text',
       description:
@@ -124,6 +134,12 @@ const meta = {
       description:
         "Overrides the variant's default primary button label. Ignored when `footer` is provided.",
       table: { type: { summary: 'string' }, category: 'Content' },
+    },
+    onPrimaryAction: {
+      control: false,
+      description:
+        'Fires when the primary footer button is clicked. Does not close the dialog automatically. Ignored when `footer` is provided.',
+      table: { type: { summary: '() => void' }, category: 'Events' },
     },
     footer: {
       control: false,

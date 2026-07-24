@@ -37,10 +37,12 @@ import { Spinner } from '../spinner';
 // that need a wider popup (see the `Large` story).
 //
 // Dialog's composable primitive parts (this file) are internal-only — not
-// re-exported from the package root. The public `Dialog` component below is
-// the sole sanctioned entry point; it's built on these parts internally. (In
-// Figma the matching component set is named "DialogDefault"; the code-facing
-// name stays `Dialog` — see dialog.figma.tsx.)
+// re-exported from the package root — except `DialogClose`, which stays
+// public: it's required by the `wide` variant's documented custom-`footer`
+// escape hatch (see the `footer` prop and dialog.mdx). The public `Dialog`
+// component below is the sole sanctioned entry point; it's built on these
+// parts internally. (In Figma the matching component set is named
+// "DialogDefault"; the code-facing name stays `Dialog` — see dialog.figma.tsx.)
 
 const dialogContentVariants = cva(
   'fixed left-1/2 top-1/2 z-50 flex w-full min-w-[var(--ui-dialog-container-width-min)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--ui-dialog-container-border-radius)] bg-[var(--ui-dialog-container-color)] text-foreground shadow-lg duration-200 data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95',
@@ -315,8 +317,14 @@ interface DialogVariantContent {
    * embeds the acted-on object's name.
    */
   title: string | ((objectName?: string) => string);
-  /** Same `objectName` interpolation as `title`, for body copy/fields that embed it. */
-  body: React.ReactNode | ((objectName?: string) => React.ReactNode);
+  /**
+   * Same `objectName` interpolation as `title`, for body copy/fields that
+   * embed it. The `rename` variant's field also receives `objectNameLabel`
+   * for its accessible name.
+   */
+  body:
+    | React.ReactNode
+    | ((objectName?: string, objectNameLabel?: string) => React.ReactNode);
   /** Secondary (dismiss) button label. Omitted when the variant has none. */
   secondaryLabel?: string;
   primaryLabel: string;
@@ -336,9 +344,9 @@ const DIALOG_VARIANT_CONTENT: Record<DialogVariant, DialogVariantContent> = {
   rename: {
     title: (objectName = 'object name') => `Rename ${objectName}`,
     // `objectName` prefills the field with the real current name; the field's
-    // accessible name ("Object name") is separate — it's the label, not the value.
-    body: (objectName = 'Current name') => (
-      <InputText aria-label="Object name" defaultValue={objectName} />
+    // accessible name (`objectNameLabel`) is separate — it's the label, not the value.
+    body: (objectName = 'Current name', objectNameLabel = 'Object name') => (
+      <InputText aria-label={objectNameLabel} defaultValue={objectName} />
     ),
     secondaryLabel: 'Cancel',
     primaryLabel: 'Rename',
@@ -433,6 +441,11 @@ export interface DialogProps extends Omit<DialogRootProps, 'children'> {
    */
   objectName?: string;
   /**
+   * Overrides the accessible name of the `rename` variant's text field
+   * (default `'Object name'`). Ignored by every other variant.
+   */
+  objectNameLabel?: string;
+  /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this for a variant with no secondary button by default (e.g. `read-only`)
    * also makes the button appear. Ignored when `footer` is provided.
@@ -440,6 +453,13 @@ export interface DialogProps extends Omit<DialogRootProps, 'children'> {
   secondaryLabel?: string;
   /** Overrides the variant's default primary button label. Ignored when `footer` is provided. */
   primaryLabel?: string;
+  /**
+   * Fires when the primary footer button is clicked. The dialog does not
+   * close automatically afterwards — pair this with `open`/`onOpenChange` to
+   * close it once the action completes. Ignored when `footer` is provided
+   * (wire behavior onto your own buttons there instead).
+   */
+  onPrimaryAction?: () => void;
   /**
    * Replaces the footer's action content entirely with free-form buttons —
    * the escape hatch the `wide` variant is meant to be paired with, for
@@ -471,8 +491,10 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       children,
       title,
       objectName,
+      objectNameLabel,
       secondaryLabel,
       primaryLabel,
+      onPrimaryAction,
       footer,
       closeLabel,
       size,
@@ -487,7 +509,9 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
     const resolvedTitle =
       typeof content.title === 'function' ? content.title(objectName) : content.title;
     const resolvedBody =
-      typeof content.body === 'function' ? content.body(objectName) : content.body;
+      typeof content.body === 'function'
+        ? content.body(objectName, objectNameLabel)
+        : content.body;
     const bodyContent = children ?? resolvedBody;
     const titleText = title ?? resolvedTitle;
     const secondaryLabelText = secondaryLabel ?? content.secondaryLabel;
@@ -525,6 +549,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
                   )}
                   {content.primaryCloses ? (
                     <DialogClose
+                      onClick={onPrimaryAction}
                       render={
                         <Button variant={content.primaryVariant}>
                           {primaryLabelText}
@@ -532,7 +557,10 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
                       }
                     />
                   ) : (
-                    <Button variant={content.primaryVariant}>
+                    <Button
+                      variant={content.primaryVariant}
+                      onClick={onPrimaryAction}
+                    >
                       {primaryLabelText}
                     </Button>
                   )}

@@ -161,6 +161,16 @@ describe('Dialog', () => {
     );
   });
 
+  it('lets objectNameLabel override the rename field accessible name', () => {
+    render(<Dialog open variant="rename" objectNameLabel="Nom de l'objet" />);
+    expect(
+      screen.getByRole('textbox', { name: "Nom de l'objet" })
+    ).toHaveValue('Current name');
+    expect(
+      screen.queryByRole('textbox', { name: 'Object name' })
+    ).not.toBeInTheDocument();
+  });
+
   it('lets objectName interpolate the rename variant title and field value', () => {
     render(<Dialog open variant="rename" objectName="Q3 Report.xlsx" />);
     const dialog = screen.getByRole('dialog');
@@ -288,6 +298,50 @@ describe('Dialog', () => {
     expect(
       screen.getByText('Drop any content into this slot.')
     ).toBeInTheDocument();
+  });
+
+  it.each<[DialogVariant, string]>([
+    ['default', 'Label'],
+    ['rename', 'Rename'],
+    ['save changes', 'Save'],
+    ['reset password', 'Reset'],
+    ['discard changes', 'Confirm'],
+    ['accept', 'Accept'],
+  ])(
+    'fires onPrimaryAction when the %s variant primary button is clicked, without closing',
+    async (variant, primary) => {
+      const user = userEvent.setup();
+      const onPrimaryAction = vi.fn();
+      const onOpenChange = vi.fn();
+      render(
+        <Dialog
+          open
+          variant={variant}
+          onPrimaryAction={onPrimaryAction}
+          onOpenChange={onOpenChange}
+        />
+      );
+      await user.click(screen.getByRole('button', { name: primary }));
+      expect(onPrimaryAction).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+    }
+  );
+
+  it('fires onPrimaryAction when the read-only variant primary button is clicked, and also closes', async () => {
+    const user = userEvent.setup();
+    const onPrimaryAction = vi.fn();
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog
+        open
+        variant="read-only"
+        onPrimaryAction={onPrimaryAction}
+        onOpenChange={onOpenChange}
+      />
+    );
+    await user.click(screen.getByRole('button', { name: 'Done' }));
+    expect(onPrimaryAction).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).toHaveBeenCalledWith(false, expect.anything());
   });
 
   it('dismisses via the secondary button and emits open-change', async () => {

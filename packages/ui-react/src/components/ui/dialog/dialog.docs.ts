@@ -66,6 +66,11 @@ export interface DialogProps {
    */
   objectName?: string;
   /**
+   * Overrides the accessible name of the `rename` variant's text field
+   * (default `'Object name'`). Ignored by every other variant.
+   */
+  objectNameLabel?: string;
+  /**
    * Overrides the variant's default secondary (dismiss) button label. Passing
    * this on a variant with no secondary button by default (e.g. `read-only`)
    * also makes the button appear. Ignored when `footer` is provided.
@@ -73,6 +78,12 @@ export interface DialogProps {
   secondaryLabel?: string;
   /** Overrides the variant's default primary button label. Ignored when `footer` is provided. */
   primaryLabel?: string;
+  /**
+   * Fires when the primary footer button is clicked. The dialog does not
+   * close automatically afterwards — pair this with `open`/`onOpenChange` to
+   * close it once the action completes. Ignored when `footer` is provided.
+   */
+  onPrimaryAction?: () => void;
   /**
    * Replaces the footer's action content entirely with free-form buttons —
    * the escape hatch the `wide` variant is meant to be paired with, for

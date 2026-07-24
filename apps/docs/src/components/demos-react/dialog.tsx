@@ -11,7 +11,12 @@ export function DialogDemo() {
       <Button variant="secondary" onClick={() => setOpen(true)}>
         Open dialog
       </Button>
-      <Dialog variant="discard changes" open={open} onOpenChange={setOpen} />
+      <Dialog
+        variant="discard changes"
+        open={open}
+        onOpenChange={setOpen}
+        onPrimaryAction={() => setOpen(false)}
+      />
     </>
   );
 }

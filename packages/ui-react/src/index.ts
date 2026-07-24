@@ -31,6 +31,7 @@ export * from './components/ui/date-range-picker';
 export * from './components/ui/description-list';
 export {
   Dialog,
+  DialogClose,
   type DialogProps,
   type DialogVariant,
 } from './components/ui/dialog';

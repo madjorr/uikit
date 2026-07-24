@@ -58,6 +58,13 @@ contract:
         variants' canned title/body in place of the generic placeholder text
         (e.g. `rename` → "Rename {objectName}" and the field's prefilled
         value); ignored by variants that don't reference an object name.
+    - name: objectNameLabel
+      type: string
+      required: false
+      default: "'Object name'"
+      description: >-
+        Overrides the accessible name of the `rename` variant's text field.
+        Ignored by every other variant.
     - name: secondaryLabel
       type: string
       required: false
@@ -124,6 +131,13 @@ contract:
       description: >-
         Fired when the dialog opens or closes (React: `onOpenChange`). Payload is
         the new open value.
+    - name: primary-action
+      payload: void
+      description: >-
+        Fired when the primary footer button is clicked (React:
+        `onPrimaryAction`). The dialog does not close automatically
+        afterwards — pair it with the open-change event to close it once the
+        action completes. Ignored when `footer` is provided.
 
   content:
     - name: default
@@ -139,7 +153,12 @@ adapters:
     status: implemented
     import: "import { Dialog } from '@acronis-platform/ui-react'"
     example: |
-      <Dialog variant="discard changes" open onOpenChange={setOpen} />
+      <Dialog
+        variant="discard changes"
+        open={open}
+        onOpenChange={setOpen}
+        onPrimaryAction={() => { discard(); setOpen(false); }}
+      />
 
       {/* Override the body slot */}
       <Dialog variant="default" defaultOpen>

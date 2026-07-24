@@ -33,12 +33,22 @@ wider dialogs; prefer one of the seven canned variants for new work.
   <DialogDemo />
 </DemoReact>
 
-A canned use-case, controlled open state:
+A canned use-case, controlled open state. `onPrimaryAction` fires when the
+primary footer button is clicked — the dialog doesn't close on its own, so
+close it yourself once the action completes:
 
 ```tsx
 const [open, setOpen] = useState(false);
 
-<Dialog variant="discard changes" open={open} onOpenChange={setOpen} />;
+<Dialog
+  variant="discard changes"
+  open={open}
+  onOpenChange={setOpen}
+  onPrimaryAction={() => {
+    discardChanges();
+    setOpen(false);
+  }}
+/>;
 ```
 
 Override the body slot while keeping the header/footer chrome:
@@ -76,6 +86,13 @@ by hand:
 
 ```tsx
 <Dialog variant="rename" objectName="Q3 Report.xlsx" open onOpenChange={setOpen} />
+```
+
+The `rename` variant's text field accessible name is also overridable via
+`objectNameLabel` (default `'Object name'`):
+
+```tsx
+<Dialog variant="rename" objectNameLabel="Nom de l'objet" open onOpenChange={setOpen} />
 ```
 
 When the dialog renders inside an isolated container (e.g. a shadow root), pass a
