@@ -6,8 +6,10 @@ import { cn } from '@/lib/utils';
 // (no label/description — like `Input`, field furniture is a future `Field`
 // wrapper). Themed by the `--ui-input-otp-*` token tier. Each slot is a plain
 // `<input>`; typing a digit advances focus to the next slot, Backspace on an
-// empty slot clears and moves back to the previous one, and pasting a full
-// code distributes it across the slots from the focused one onward. `error`
+// empty slot clears and moves back to the previous one, and pasting — or a
+// browser/password-manager autofill that drops the full code into one slot's
+// `onChange` — distributes it across the slots from the focused one onward.
+// `error`
 // reddens every box (via `--ui-input-otp-box-border-color-error`); there is no
 // disabled treatment in the design, so `disabled` falls back to the generic
 // `disabled:opacity-50` convention used elsewhere in this package. OTP codes
@@ -107,8 +109,29 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Distributes digits across slots starting at `index` — shared by a
+    // multi-character paste and a multi-character autofill `onChange` (a
+    // password manager or Chrome's OTP autofill can set a single slot's
+    // `.value` to the entire code, bypassing `maxLength`).
+    const distributeFrom = (index: number, digits: string) => {
+      const nextSlots = [...slots];
+      let cursor = index;
+      for (const char of digits) {
+        if (cursor >= length) break;
+        nextSlots[cursor] = char;
+        cursor += 1;
+      }
+      commitSlots(nextSlots);
+      focusSlot(Math.min(cursor, length - 1));
+    };
+
     const handleSlotChange = (index: number, raw: string) => {
-      const char = raw.slice(-1);
+      if (raw.length > 1) {
+        const digits = raw.replace(/\D/g, '');
+        if (digits) distributeFrom(index, digits);
+        return;
+      }
+      const char = raw;
       if (char !== '' && !DIGIT_PATTERN.test(char)) return;
       const nextSlots = [...slots];
       nextSlots[index] = char;
@@ -139,18 +162,10 @@ const InputOTP = React.forwardRef<HTMLDivElement, InputOTPProps>(
       index: number,
       event: React.ClipboardEvent<HTMLInputElement>
     ) => {
-      const text = event.clipboardData.getData('text').replace(/\D/g, '');
-      if (!text) return;
+      const digits = event.clipboardData.getData('text').replace(/\D/g, '');
+      if (!digits) return;
       event.preventDefault();
-      const nextSlots = [...slots];
-      let cursor = index;
-      for (const char of text) {
-        if (cursor >= length) break;
-        nextSlots[cursor] = char;
-        cursor += 1;
-      }
-      commitSlots(nextSlots);
-      focusSlot(Math.min(cursor, length - 1));
+      distributeFrom(index, digits);
     };
 
     return (

@@ -179,6 +179,19 @@ describe('InputOTP', () => {
       expect(slot3).toHaveValue('5');
       expect(slot3).toHaveFocus();
     });
+
+    it('distributes a multi-character value from an autofill onChange instead of truncating it', () => {
+      const onChange = vi.fn();
+      const onComplete = vi.fn();
+      render(
+        <InputOTP length={4} onChange={onChange} onComplete={onComplete} />
+      );
+      const slot1 = screen.getByLabelText('Digit 1 of 4');
+      fireEvent.change(slot1, { target: { value: '1234' } });
+      expect(onChange).toHaveBeenLastCalledWith('1234');
+      expect(onComplete).toHaveBeenCalledExactlyOnceWith('1234');
+      expect(screen.getByLabelText('Digit 4 of 4')).toHaveFocus();
+    });
   });
 
   describe('handleKeyDown', () => {
@@ -258,11 +271,15 @@ describe('InputOTP', () => {
 
     it('clamps a paste longer than the remaining slots and focuses the last slot', async () => {
       const onChange = vi.fn();
-      render(<InputOTP length={3} onChange={onChange} />);
+      const onComplete = vi.fn();
+      render(
+        <InputOTP length={3} onChange={onChange} onComplete={onComplete} />
+      );
       const slot1 = screen.getByLabelText('Digit 1 of 3');
       slot1.focus();
       await userEvent.paste('123456');
       expect(onChange).toHaveBeenLastCalledWith('123');
+      expect(onComplete).toHaveBeenCalledExactlyOnceWith('123');
       expect(screen.getByLabelText('Digit 3 of 3')).toHaveFocus();
     });
 
