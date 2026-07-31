@@ -45,12 +45,13 @@ import { Loading } from '../loading';
 // parts internally. (In Figma the matching component set is named
 // "DialogDefault"; the code-facing name stays `Dialog` — see dialog.figma.tsx.)
 
-// Figma's "DialogWelcome" frame (variant=carousel, node 6353:6164) wraps its
-// popup preview in a `p-[48px]` ancestor — the minimum margin the popup must
-// keep from the viewport edge on any screen size. `max-w`/`max-h` (not
-// padding, since the popup itself is centered via `fixed` + transform)
-// enforce it here so every consumer keeps that margin, not just the frame
-// that surfaced it.
+// The "DialogDefault" node's own ancestor frame (variant=default, node
+// 4220:3529) wraps its `Container` preview in a `p-[48px]` ancestor — the
+// same margin also documented on "DialogWelcome" (node 6353:6164). `max-w`/
+// `max-h` (not padding, since the popup itself is centered via `fixed` +
+// transform) enforce it here so every consumer keeps that margin, not just
+// the frame that surfaced it: the popup grows with its content up to that
+// bound, then `DialogBody` below takes over the overflow (see its comment).
 const dialogContentVariants = cva(
   'fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh-96px)] w-full min-w-[var(--ui-dialog-container-width-min)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--ui-dialog-container-border-radius)] bg-[var(--ui-dialog-container-color)] text-foreground shadow-lg duration-200 data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95',
   {
@@ -267,6 +268,15 @@ function DialogHeader({ title, closeLabel }: DialogHeaderProps) {
 // override), reconciled against the Figma DialogDefault node via the
 // `--ui-dialog-body-*` tier. Local to this file — distinct from the generic
 // `DialogBodyRoot` composable primitive above.
+//
+// `flex-1 min-w-0` + `overflow-auto` make this the popup's sole scroll
+// container: the popup (a flex column capped by `max-h`/`max-w` above) grows
+// with content up to those bounds — header/footer stay `shrink-0` — and once
+// clamped, this is the item that shrinks, so it (not the popup's
+// `overflow-hidden`) absorbs the overflow. Without `min-w-0`, a flex item's
+// default content-based auto-minimum keeps it from shrinking narrower than
+// its content, so wide non-wrapping content (e.g. a table) would silently
+// clip at the popup edge instead of scrolling here.
 interface DialogBodyProps {
   children: React.ReactNode;
   /** Makes the body unfocusable/unclickable while the loading overlay is shown. */
@@ -277,7 +287,7 @@ function DialogBody({ children, inert }: DialogBodyProps) {
   return (
     <div
       inert={inert}
-      className="flex min-h-[var(--ui-dialog-body-height-min)] flex-col justify-center-safe gap-[var(--ui-dialog-body-gap)] overflow-y-auto px-4 py-[var(--ui-dialog-body-padding-y)]"
+      className="flex min-h-[var(--ui-dialog-body-height-min)] min-w-0 flex-1 flex-col justify-center-safe gap-[var(--ui-dialog-body-gap)] overflow-auto px-4 py-[var(--ui-dialog-body-padding-y)]"
     >
       {typeof children === 'string' ? (
         <p className="text-sm leading-6 text-foreground">{children}</p>

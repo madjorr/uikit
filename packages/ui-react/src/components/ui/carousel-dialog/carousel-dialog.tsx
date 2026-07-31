@@ -79,7 +79,7 @@ const CarouselDialog = React.forwardRef<HTMLDivElement, CarouselDialogProps>(
       >
         <div
           className={cn(
-            'flex min-w-0 flex-1 flex-col items-start justify-center',
+            'flex shrink-0 grow basis-0 flex-col items-start justify-center',
             isFirst && 'h-8'
           )}
         >
@@ -90,9 +90,14 @@ const CarouselDialog = React.forwardRef<HTMLDivElement, CarouselDialogProps>(
           )}
         </div>
 
-        <div
-          className="flex shrink-0 items-center gap-[var(--ui-carousel-dialog-list-indicator-gap)]"
-        >
+        {/*
+          `min-w-0` (no `shrink-0`) so this — not the Back/Next buttons —
+          gives way once `slideCount` grows past the available footer width;
+          `overflow-x-auto` scrolls the excess dots instead of the popup's
+          `overflow-hidden` clipping them (which previously squeezed the
+          flanking button areas to zero width, hiding Back/Next entirely).
+        */}
+        <div className="flex min-w-0 items-center gap-[var(--ui-carousel-dialog-list-indicator-gap)] overflow-x-auto">
           {Array.from({ length: slideCount }, (_, index) => {
             const isActive = index === selectedIndex;
             return (
@@ -117,9 +122,7 @@ const CarouselDialog = React.forwardRef<HTMLDivElement, CarouselDialogProps>(
           })}
         </div>
 
-        <div
-          className="flex min-w-0 flex-1 flex-col items-end justify-center"
-        >
+        <div className="flex shrink-0 grow basis-0 flex-col items-end justify-center">
           <Button onClick={isLast ? onPrimaryAction : onNext}>
             {isLast ? primaryLabel : nextLabel}
           </Button>

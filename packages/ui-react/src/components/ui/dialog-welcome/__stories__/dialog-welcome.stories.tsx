@@ -204,6 +204,58 @@ export const CarouselWithImages: Story = {
   ),
 };
 
+// Same viewport-margin bound as `Dialog` (see dialog.tsx's comment on
+// `dialogContentVariants` — node 4220:3529) applies here via the shared
+// `DialogContent` popup, but nothing downstream of it absorbed the overflow:
+// a long description pushes the slide taller than the available height, and
+// the popup's own `overflow-hidden` silently clipped the excess instead of
+// the carousel viewport scrolling it — the same class of bug `Dialog`'s body
+// had. Long, real (non-lorem) copy demonstrates it without depending on the
+// Storybook viewport height.
+const LONG_DESCRIPTION = Array.from(
+  { length: 12 },
+  (_, i) =>
+    `Paragraph ${i + 1}: automated backups run on the schedule you set, with ransomware detection on every pass and instant point-in-time recovery.`
+).join(' ');
+
+export const OverflowY: Story = {
+  render: () => (
+    <DialogWelcome
+      variant="carousel"
+      slides={[{ title: 'Automated backups', description: LONG_DESCRIPTION }]}
+      defaultOpen
+    />
+  ),
+};
+
+// The dot `ListIndicator` in `DialogFooterCarousel`/`CarouselDialog` grows
+// with `slideCount` and had no bound — with enough slides it overflowed the
+// fixed-width footer and was clipped by the popup the same way, instead of
+// scrolling within the footer.
+const MANY_SLIDES = Array.from({ length: 30 }, (_, i) => ({
+  title: `Feature ${i + 1}`,
+  description: `Feature ${i + 1} of many.`,
+}));
+
+export const OverflowX: Story = {
+  render: () => (
+    <DialogWelcome variant="carousel" slides={MANY_SLIDES} defaultOpen />
+  ),
+};
+
+export const OverflowXY: Story = {
+  render: () => (
+    <DialogWelcome
+      variant="carousel"
+      slides={[
+        { title: 'Automated backups', description: LONG_DESCRIPTION },
+        ...MANY_SLIDES,
+      ]}
+      defaultOpen
+    />
+  ),
+};
+
 export const Single: Story = {
   render: () => (
     <DialogWelcome

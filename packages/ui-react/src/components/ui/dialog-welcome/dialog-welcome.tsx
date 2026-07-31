@@ -299,7 +299,20 @@ function ContainerCarousel({
 }: ContainerCarouselProps) {
   return (
     <>
-      <div ref={emblaRef} className="w-full overflow-hidden">
+      {/*
+        This is Embla's "viewport" — `overflow-x-hidden` is required so
+        non-active slides stay clipped horizontally while Embla translates
+        the track. `flex-1 min-h-0 overflow-y-auto` is the same
+        grow-then-scroll idiom as `Dialog`'s body (see dialog.tsx): the popup
+        above already caps at the Figma viewport margin, so once a slide's
+        own content (e.g. a long description) is taller than what's left,
+        this is what scrolls instead of the popup's `overflow-hidden`
+        silently clipping it.
+      */}
+      <div
+        ref={emblaRef}
+        className="min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto"
+      >
         <div className="flex">
           {slides.map((slide, index) => (
             <div
@@ -355,7 +368,12 @@ function ContainerNoSlides({
   onCloseAction,
 }: ContainerNoSlidesProps) {
   return (
-    <div className="flex w-full flex-col items-center gap-3 pb-4">
+    // `flex-1 min-h-0 overflow-y-auto` — same grow-then-scroll idiom as the
+    // carousel viewport above and `Dialog`'s body: this is the sole child of
+    // the shared `DialogContent` popup (capped at the Figma viewport
+    // margin), so it's what scrolls once `image`/`description` push taller
+    // than what's left, instead of the popup's `overflow-hidden` clipping it.
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3 overflow-y-auto pb-4">
       <DialogWelcomeSlideBody
         image={image}
         title={title}
