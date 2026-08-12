@@ -1,0 +1,212 @@
+# Runs `/figma-component` headlessly in Actions and opens a PR with the result.
+#
+# Companion doc: figma-component-cloud-feasibility.md (Option A). This workflow
+# is the first implementation pass — treat it as a draft until a manual
+# `workflow_dispatch` run has been timed and verified end to end (see the
+# "NEEDS VERIFICATION" comments below; none of this has run successfully yet).
+#
+# ── Required secrets checklist ──────────────────────────────────────────────
+#   FIGMA_ACCESS_TOKEN_ACRONIS  MISSING — must be added.
+#                               figma-console-mcp (the token-based Figma MCP
+#                               server, see .mcp.json) reads this exact env var
+#                               name, not FIGMA_ACCESS_TOKEN. The repo already
+#                               has a FIGMA_ACCESS_TOKEN secret used by
+#                               figma-code-connect.yml / icons-fetch.yml — TODO
+#                               confirm whether that same PAT can be reused
+#                               under this second secret name, or whether a
+#                               distinct token/scope is required.
+#   ANTHROPIC_API_KEY           MISSING — must be added.
+#                               Acronis's Claude Code org is Console/API-billed
+#                               (see figma-component-cloud-feasibility.md §2),
+#                               so headless `claude -p` needs an API key, not a
+#                               subscription login. TODO: decide who owns this
+#                               key and its spend budget/alerting before wiring
+#                               it in for real.
+#   ACV_TOKEN                   Already exists (shared with icons-fetch.yml) —
+#                               GitHub PAT used to push the branch and open the
+#                               PR against branch-protected `main`.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# NEEDS VERIFICATION (not secrets, but open items from the feasibility doc):
+#   - Exact Claude Code CLI flags for non-interactive MCP config + permission
+#     bypass (see the "Run Claude Code headless" step). Flag names below are a
+#     best-effort guess from current docs, not yet run in this repo's CI.
+#   - Whether figma-console's tool surface actually covers everything Phase 1
+#     of the skill needs (get_design_context / get_variable_defs / the
+#     Code-Connect property read) — see feasibility doc §5.
+#   - Whether a GitHub-hosted runner is fast/big enough for the Docker VR step
+#     the skill triggers internally (Phase 5) — untimed.
+
+name: Figma Component (Cloud)
+
+on:
+  workflow_dispatch:
+    inputs:
+      componentName:
+        description: 'Component name (PascalCase), e.g. DatePicker'
+        required: true
+        type: string
+      figmaUrl:
+        description: 'Figma node URL ("ready for dev" node)'
+        required: true
+        type: string
+      update:
+        description: 'Pass --update to refresh an existing component instead of creating one'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: figma-component-cloud-${{ inputs.componentName }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    # Don't run on forks — only the canonical repo holds the Figma/Anthropic secrets.
+    if: github.repository == 'acronis/uikit'
+    runs-on: ubuntu-latest
+
+    # NEEDS VERIFICATION: untimed. Lower once a real run's duration is known;
+    # raise (or move to a self-hosted runner) if Phase 5's Docker VR step
+    # doesn't fit. See feasibility doc §4 item 7.
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Docker is needed by the skill's own Phase 5 (visual-regression baseline
+      # generation) — ubuntu-latest ships Docker preinstalled, same as
+      # visual-regression.yml, so no extra setup step here.
+
+      - name: Install Claude Code CLI
+        run: curl -fsSL https://claude.ai/install.sh | bash
+
+      # figma-console (token-based) is the only Figma MCP server this run
+      # should see — the repo's default .mcp.json also lists the official
+      # hosted `figma` server, which is OAuth-gated and would hang/fail
+      # waiting for an interactive browser login on a runner. Writing a
+      # CI-only MCP config and loading it with --strict-mcp-config (below)
+      # keeps the OAuth server out of the picture entirely.
+      #
+      # NEEDS VERIFICATION: `--strict-mcp-config` is assumed to suppress the
+      # project .mcp.json in favor of this file — confirm against the
+      # installed CLI version's `claude mcp --help` / `claude --help` before
+      # relying on it.
+      - name: Write CI-only MCP config (figma-console only)
+        env:
+          FIGMA_ACCESS_TOKEN_ACRONIS: ${{ secrets.FIGMA_ACCESS_TOKEN_ACRONIS }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FIGMA_ACCESS_TOKEN_ACRONIS:-}" ]; then
+            echo "::error::FIGMA_ACCESS_TOKEN_ACRONIS secret is not set — see the required-secrets checklist at the top of this workflow file."
+            exit 1
+          fi
+          cat > "$RUNNER_TEMP/mcp-ci.json" <<EOF
+          {
+            "mcpServers": {
+              "figma-console": {
+                "command": "npx",
+                "args": ["-y", "figma-console-mcp@latest"],
+                "env": {
+                  "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN_ACRONIS}",
+                  "ENABLE_MCP_APPS": "false"
+                }
+              }
+            }
+          }
+          EOF
+
+      - name: Build the /figma-component prompt
+        id: prompt
+        run: |
+          set -euo pipefail
+          FLAG=""
+          if [ "${{ inputs.update }}" = "true" ]; then
+            FLAG=" --update"
+          fi
+          {
+            echo "text<<PROMPT_EOF"
+            echo "/figma-component ${{ inputs.componentName }} ${{ inputs.figmaUrl }}${FLAG}"
+            echo "PROMPT_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # NEEDS VERIFICATION: this whole step is unproven end to end.
+      #   - `--dangerously-skip-permissions` bypasses tool-approval prompts so
+      #     the run doesn't block waiting for interactive confirmation — only
+      #     acceptable because this runs in a throwaway Actions container, not
+      #     a real workstation. Confirm this is still the correct flag name.
+      #   - `--mcp-config` / `--strict-mcp-config` are assumed to load *only*
+      #     the file written above; re-check against the installed CLI version.
+      #   - The skill also shells out to pnpm/Docker; confirm the CLI's default
+      #     tool allowlist under `-p` covers Bash, or add `--allowedTools`.
+      - name: Run /figma-component headless
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+            echo "::error::ANTHROPIC_API_KEY secret is not set — see the required-secrets checklist at the top of this workflow file."
+            exit 1
+          fi
+          claude -p "${{ steps.prompt.outputs.text }}" \
+            --mcp-config "$RUNNER_TEMP/mcp-ci.json" \
+            --strict-mcp-config \
+            --dangerously-skip-permissions
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git status --porcelain | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # NEEDS VERIFICATION: ACV_TOKEN already exists for icons-fetch.yml —
+          # confirm it has permission to push/open PRs from this workflow too
+          # (it should, it's a repo-scoped PAT, not workflow-scoped).
+          token: ${{ secrets.ACV_TOKEN }}
+          branch: feat/figma-component-${{ inputs.componentName }}
+          base: main
+          commit-message: 'feat(${{ inputs.componentName }}): generate from Figma via /figma-component'
+          title: 'feat(${{ inputs.componentName }}): generate from Figma'
+          body: |
+            Automated `/figma-component ${{ inputs.componentName }} ${{ inputs.figmaUrl }}` run.
+
+            Source Figma node: ${{ inputs.figmaUrl }}
+            Triggered by: @${{ github.actor }}
+
+            Review carefully — this is an early cloud run of `/figma-component`
+            (see `figma-component-cloud-feasibility.md`). Check the diff, run
+            Storybook locally, and confirm the generated Code Connect / spec /
+            docs page before merging.
+          labels: |
+            figma-component
+            automated
+          delete-branch: true
+
+      - name: No changes produced
+        if: steps.diff.outputs.changed == 'false'
+        run: |
+          echo "::warning::The /figma-component run produced no file changes — check the job log for errors before assuming success."
