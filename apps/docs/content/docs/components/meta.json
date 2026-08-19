@@ -106,6 +106,7 @@
     "auth-layout",
     "page-header",
     "page-content",
+    "wizard",
     "stack",
     "grid",
     "section",
