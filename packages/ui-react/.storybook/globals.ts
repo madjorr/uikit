@@ -6,72 +6,50 @@
  * - Light/dark is NOT a `.dark` class. The tokens use `light-dark()` resolved by
  *   `color-scheme`; ui-react's `dark:` variant keys off `[data-theme]`. So we set
  *   both `color-scheme` and `[data-theme]` on the root element.
- * - Brand is NOT a class toggle. `default` is the base layer (loaded by
- *   `src/styles/index.css`); `deep_sky_itkontoret` is an override-only `:root`
- *   stylesheet layered on top by injecting it into a managed `<style>` element.
+ * - Brand is NOT a class toggle, and it is NOT a per-tier override list either
+ *   (that used to mean hand-listing every component tier here and keeping it in
+ *   sync with `src/styles/index.css` — exactly the drift `tokens-pd`'s
+ *   `bundles/<brand>.css` exists to prevent). `default` is the base layer
+ *   (loaded by `src/styles/index.css`); every other brand is swapped in wholesale
+ *   by injecting its full bundle — semantics + every component tier in one
+ *   file — into a managed `<style>` element. This is the same runtime
+ *   brand-switching pattern documented in `apps/docs/content/docs/theming.mdx`.
  */
 
-// deep_sky_itkontoret override-only `:root` stylesheets (semantic + every
-// per-component tier that `src/styles/index.css` loads for the default brand),
-// imported as raw text and concatenated. Keep this list in sync with the
-// component tiers imported there.
-import semanticDeepSky from '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css?raw';
-import avatarDeepSky from '@acronis-platform/tokens-pd/css/Avatar/deep_sky_itkontoret.css?raw';
-import buttonDeepSky from '@acronis-platform/tokens-pd/css/Button/deep_sky_itkontoret.css?raw';
-import buttonMenuDeepSky from '@acronis-platform/tokens-pd/css/ButtonMenu/deep_sky_itkontoret.css?raw';
-import buttonIconDeepSky from '@acronis-platform/tokens-pd/css/ButtonIcon/deep_sky_itkontoret.css?raw';
-import cardFilterDeepSky from '@acronis-platform/tokens-pd/css/CardFilter/deep_sky_itkontoret.css?raw';
-import switchDeepSky from '@acronis-platform/tokens-pd/css/Switch/deep_sky_itkontoret.css?raw';
-import checkboxDeepSky from '@acronis-platform/tokens-pd/css/Checkbox/deep_sky_itkontoret.css?raw';
-import inputTextDeepSky from '@acronis-platform/tokens-pd/css/InputText/deep_sky_itkontoret.css?raw';
-import inputTextAreaDeepSky from '@acronis-platform/tokens-pd/css/InputTextArea/deep_sky_itkontoret.css?raw';
-import inputSearchDeepSky from '@acronis-platform/tokens-pd/css/InputSearch/deep_sky_itkontoret.css?raw';
-import inputSelectDeepSky from '@acronis-platform/tokens-pd/css/InputSelect/deep_sky_itkontoret.css?raw';
-import inputDatePickerDeepSky from '@acronis-platform/tokens-pd/css/InputDatePicker/deep_sky_itkontoret.css?raw';
-import linkDeepSky from '@acronis-platform/tokens-pd/css/Link/deep_sky_itkontoret.css?raw';
-import radioDeepSky from '@acronis-platform/tokens-pd/css/Radio/deep_sky_itkontoret.css?raw';
-import breadcrumbDeepSky from '@acronis-platform/tokens-pd/css/Breadcrumb/deep_sky_itkontoret.css?raw';
-import resizableDeepSky from '@acronis-platform/tokens-pd/css/Resizable/deep_sky_itkontoret.css?raw';
-import tagDeepSky from '@acronis-platform/tokens-pd/css/Tag/deep_sky_itkontoret.css?raw';
-import tooltipDeepSky from '@acronis-platform/tokens-pd/css/Tooltip/deep_sky_itkontoret.css?raw';
-import sidebarPrimaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarPrimary/deep_sky_itkontoret.css?raw';
-import sidebarSecondaryDeepSky from '@acronis-platform/tokens-pd/css/SidebarSecondary/deep_sky_itkontoret.css?raw';
+import bundleDeepSky from '@acronis-platform/tokens-pd/bundles/deep_sky_itkontoret.css?raw';
+import bundleLightGray from '@acronis-platform/tokens-pd/bundles/light-gray.css?raw';
+import bundleTelstra from '@acronis-platform/tokens-pd/bundles/telstra.css?raw';
+import bundleVirtuozzo from '@acronis-platform/tokens-pd/bundles/virtuozzo.css?raw';
+import bundleYellow1c from '@acronis-platform/tokens-pd/bundles/yellow-1c.css?raw';
 
-export type Brand = 'default' | 'deep_sky_itkontoret';
+export type Brand =
+  | 'default'
+  | 'deep_sky_itkontoret'
+  | 'light-gray'
+  | 'telstra'
+  | 'virtuozzo'
+  | 'yellow-1c';
 export type ColorMode = 'light' | 'dark';
 export type Direction = 'auto' | 'ltr' | 'rtl';
 export type Locale = 'en' | 'de' | 'fr' | 'ja' | 'ar' | 'he';
 
-const DEEP_SKY_OVERRIDES = [
-  semanticDeepSky,
-  avatarDeepSky,
-  buttonDeepSky,
-  buttonMenuDeepSky,
-  buttonIconDeepSky,
-  cardFilterDeepSky,
-  switchDeepSky,
-  checkboxDeepSky,
-  inputTextDeepSky,
-  inputTextAreaDeepSky,
-  inputSearchDeepSky,
-  inputSelectDeepSky,
-  inputDatePickerDeepSky,
-  linkDeepSky,
-  radioDeepSky,
-  breadcrumbDeepSky,
-  resizableDeepSky,
-  tagDeepSky,
-  tooltipDeepSky,
-  sidebarPrimaryDeepSky,
-  sidebarSecondaryDeepSky,
-].join('\n');
-
-// Locales that read right-to-left, used when `direction` is left on 'auto'.
-const RTL_LOCALES = new Set<Locale>(['ar', 'he']);
+/** Every non-default brand's full bundle, keyed for `applyBrand`. */
+const BRAND_BUNDLES: Record<Exclude<Brand, 'default'>, string> = {
+  deep_sky_itkontoret: bundleDeepSky,
+  'light-gray': bundleLightGray,
+  telstra: bundleTelstra,
+  virtuozzo: bundleVirtuozzo,
+  'yellow-1c': bundleYellow1c,
+};
 
 const BRAND_STYLE_ID = 'sb-brand-override';
 
-/** Layer deep_sky_itkontoret's `:root` overrides on the default base, or clear them. */
+/**
+ * Swap in a brand's full bundle (semantics + every component tier), or clear
+ * the override to fall back to the default brand `src/styles/index.css`
+ * already loads. A bundle is full-strength, not an override-only diff, so it
+ * replaces rather than layers — one `<style>` element holds at most one brand.
+ */
 export function applyBrand(brand: Brand): void {
   const existing = document.getElementById(BRAND_STYLE_ID);
   if (brand === 'default') {
@@ -80,7 +58,7 @@ export function applyBrand(brand: Brand): void {
   }
   const el = existing ?? document.createElement('style');
   el.id = BRAND_STYLE_ID;
-  el.textContent = DEEP_SKY_OVERRIDES;
+  el.textContent = BRAND_BUNDLES[brand];
   if (!existing) document.head.appendChild(el);
 }
 
@@ -90,6 +68,9 @@ export function applyColorMode(mode: ColorMode): void {
   html.dataset.theme = mode;
   html.style.colorScheme = mode;
 }
+
+// Locales that read right-to-left, used when `direction` is left on 'auto'.
+const RTL_LOCALES = new Set<Locale>(['ar', 'he']);
 
 /** Set `lang` + `dir`. With direction 'auto', RTL locales flip to rtl. */
 export function applyLocaleAndDirection(
