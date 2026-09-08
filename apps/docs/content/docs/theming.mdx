@@ -75,25 +75,29 @@ When the brand is only known at runtime — a multi-tenant shell that resolves
 the tenant per request, say — load that brand's **bundle** instead. Each
 `bundles/<brand>.css` is a single self-contained file carrying the semantic tier
 *and* every component tier in one `:root, :host {}` block, so one file fully
-re-themes the UI:
-
-```html
-<link
-  rel="stylesheet"
-  href="/node_modules/@acronis-platform/tokens-pd/bundles/telstra.css"
-/>
-```
+re-themes the UI.
 
 A bundle is full-strength, not an override, so you **replace** it rather than
-layer it — point one `<link>` at the brand you want and swap its `href` to
-switch:
+layer it. The recommended approach is a managed `<style>` element: import each
+brand's bundle at build time with Vite's `?raw` suffix, then swap the element's
+content at runtime:
 
 ```ts
-link.href = new URL(
-  `@acronis-platform/tokens-pd/bundles/${brand}.css`,
-  import.meta.url,
-).href;
+// Static ?raw imports — Vite inlines the CSS text at build time.
+import bundleTelstra from '@acronis-platform/tokens-pd/bundles/telstra.css?raw';
+import bundleDefault from '@acronis-platform/tokens-pd/bundles/default.css?raw';
+
+// Create one managed <style> element:
+const el = document.createElement('style');
+document.head.appendChild(el);
+
+// To switch brands, replace its content:
+el.textContent = bundleTelstra;
 ```
+
+In Vite's dev server the bundle is also served at
+`/node_modules/@acronis-platform/tokens-pd/bundles/<brand>.css`, but that path
+is not available in production builds — load the bundle via your bundler instead.
 
 Every brand has a bundle, `default` included, and each one also carries the
 `.ui-typography-*` utility classes and the `[data-theme]` light/dark blocks — so

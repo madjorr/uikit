@@ -16,17 +16,18 @@ Brands: `default` plus `deep_sky_itkontoret`, `light-gray`, `telstra`,
 
 ## Layout
 
-Output is grouped into three top-level directories — `css/`, `tailwind/`, `dtcg/`:
+Output is grouped into four top-level directories — `css/`, `bundles/`, `tailwind/`, `dtcg/`:
 
-| Path                                         | Tier      | Contents                                                                                                                    |
-| -------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `css/default.css`                            | semantic  | Default brand — every semantic token (`--ui-*`, incl. `--ui-shadow-*`), `.ui-typography-*`, `.ui-p-*`/`.ui-m-*`/`.ui-gap-*` |
-| `css/<brand>.css`                            | semantic  | Non-default brand — only the tokens that differ from `default`                                                              |
-| `css/<Component>/default.css`                | component | Default brand — that component's tokens (`Button/`, `Tooltip/`, …; dirs are PascalCase)                                     |
-| `css/<Component>/<brand>.css`                | component | Non-default brand — only the component tokens that differ                                                                   |
-| `tailwind/<brand>/tokens.js`                 | semantic  | Tailwind preset of the shared semantic vocabulary (**baked** values), incl. `gap-*` and `boxShadow` keys                    |
-| `tailwind/<brand>/components/<Component>.js` | component | One preset per component — opt-in, so its utilities aren't suggested globally                                               |
-| `dtcg/*.json`                                | —         | The 100%-DTCG intermediate (per-mode), for generic DTCG tooling                                                             |
+| Path                                         | Tier      | Contents                                                                                                                                 |
+| -------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `css/default.css`                            | semantic  | Default brand — every semantic token (`--ui-*`, incl. `--ui-shadow-*`), `.ui-typography-*`, `.ui-p-*`/`.ui-m-*`/`.ui-gap-*`              |
+| `css/<brand>.css`                            | semantic  | Non-default brand — only the tokens that differ from `default`                                                                           |
+| `css/<Component>/default.css`                | component | Default brand — that component's tokens (`Button/`, `Tooltip/`, …; dirs are PascalCase)                                                  |
+| `css/<Component>/<brand>.css`                | component | Non-default brand — only the component tokens that differ                                                                                |
+| `bundles/<brand>.css`                        | bundle    | Full brand in one file — semantic tier + every component tier merged, always full (never override-only). Runtime re-theming entry point. |
+| `tailwind/<brand>/tokens.js`                 | semantic  | Tailwind preset of the shared semantic vocabulary (**baked** values), incl. `gap-*` and `boxShadow` keys                                 |
+| `tailwind/<brand>/components/<Component>.js` | component | One preset per component — opt-in, so its utilities aren't suggested globally                                                            |
+| `dtcg/*.json`                                | —         | The 100%-DTCG intermediate (per-mode), for generic DTCG tooling                                                                          |
 
 Names use the `--ui-*` convention (the `colors` tier segment is dropped, every
 token is prefixed with `ui`): `colors.background.surface.primary` →
@@ -38,12 +39,28 @@ token is prefixed with `ui`): `colors.background.surface.primary` →
 /* Default brand */
 @import '@acronis-platform/tokens-pd/css/default.css';
 
-/* …or a single brand per app: base + override (last import wins) */
-@import '@acronis-platform/tokens-pd/css/default.css';
-@import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css';
-
 /* Component tier is opt-in, per component (dirs are PascalCase) */
 @import '@acronis-platform/tokens-pd/css/Button/default.css';
+```
+
+**Brand override: every tier must be overridden.** Overriding only the semantic
+file (`css/<brand>.css`) re-themes the shared `--ui-*` vocabulary but leaves
+every component on the default brand's colors, because component-tier values are
+baked literals, not references to the semantic tokens. Load the matching component
+override for each component tier you use:
+
+```css
+@import '@acronis-platform/tokens-pd/css/default.css';
+@import '@acronis-platform/tokens-pd/css/deep_sky_itkontoret.css'; /* semantic */
+@import '@acronis-platform/tokens-pd/css/Button/default.css';
+@import '@acronis-platform/tokens-pd/css/Button/deep_sky_itkontoret.css'; /* component */
+```
+
+Or use a **bundle** — one file carries the semantic tier and every component tier
+merged, so you never need to enumerate component overrides:
+
+```css
+@import '@acronis-platform/tokens-pd/bundles/deep_sky_itkontoret.css';
 ```
 
 Light/dark is built in via `light-dark()` + `color-scheme`; switch with the

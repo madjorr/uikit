@@ -38,14 +38,22 @@ const BRANDS = [
 
 type BrandValue = (typeof BRANDS)[number]['value'];
 
-const RUNTIME_SWAP_SNIPPET = `// Runtime brand switching: replace a <link>'s href with the target
-// brand's full bundle. One file re-themes semantics AND every component —
-// unlike swapping only tokens-pd/css/<brand>.css, which leaves every
-// component on the default brand's colors.
-link.href = new URL(
-  \`@acronis-platform/tokens-pd/bundles/\${brand}.css\`,
-  import.meta.url,
-).href;`;
+const RUNTIME_SWAP_SNIPPET = `// Runtime brand switching via a managed <style> element.
+// Import each bundle at build time with Vite's ?raw suffix; swap the
+// element's content at runtime to re-theme. One file covers semantics AND
+// every component — unlike swapping only css/<brand>.css, which leaves
+// components on the default brand's colors.
+
+// Static ?raw imports (Vite resolves these at build time):
+import bundleTelstra from '@acronis-platform/tokens-pd/bundles/telstra.css?raw';
+// … one import per brand you support
+
+// Create one managed <style> element:
+const el = document.createElement('style');
+document.head.appendChild(el);
+
+// To switch brands, replace the element's content:
+el.textContent = bundleTelstra; // or the bundle constant for the active brand`;
 
 /**
  * Swaps a managed `<style>` element's content to the selected brand's full
