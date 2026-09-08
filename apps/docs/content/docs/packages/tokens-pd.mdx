@@ -88,14 +88,20 @@ the semantic tier *and* every component tier merged into a single
 Unlike `css/<brand>.css`, a bundle is not an override — you **replace** it
 rather than layer it, and it needs no `default` base underneath. That makes it
 the artifact for **runtime brand switching**, where a consumer swaps a single
-`<link>`/`<style>` instead of choosing imports at build time:
+`<style>` element instead of choosing imports at build time. With Vite, import
+each brand's bundle using `?raw` and swap the element's content at runtime:
 
-```html
-<link
-  rel="stylesheet"
-  href="/node_modules/@acronis-platform/tokens-pd/bundles/telstra.css"
-/>
+```ts
+import bundleTelstra from '@acronis-platform/tokens-pd/bundles/telstra.css?raw';
+
+const el = document.createElement('style');
+document.head.appendChild(el);
+el.textContent = bundleTelstra; // swap to switch brands
 ```
+
+In Vite's dev server the bundle is also served at
+`/node_modules/@acronis-platform/tokens-pd/bundles/telstra.css`, but that path
+is not available in production builds.
 
 A bundle carries every component's tokens whether the app renders that component
 or not, so a build that knows its brand up front should keep the opt-in
