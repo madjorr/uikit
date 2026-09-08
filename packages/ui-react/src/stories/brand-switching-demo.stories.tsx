@@ -58,9 +58,14 @@ el.textContent = bundleTelstra; // or the bundle constant for the active brand`;
 /**
  * Swaps a managed `<style>` element's content to the selected brand's full
  * bundle. Isolated from `.storybook/globals.ts`'s own `#sb-brand-override`
- * element (used by the toolbar's "Brand" control) via a distinct id, and
- * appended after mount so it always wins source order over it — this story
- * demonstrates runtime switching regardless of the toolbar's setting.
+ * element (used by the toolbar's "Brand" control) via a distinct id. Appended
+ * after mount so it wins source order when both elements are present — except
+ * when this story's brand is "Default" (textContent set to ''), in which case
+ * the element overrides nothing and the toolbar's brand shows through; and
+ * globals.ts removes #sb-brand-override on 'default' and re-appends it on the
+ * next non-default selection, which would land it after this element and invert
+ * source order. Use this story for demonstrating per-brand bundle content, not
+ * as a reliable source-order isolation fixture.
  */
 function useStoryBrandOverride(brand: BrandValue): void {
   const styleRef = useRef<HTMLStyleElement | null>(null);

@@ -15,5 +15,7 @@ leaving every component on the default brand's colors.
 semantic tier and every component tier merged into a single `:root, :host {}`
 block, always full (never override-only). The brand/component set is derived
 from the same data `tokens.ts` already uses internally (`BRANDS`, the per-slice
-declaration maps), so it can't drift from what's actually built. Exposed via
-`tokens-pd`'s `package.json` `exports` as `./bundles/*`.
+declaration maps), so it can't drift from what's actually built. The files are
+published via `tokens-pd`'s `files` field (`"bundles/**/*.css"`); the
+`./bundles/*` entry in `exports` is present for explicitness but is covered by
+the existing `./*` catch-all.
