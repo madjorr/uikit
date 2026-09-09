@@ -29,7 +29,7 @@ catalog:
   # chart pages with real recharts SVG output. @vitejs/plugin-react bumped to
   # 6.x alongside this (6.x requires vite ^8).
   vite: 8.2.0
-  vitest: 4.1.10
+  vitest: 4.1.11
 
   # Cross-workspace runtime deps. Versions are anchored on
   # packages/ui-react (the published library) so its typecheck stays
