@@ -168,6 +168,25 @@ Scenario: Reorder a column by dragging its header
 ```
 
 ```gherkin
+Scenario: Grouped (multi-row) column headers
+  Given a column definition that nests leaf columns in a `columns` array
+  Then the header renders an extra row: the group-parent cell sits in the upper
+      row and spans its leaf columns (colSpan), the leaf headers in the row below
+  And a column declared outside any group renders an empty placeholder cell in
+      the upper row, with its real header cell in the leaf row below
+  And a group-parent cell gets no resize handle — it spans more than one column,
+      so there is no single column boundary to drag
+  And a group-parent cell is not sortable — a group column has no accessor, so it
+      has nothing to sort by
+  And a group-parent cell is not reorderable — the drag affordance is suppressed
+      (no draggable attribute, no grab cursor, no "Reorder" hint), because the
+      column order is seeded from the leaf columns, which a group column is not
+      part of
+  # Flat (non-grouped) column definitions are unaffected — every header cell
+  # spans exactly one column and keeps all of its affordances.
+```
+
+```gherkin
 Scenario: Row actions vs. bulk actions — the selection threshold
   Given a table with a selection column, per-row TableActionsCell actions, and a
       DataTableBulkActionsBar over the same table instance

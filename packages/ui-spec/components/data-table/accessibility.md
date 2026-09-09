@@ -15,7 +15,11 @@
   expand.
 - The column resize handle is a `role="separator"` with `aria-orientation`
   vertical and an "Resize column" label (override via `resizeColumnLabel`)
-  (`enableColumnResizing`).
+  (`enableColumnResizing`). A **group-parent header cell** (one that spans its
+  leaf columns in a grouped header) deliberately renders no handle: it covers
+  more than one column, so there is no single column boundary for the separator
+  to describe or for arrow keys to move. Resizing stays on the leaf headers,
+  where each handle maps to exactly one column.
 - **Row navigation uses a roving tabindex**: exactly one data row is a Tab stop
   (`tabIndex={0}`, the rest `-1`), and Arrow Up / Arrow Down move both DOM focus
   and which row that is. Focusing a row by click syncs the roving index too,

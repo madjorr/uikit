@@ -459,6 +459,134 @@ describe('DataTable infinite scroll (paginationMode="infinite")', () => {
   });
 });
 
+describe('DataTable grouped headers', () => {
+  const groupedColumns: ColumnDef<Row>[] = [
+    { accessorKey: 'id', header: 'Customer' },
+    {
+      id: 'contact',
+      header: 'Contact',
+      columns: [
+        { accessorKey: 'email', header: 'Email' },
+        { accessorKey: 'amount', header: 'Amount' },
+      ],
+    },
+  ];
+
+  it('spans a group-parent header across its leaf columns', () => {
+    render(
+      <DataTable
+        columns={groupedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+      />
+    );
+    expect(
+      screen.getByRole('columnheader', { name: 'Contact' })
+    ).toHaveAttribute('colspan', '2');
+  });
+
+  it('renders leaf headers with a colSpan of 1', () => {
+    render(
+      <DataTable
+        columns={groupedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+      />
+    );
+    for (const name of ['Customer', 'Email', 'Amount']) {
+      expect(screen.getByRole('columnheader', { name })).toHaveAttribute(
+        'colspan',
+        '1'
+      );
+    }
+  });
+
+  it('renders no resize handle inside a group-parent header', () => {
+    render(
+      <DataTable
+        columns={groupedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+        enableColumnResizing
+      />
+    );
+    const groupHeader = screen.getByRole('columnheader', { name: 'Contact' });
+    expect(
+      within(groupHeader).queryByRole('separator', { name: 'Resize column' })
+    ).not.toBeInTheDocument();
+    // Leaf headers still get one — their accessible name picks up the
+    // handle's own label, hence the composite name here.
+    expect(
+      within(
+        screen.getByRole('columnheader', { name: 'Email Resize column' })
+      ).getByRole('separator', { name: 'Resize column' })
+    ).toBeInTheDocument();
+  });
+
+  it('renders no resize handle in an ungrouped column placeholder cell', () => {
+    const { container } = render(
+      <DataTable
+        columns={groupedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+        enableColumnResizing
+      />
+    );
+    const [topRow] = Array.from(container.querySelectorAll('thead tr'));
+    // The ungrouped `Customer` column only carries a real header in the bottom
+    // row; its top-row cell is a placeholder and must own no drag handle.
+    const placeholderCell = topRow.querySelectorAll('th')[0] as HTMLElement;
+    expect(placeholderCell).toHaveTextContent('');
+    expect(
+      within(placeholderCell).queryByRole('separator')
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders no reorder affordance on a group-parent header', () => {
+    render(
+      <DataTable
+        columns={groupedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+        enableColumnReordering
+      />
+    );
+    expect(
+      screen.getByRole('columnheader', { name: 'Contact' })
+    ).not.toHaveAttribute('draggable', 'true');
+    // The guard is structural — leaf headers under the same group stay
+    // draggable, so it can't be satisfied by disabling reordering wholesale.
+    expect(screen.getByRole('columnheader', { name: 'Email' })).toHaveAttribute(
+      'draggable',
+      'true'
+    );
+  });
+
+  it('sizes a group-parent header to the sum of its leaf columns', () => {
+    const sizedColumns: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'Customer', size: 120 },
+      {
+        id: 'contact',
+        header: 'Contact',
+        columns: [
+          { accessorKey: 'email', header: 'Email', size: 200 },
+          { accessorKey: 'amount', header: 'Amount', size: 140 },
+        ],
+      },
+    ];
+    render(
+      <DataTable
+        columns={sizedColumns}
+        data={data.slice(0, 2)}
+        hideActionColumn
+      />
+    );
+    expect(screen.getByRole('columnheader', { name: 'Contact' })).toHaveStyle({
+      width: '340px',
+    });
+  });
+});
+
 describe('DataTable column resizing', () => {
   it('lets resizeColumnLabel override the default accessible name', () => {
     render(
@@ -988,10 +1116,14 @@ describe('DataTable wrapping (meta.wrap) columns', () => {
     // The wrap-flagged cell + header get `whitespace-normal` and lose the min-height token.
     const wrapCell = screen.getByText('100').closest('td')!;
     expect(wrapCell).toHaveClass('whitespace-normal');
-    expect(wrapCell).not.toHaveClass('h-[var(--ui-table-global-cell-min-height)]');
+    expect(wrapCell).not.toHaveClass(
+      'h-[var(--ui-table-global-cell-min-height)]'
+    );
     const wrapHeader = screen.getByText('Amount').closest('th')!;
     expect(wrapHeader).toHaveClass('whitespace-normal');
-    expect(wrapHeader).not.toHaveClass('h-[var(--ui-table-global-cell-min-height)]');
+    expect(wrapHeader).not.toHaveClass(
+      'h-[var(--ui-table-global-cell-min-height)]'
+    );
 
     // The unflagged column keeps the default fixed height / no-wrap.
     const plainCell = screen.getByText('user1@example.com').closest('td')!;

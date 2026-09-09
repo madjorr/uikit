@@ -293,6 +293,54 @@ table edge by definition.
 the order internally; pass them to persist the user's order. The gesture is
 pointer-only for now: there is no keyboard equivalent yet.
 
+### Grouped column headers
+
+Nest leaf columns in a `columns` array and `DataTable` renders a **multi-row
+header**: the group parent sits in the upper row spanning its leaf columns, the
+leaf headers in the row below. A column declared outside any group gets an empty
+placeholder cell in the upper row (TanStack fills the gap); its real header sits
+in the leaf row alongside the group's leaf headers. Nothing sets `rowSpan`.
+
+```tsx
+const columns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: 'email',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Customer" />,
+  },
+  {
+    id: 'email-security',
+    header: 'Email Security',
+    columns: [
+      { accessorKey: 'status', header: 'Status' },
+      { id: 'email-seats', accessorKey: 'amount', header: 'Seats' },
+    ],
+  },
+  {
+    id: 'collaboration-security',
+    header: 'Collaboration Security',
+    columns: [
+      { accessorKey: 'id', header: 'Plan' },
+      { id: 'collaboration-seats', accessorKey: 'amount', header: 'Seats' },
+    ],
+  },
+];
+
+<DataTable columns={columns} data={payments} />
+```
+
+Give each nested column an explicit `id` when two of them share an
+`accessorKey` (`amount` above), so the ids stay unique.
+
+Only **leaf** headers carry the column affordances. A group-parent cell gets no
+resize handle (it spans several columns, so there is no single boundary to
+drag), is not sortable (a group column has no accessor), and has no reorder
+affordance under `enableColumnReordering` — dragging is suppressed, so there is
+no grab cursor and no "Reorder" hint, because the column order is made of leaf
+columns. Sort, resize and reorder the leaf headers instead.
+
+This is header grouping, which is unrelated to the **row** grouping under
+[Advanced compositions](#advanced-compositions).
+
 ### Row actions vs. bulk actions
 
 Per-row actions and bulk actions are mutually exclusive, and the switch point is

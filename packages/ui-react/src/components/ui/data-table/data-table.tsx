@@ -39,7 +39,11 @@ import { EllipsisIcon } from '@acronis-platform/icons-react/stroke-mono';
 import { useIntersectionObserver } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { ButtonIcon } from '../button-icon';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '../dropdown-menu';
 import {
   Table,
   TableActionsCell,
@@ -151,7 +155,12 @@ function getHeaderStyle<TData>(
   enableColumnResizing: boolean
 ): CSSProperties | undefined {
   const pin = getPinnedStyle(header.column);
-  const width = getColumnWidth(header.column, enableColumnResizing);
+  // For group-parent headers, header.getSize() returns the sum of visible leaf
+  // sizes. Leaf headers use getColumnWidth so resize-handle drag math is correct.
+  const width =
+    header.column.columns.length > 0
+      ? header.getSize()
+      : getColumnWidth(header.column, enableColumnResizing);
   if (!pin && width === undefined) return undefined;
   return { ...pin, width };
 }
@@ -537,9 +546,7 @@ export function DataTable<TData, TValue = unknown>({
     onSortingChange?.(updater);
   };
 
-  const handleRowSelectionChange: OnChangeFn<RowSelectionState> = (
-    updater
-  ) => {
+  const handleRowSelectionChange: OnChangeFn<RowSelectionState> = (updater) => {
     if (controlledRowSelection === undefined) {
       setInternalRowSelection(updater);
     }
@@ -801,14 +808,23 @@ export function DataTable<TData, TValue = unknown>({
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   const isPinned = header.column.getIsPinned();
+                  // A group-parent header spans its leaf columns, so there is
+                  // no single column for a drag handle to resize.
                   const canResize =
                     resizingEnabled &&
+                    !header.isPlaceholder &&
                     header.column.getCanResize() &&
-                    header.column.id !== 'select';
+                    header.column.id !== 'select' &&
+                    header.column.columns.length === 0;
                   // A pinned column is anchored to a table edge, so dragging it
-                  // out of that edge would contradict its own pinning.
+                  // out of that edge would contradict its own pinning. Group
+                  // parents are excluded too: column order is seeded from leaf
+                  // columns, so dropping a group parent is inert.
                   const canReorder =
-                    reorderingEnabled && !header.isPlaceholder && !isPinned;
+                    reorderingEnabled &&
+                    !header.isPlaceholder &&
+                    !isPinned &&
+                    header.column.columns.length === 0;
                   const canSort =
                     !header.isPlaceholder && header.column.getCanSort();
                   // One tooltip line per capability the column actually has, in
@@ -838,6 +854,7 @@ export function DataTable<TData, TValue = unknown>({
                   const headerCell = (
                     <TableHead
                       wrap={header.column.columnDef.meta?.wrap}
+                      colSpan={header.colSpan}
                       style={getHeaderStyle(header, resizingEnabled)}
                       draggable={
                         (canReorder && !isAnyColumnResizing) || undefined
@@ -851,8 +868,7 @@ export function DataTable<TData, TValue = unknown>({
                       onDragOver={canReorder ? handleColumnDragOver : undefined}
                       onDrop={
                         canReorder
-                          ? (event) =>
-                              handleColumnDrop(event, header.column.id)
+                          ? (event) => handleColumnDrop(event, header.column.id)
                           : undefined
                       }
                       onDragEnd={
