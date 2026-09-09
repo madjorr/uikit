@@ -160,7 +160,7 @@ const compareClassSelectors = ([a]: [string, string], [b]: [string, string]): nu
 
 export interface SerializeOptions {
   brand: string;
-  /** `semantic` or a component name — recorded in the file header. */
+  /** `semantic`, a component name, or `bundle` — recorded in the file header. */
   tier: string;
   /** Override-only files are bare `:root, :host {}`; base files carry the theme shell. */
   isOverride: boolean;
