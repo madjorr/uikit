@@ -1,5 +1,93 @@
 # @acronis-platform/ui-react
 
+## 5.2.0
+
+### Minor Changes
+
+- [#723](https://github.com/acronis/uikit/pull/723) [`4b5ec8d`](https://github.com/acronis/uikit/commit/4b5ec8df7b17632ce73070bd69cf2c89e17417a7) Thanks [@madjorr](https://github.com/madjorr)! - `SidebarPrimaryHeader` now accepts `logoHeight`/`collapsedLogoHeight` props to override the design-system default logo slot height, for branded logos taller than the default 48px/32px.
+
+### Patch Changes
+
+- [#710](https://github.com/acronis/uikit/pull/710) [`6a46186`](https://github.com/acronis/uikit/commit/6a461869c22695012da479f728b700608a1830c4) Thanks [@madjorr](https://github.com/madjorr)! - **Checkbox**: refreshed the Figma link. The Code Connect mapping and spec now
+  point at the current node (`725:2773`) instead of the stale `2238:43890`
+  node — same Figma file, just an outdated node reference. The design's props
+  (`label`, `description`), variants (`unchecked`/`checked`/`indeterminate`),
+  and states (`idle`/`hover`/`active`/`focus`/`disabled`) were verified against
+  the current implementation — no code changes were needed, they already match.
+
+- [#710](https://github.com/acronis/uikit/pull/710) [`bdf2d37`](https://github.com/acronis/uikit/commit/bdf2d3757b5ec2011b60737ebef9060c2c1a2fd4) Thanks [@madjorr](https://github.com/madjorr)! - **Combobox, InputSelect, DropdownMenu**: extended the Checkbox indicator glyph
+  fix to the remaining 16px selection-indicator slots. Combobox's selected-option
+  check, InputSelect's selected-option check (two call sites), and DropdownMenu's
+  checked menu-item indicator all rendered the full-size `CheckIcon`, whose 16px
+  entry reuses the same edge-to-edge path geometry as the 24px one (only the
+  stroke width changes), so the glyph filled the 16px box corner to corner. They
+  now use `CheckSmallIcon`, whose inset path is purpose-built for a 16px slot —
+  the same fix pattern already applied to Checkbox.
+
+  DropdownMenu additionally passed no `size` prop at all, so the icon fell back to
+  `defaultSize={24}` and was squeezed to 16px by `className="size-4"`, rendering a
+  thinner stroke than the 16px contract intends; it now passes `size={16}` like
+  the other indicators. No token, geometry, or API change.
+
+  **Known gaps (not addressed in this change)**: two follow-ups were reviewed and
+  deliberately deferred; a third — stale VR baselines from this same glyph
+  swap — has since been fixed as a one-off.
+
+  Visual-regression tests can't catch this class of bug at the current settings.
+  `.storybook/test-runner.ts` uses a kit-wide `failureThreshold: 0.005` (0.5%),
+  which on a checkbox-sized story (~1280×75px) is a budget of roughly 480px —
+  far more than the ~40–60px ink delta the glyph swap produces. That is why the
+  original regression (introduced when a `chore(design-assets)` Figma resync
+  redefined `Check.svg` from an inset path to an edge-to-edge one) shipped
+  silently and surfaced only in manual review. The `failureThreshold` itself is
+  left as-is — this class of sub-threshold visual bug can still slip through VR
+  undetected for any other story in the kit, and that structural gap remains
+  unaddressed.
+
+  That same Figma resync altered path geometry on 108 icon SVGs, not just
+  `Check.svg` (e.g. `ArrowDown`, `Minus`, `Plus`, `Times`, `Ellipsis` all went
+  inset → edge-to-edge). Of the ~17 of those icons actually rendered in
+  `ui-react` source, only `Check`'s call sites have been audited and fixed here;
+  the other 16 (several high-traffic — close buttons, tag removal, steppers,
+  overflow menus) were not audited for the same class of sub-threshold-stale
+  baseline. That's a pre-existing, unaddressed gap bounded by the same
+  `failureThreshold` issue above, not something this change scoped in.
+
+  17 stories across Checkbox, Combobox, InputSelect, DropdownMenu, Table, and
+  Field (34 PNGs across light/dark) had baselines that were themselves stale
+  against the new `Check` glyph and wouldn't refresh under a normal
+  `--updateSnapshot` run, since jest-image-snapshot only rewrites a baseline
+  when the diff exceeds the threshold. That specific staleness has since been
+  fixed: the stale baselines were deleted and regenerated unconditionally via a
+  docker VR-update run, not by changing the threshold. This was a one-off
+  correction for the `Check`/`Minus` glyph swap's own baselines only — it does
+  not change how VR behaves for any other story, and does not cover the other
+  16 unaudited icons above.
+
+  `number-field.tsx` and `input-num-picker.tsx` still render `<MinusIcon
+size={16} />` for their decrement buttons. Those call sites have the same icon
+  geometry, but the glyph is a decrement affordance rather than a selection
+  indicator, and whether the inset small variant is correct in that role is a
+  design call that hasn't been made. Left unchanged pending that decision.
+
+- [#710](https://github.com/acronis/uikit/pull/710) [`6ab4e6d`](https://github.com/acronis/uikit/commit/6ab4e6d944270db5cb5d0c021aac42e014ba9e20) Thanks [@madjorr](https://github.com/madjorr)! - **Checkbox**: fixed a visual bug where the check/minus indicator glyph rendered
+  oversized and off-proportion versus the Figma design. The indicator used the
+  full-size `CheckIcon`/`MinusIcon`, whose 16px entry reuses the same
+  edge-to-edge path geometry as the 24px one (only the stroke width changes), so
+  the glyph filled the 16px box corner to corner and its stroke read as thin
+  against it. It now uses `CheckSmallIcon`/`MinusSmallIcon`, whose inset path is
+  purpose-built for a 16px slot — the same pattern Chip already uses with
+  `TimesSmallIcon`. No token, geometry, or API change.
+
+- [#722](https://github.com/acronis/uikit/pull/722) [`ea9aa38`](https://github.com/acronis/uikit/commit/ea9aa38dcc4c970b83aa31a2334b70c57f551776) Thanks [@madjorr](https://github.com/madjorr)! - Import the 4 component token tiers missing from `src/styles/index.css`
+  (`AlertRibbon`, `Chat`, `SegmentControl`, `SideSheet`). `ui-react/styles` is
+  meant to load every component tier `@acronis-platform/tokens-pd` ships for the
+  default brand; these four `--ui-<component>-*` custom property sets were absent
+  from the bundle, so anything referencing them directly had no defined value.
+- Updated dependencies [[`cf79270`](https://github.com/acronis/uikit/commit/cf79270136bdd75d9b511329c5cc4ddb17d6971e)]:
+  - @acronis-platform/tokens-pd@2.9.0
+  - @acronis-platform/icons-react@1.0.1
+
 ## 5.1.1
 
 ### Patch Changes
