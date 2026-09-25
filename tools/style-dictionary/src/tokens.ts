@@ -327,6 +327,49 @@ export async function resolveFontScalarTokens(filter: Filter): Promise<Map<strin
   return vars;
 }
 
+/**
+ * The `units.*` scalar scales — other than `gap`, which gets its own
+ * utility-class treatment via `resolveGapTokens` — to expose as bare custom
+ * properties, and the `--ui-*` prefix each one gets.
+ */
+const UNITS_SCALAR_GROUPS: ReadonlyArray<readonly [sub: string, varPrefix: string]> = [
+  ['size', 'ui-size'],
+  ['radius', 'ui-radius'],
+  ['stroke', 'ui-stroke'],
+];
+
+/**
+ * Resolve `units.{size,radius,stroke}.*` primitives directly — the same
+ * `isEmittableToken`-bypassing read `resolveGapTokens`/`resolveFontScalarTokens`
+ * do — so consumer apps get these primitive scales as bare `--ui-size-*` /
+ * `--ui-radius-*` / `--ui-stroke-*` vars to build their own local classes
+ * from. Unlike `gap`, no utility classes are generated here, just the vars.
+ * Mode/brand-invariant like gap, so a single primitives-light read is enough.
+ * Keys are taken as-is (numeric like `8`, decimal-dash like `1-6`, or named
+ * like `full`) — none of these three sub-scales carries a non-scale variant
+ * to exclude the way gap's `neg-6` does, so no key filter is needed.
+ */
+export async function resolveUnitsScalarTokens(filter: Filter): Promise<Map<string, string>> {
+  const key: PlatformKey = `${filter}-css`;
+  const sd = makeSd({
+    tokens: readView('primitives-light'),
+    platforms: { [key]: { transformGroup: ACRONIS_CSS_GROUP } },
+  });
+  const { allTokens } = await sd.getPlatformTokens(key);
+
+  const bySub = new Map(UNITS_SCALAR_GROUPS.map(([sub]) => [sub, new Map<string, string>()]));
+  for (const token of allTokens) {
+    if (token.path[0] !== 'units' || typeof token.$value !== 'string') continue;
+    bySub.get(token.path[1])?.set(token.path[2], token.$value);
+  }
+
+  const vars = new Map<string, string>();
+  for (const [sub, varPrefix] of UNITS_SCALAR_GROUPS) {
+    for (const [sizeKey, value] of bySub.get(sub) ?? []) vars.set(`${varPrefix}-${sizeKey}`, value);
+  }
+  return vars;
+}
+
 /** Resolve a theme to a `path → value` map of its color tokens (already `rgb()`). */
 export async function resolveColorMap(
   filter: Filter,
@@ -381,6 +424,7 @@ export async function buildCss(filter: Filter): Promise<void> {
   // added once per brand rather than to the default only).
   const gapTokens = await resolveGapTokens(filter);
   const fontScalarTokens = await resolveFontScalarTokens(filter);
+  const unitsScalarTokens = await resolveUnitsScalarTokens(filter);
 
   // brand → slice → resolved declarations.
   const perBrand = new Map<string, Map<string, Decls>>();
@@ -412,6 +456,7 @@ export async function buildCss(filter: Filter): Promise<void> {
         }
       }
       for (const [varName, value] of fontScalarTokens) semantics.vars.set(varName, value);
+      for (const [varName, value] of unitsScalarTokens) semantics.vars.set(varName, value);
     }
     perBrand.set(brand.name, decls);
   }

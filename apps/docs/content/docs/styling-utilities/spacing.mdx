@@ -102,3 +102,28 @@ There's also one static, non-scale utility:
   `tools/style-dictionary` pipeline and committed to git. Never hand-edit
   `css/default.css` directly — change the upstream token and rebuild.
 </Callout>
+
+## Units scale variables
+
+Three more `units.*` **primitive** scales — `size`, `radius`, and `stroke` —
+are also exposed as bare custom properties, the same mechanism as `gap`
+above. Unlike `gap`, they get **no** utility-class grammar, just the vars:
+
+| Variable        | Values                                                 |
+| ---------------- | ------------------------------------------------------ |
+| `--ui-size-*`    | `6`, `8`, `12`, `16`, `20`, `24`, `32`, `40`, `48`, `56`, `64`, `72`, `76`, `96`, `128`, `224`, `256`, `320`, `384`, `512`, `632` (px) |
+| `--ui-radius-*`  | `2`, `4`, `8`, `12`, `16`, `24`, `full` (`999px`) (px)  |
+| `--ui-stroke-*`  | `1`, `1-6` (1.6px), `2`, `2-5` (2.5px), `3` (px)        |
+
+```css
+.my-element {
+  width: var(--ui-size-96);
+  border-radius: var(--ui-radius-8);
+  border-width: var(--ui-stroke-1-6);
+}
+```
+
+<Callout type="info">
+  Like `gap`, these three are shared by every brand — there is one scale, not
+  a per-brand one.
+</Callout>

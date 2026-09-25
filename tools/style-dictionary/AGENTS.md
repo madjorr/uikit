@@ -202,6 +202,12 @@ tool needs `@acronis-platform/design-assets` as a workspace dependency.
   `--ui-font-family-*` var, only inside the typography classes, because no
   `@font-face` ships anywhere in this pipeline — see
   [`context/output.md`](context/output.md#font-scalar-vars).
+- **`units.{size,radius,stroke}` primitives ALSO emit as bare vars.** Same
+  mechanism as font scalars above, via `tokens.ts`'s
+  `resolveUnitsScalarTokens` — `--ui-size-*` / `--ui-radius-*` /
+  `--ui-stroke-*` custom properties, no key filter (keys include decimal-dash
+  like `1-6` and named like `full`), no utility classes (unlike `gap`). See
+  [`context/output.md`](context/output.md#units-scalar-vars).
 - **Gradients are supported.** The `gradient/css` transform renders the top-level
   `gradients.*` root (color-stop arrays + a Figma transform matrix) into
   `linear-gradient(...)` strings (angle from `com.figma.gradientTransform`).

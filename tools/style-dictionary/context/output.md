@@ -121,6 +121,32 @@ combinations) reaches for these vars directly:
 }
 ```
 
+## Units scalar vars
+
+`units.{size,radius,stroke}` — the primitive scales those component tokens
+alias into (2560/693/987 alias references respectively, per
+`packages/design-tokens/tiers/components.json`) — additionally emit as bare
+custom properties, the same mechanism as [Font scalar vars](#font-scalar-vars)
+above and `units.gap.*` below: `tokens.ts`'s `resolveUnitsScalarTokens` reads
+`units.size.*` / `units.radius.*` / `units.stroke.*` directly — bypassing
+`isEmittableToken`'s primitive-root filter — and feeds the result into
+`buildCss`'s `semantics` slice the same way `resolveGapTokens` does for gap.
+Unlike gap, **no utility classes** are generated for these three — just the
+vars. Like gap and font, they are mode/brand-invariant (a single `$value` per
+key), so they render identically in every brand file with no override-diff
+entries:
+
+```css
+--ui-size-96: 96px;
+--ui-radius-full: 999px;
+--ui-stroke-1-6: 1.6px;
+```
+
+Keys are taken as-is, including the decimal-dash (`1-6`, `2-5`) and named
+(`full`) keys under `stroke`/`radius` — unlike `gap`'s `neg-6`, none of these
+three sub-scales carries a non-scale variant that needs excluding, so
+`resolveUnitsScalarTokens` applies no key filter.
+
 ## Gap utility classes
 
 Every numeric `units.gap.*` **primitive** size also emits a full
