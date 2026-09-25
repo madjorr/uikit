@@ -29,7 +29,9 @@ header). `dev`/`clean`/`lint`/`typecheck` are no-ops; `test` re-runs the build.
 Three top-level dirs — `css/`, `bundles/`, `dtcg/`:
 
 - `css/default.css` — semantic tier, default brand (full): `--ui-*` custom
-  properties + `.ui-typography-*` and `.ui-p-*`/`.ui-m-*`/`.ui-gap-*` (+ `.ui-mx-auto`)
+  properties (incl. the bare `--ui-font-size-*`/`--ui-font-weight-*`/
+  `--ui-line-height-*`/`--ui-letter-spacing-*` scalars) +
+  `.ui-typography-*` and `.ui-p-*`/`.ui-m-*`/`.ui-gap-*` (+ `.ui-mx-auto`)
   spacing utility classes.
 - `css/brand-b.css` — semantic tier, non-default brand: **override-only**.
 - `css/<Component>/<brand>.css` — component tier, one dir per component
@@ -72,6 +74,16 @@ tiers/*.json` is Figma-sourced only and there is no `spacing` group in Figma,
   inline-start/inline-end pair), the same nine for `m`/margin, `.ui-gap-*`/
   `.ui-gap-x-*`/`.ui-gap-y-*`, plus a static `.ui-mx-auto`. Not brand-dependent, so
   non-default brand override files carry no gap entries.
+- **Font scalar vars.** The same treatment, for the four scalar scales the
+  `.ui-typography-*` composites are built from: `tokens.ts`'s
+  `resolveFontScalarTokens` reads `font.font-size.*` / `font.font-weight.*` /
+  `font.line-height.*` / `font.letter-spacing.*` directly (bypassing
+  `isEmittableToken`, same as gap) and emits bare `--ui-font-size-*` /
+  `--ui-font-weight-*` / `--ui-line-height-*` / `--ui-letter-spacing-*`
+  custom properties, for a consumer building their own local class from the
+  same preset scale the typography classes use. Not brand-dependent, so no
+  override-file entries. `font-family` is deliberately excluded — no
+  `--ui-font-family-*` var, since the kit ships no `@font-face`.
 
 See `../../context/releasing.md` for the Changesets / publish flow. The tool's
 own conventions live in [`../../tools/style-dictionary/AGENTS.md`](../../tools/style-dictionary/AGENTS.md).

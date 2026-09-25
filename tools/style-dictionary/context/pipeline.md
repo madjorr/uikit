@@ -85,7 +85,14 @@ output contract.
   `serializeCss` wraps it in a `.ui-typography-*` utility class.
 - The primitive roots (`palette`, `units`, `font`) are dropped via
   `isEmittableToken` (the `semantic-only` predicate); they are resolution inputs
-  only, so only the `semantics` + `component` tiers are emitted.
+  only, so only the `semantics` + `component` tiers are emitted **normally**.
+  Two sub-scales are the deliberate exception, read directly (bypassing that
+  filter) and injected into the `semantics` slice by dedicated code in
+  `buildCss`: `units.gap.*` (`resolveGapTokens`) and
+  `font.{font-size,font-weight,line-height,letter-spacing}.*`
+  (`resolveFontScalarTokens`, added alongside gap) — both emit as bare
+  `--ui-*` custom properties despite living under a primitive root. See
+  [`output.md`](output.md#font-scalar-vars).
 - Emitted tokens partition by `token.path[0]` into the semantics root file vs a
   per-component file; non-default brands are diffed against `default` and written
   as override-only files.

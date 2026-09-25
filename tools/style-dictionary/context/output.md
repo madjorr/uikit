@@ -74,6 +74,53 @@ Colors are always wrapped in `light-dark()`, even when both modes resolve to the
 same value. Gradients, dimensions, and typography are mode-invariant, so they
 appear once with a single value.
 
+The four scalar fields above — `font-size`, `font-weight`, `line-height`,
+`letter-spacing` — are not _only_ baked into the typography class: each also
+emits as its own bare `--ui-font-size-*` / `--ui-font-weight-*` /
+`--ui-line-height-*` / `--ui-letter-spacing-*` custom property. See
+[Font scalar vars](#font-scalar-vars) below. `font-family` does not get this
+treatment — there is no `--ui-font-family-*` var, by design (see that section).
+
+## Font scalar vars
+
+`font.{font-size,font-weight,line-height,letter-spacing}` — the primitive
+scales the `.ui-typography-*` composites are assembled from — additionally
+emit as bare custom properties, exactly mirroring the `units.gap.*` mechanism
+below: `tokens.ts`'s `resolveFontScalarTokens` reads `font.font-size.*` /
+`font.font-weight.*` / `font.line-height.*` / `font.letter-spacing.*` directly
+— bypassing `isEmittableToken`'s primitive-root filter — and feeds the result
+into `buildCss`'s `semantics` slice the same way `resolveGapTokens` does for
+gap. Like gap, these are mode/brand-invariant (a single `$value` per key), so
+they render identically in every brand file with no override-diff entries:
+
+```css
+--ui-font-size-18: 18px;
+--ui-font-weight-bold: 700;
+--ui-line-height-48: 48px;
+--ui-letter-spacing-0-3: 0.3px;
+```
+
+`font-family` is the deliberate exception — it is never exposed as a bare
+`--ui-font-family-*` var. The kit ships no `@font-face` for `Inter` /
+`IBM Plex Mono` (see `tools/style-dictionary/AGENTS.md`); exposing a bare
+family var would imply the font is guaranteed to be loaded, which it is not —
+the name only ever appears inside a `.ui-typography-*` class, where the
+consumer already understands it as "the font this text style asks for," not
+a promise that it's available.
+
+A consumer who wants a preset size/weight/line-height/letter-spacing value in
+their **own** local class (rather than one of the shipped `.ui-typography-*`
+combinations) reaches for these vars directly:
+
+```css
+.my-local-class {
+  font-size: var(--ui-font-size-18);
+  font-weight: var(--ui-font-weight-bold);
+  line-height: var(--ui-line-height-48);
+  letter-spacing: var(--ui-letter-spacing-1);
+}
+```
+
 ## Gap utility classes
 
 Every numeric `units.gap.*` **primitive** size also emits a full

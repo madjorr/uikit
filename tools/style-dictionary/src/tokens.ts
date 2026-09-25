@@ -284,6 +284,49 @@ export async function resolveGapTokens(filter: Filter): Promise<Map<string, stri
   return gap;
 }
 
+/**
+ * The `font.*` scalar scales to expose as bare custom properties, and the
+ * `--ui-*` prefix each one gets. `font-family` is deliberately excluded — it
+ * stays inside the `.ui-typography-*` classes only, never a bare
+ * `--ui-font-family-*` var (see AGENTS.md: font loading isn't guaranteed for
+ * a consumer, so the kit doesn't imply otherwise by exposing the name alone).
+ */
+const FONT_SCALAR_GROUPS: ReadonlyArray<readonly [sub: string, varPrefix: string]> = [
+  ['font-size', 'ui-font-size'],
+  ['font-weight', 'ui-font-weight'],
+  ['line-height', 'ui-line-height'],
+  ['letter-spacing', 'ui-letter-spacing'],
+];
+
+/**
+ * Resolve `font.{font-size,font-weight,line-height,letter-spacing}.*`
+ * primitives directly — the same `isEmittableToken`-bypassing read
+ * `resolveGapTokens` does for `units.gap.*` — so consumer apps get the same
+ * preset scale the shared `.ui-typography-*` classes are assembled from, to
+ * build their own local classes from. Mode/brand-invariant like gap, so a
+ * single primitives-light read is enough.
+ */
+export async function resolveFontScalarTokens(filter: Filter): Promise<Map<string, string>> {
+  const key: PlatformKey = `${filter}-css`;
+  const sd = makeSd({
+    tokens: readView('primitives-light'),
+    platforms: { [key]: { transformGroup: ACRONIS_CSS_GROUP } },
+  });
+  const { allTokens } = await sd.getPlatformTokens(key);
+
+  const bySub = new Map(FONT_SCALAR_GROUPS.map(([sub]) => [sub, new Map<string, string>()]));
+  for (const token of allTokens) {
+    if (token.path[0] !== 'font' || typeof token.$value !== 'string') continue;
+    bySub.get(token.path[1])?.set(token.path[2], token.$value);
+  }
+
+  const vars = new Map<string, string>();
+  for (const [sub, varPrefix] of FONT_SCALAR_GROUPS) {
+    for (const [sizeKey, value] of bySub.get(sub) ?? []) vars.set(`${varPrefix}-${sizeKey}`, value);
+  }
+  return vars;
+}
+
 /** Resolve a theme to a `path → value` map of its color tokens (already `rgb()`). */
 export async function resolveColorMap(
   filter: Filter,
@@ -337,6 +380,7 @@ export async function buildCss(filter: Filter): Promise<void> {
   // identically across every brand below (mirrors how STATIC_GAP_CLASSES is
   // added once per brand rather than to the default only).
   const gapTokens = await resolveGapTokens(filter);
+  const fontScalarTokens = await resolveFontScalarTokens(filter);
 
   // brand → slice → resolved declarations.
   const perBrand = new Map<string, Map<string, Decls>>();
@@ -367,6 +411,7 @@ export async function buildCss(filter: Filter): Promise<void> {
           semantics.classes.set(selector, block);
         }
       }
+      for (const [varName, value] of fontScalarTokens) semantics.vars.set(varName, value);
     }
     perBrand.set(brand.name, decls);
   }

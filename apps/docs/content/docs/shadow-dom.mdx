@@ -152,6 +152,14 @@ that must overlay the entire viewport), pass `portalContainer` directly:
   outside the shadow root.
 - **Focus management**: Base UI's focus trapping and restoration work across
   shadow boundaries in modern browsers (Chrome 90+, Firefox 96+, Safari 16.4+).
+- **Font loading**: everything under `--ui-*` (including the new
+  `--ui-font-size-*`/`--ui-font-weight-*`/`--ui-line-height-*`/
+  `--ui-letter-spacing-*` vars, see [Typography](/typography#scale-variables))
+  crosses the shadow boundary fine once you adopt the stylesheet above — but
+  `font-family` does not resolve to an actual typeface on its own. The kit
+  ships no `@font-face` for `Inter` / `IBM Plex Mono`, inside or outside a
+  shadow root, so text renders in the `system-ui` fallback unless your host
+  app separately loads those fonts.
 
 ## API reference
 

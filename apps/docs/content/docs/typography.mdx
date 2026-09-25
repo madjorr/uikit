@@ -1,14 +1,15 @@
 ---
 title: Typography
-description: The typography scale shipped by @acronis-platform/tokens-pd as .ui-typography-* utility classes.
+description: The typography scale shipped by @acronis-platform/tokens-pd as .ui-typography-* utility classes, plus the underlying font-size/weight/line-height/letter-spacing custom properties.
 ---
 
+import { Callout } from 'fumadocs-ui/components/callout';
 import { TypographyCatalog } from '@/components/TypographyCatalog';
 
 [`@acronis-platform/tokens-pd`](/packages/tokens-pd) emits the typography
-scale as `.ui-typography-*` utility classes (in `css/default.css`), rather than
-as `--ui-*` custom properties. Apply a class to set a complete text style —
-font family, size, weight, line height, and letter spacing — in one place:
+scale as `.ui-typography-*` utility classes (in `css/default.css`). Apply a
+class to set a complete text style — font family, size, weight, line height,
+and letter spacing — in one place:
 
 ```tsx
 <p className="ui-typography-body-default">Body copy.</p>
@@ -19,3 +20,34 @@ Each row below renders a live sample with the parsed declarations applied
 inline, alongside the class name and its metrics. Styles are grouped by family.
 
 <TypographyCatalog />
+
+## Scale variables
+
+The four scalar scales these classes are assembled from — size, weight, line
+height, and letter spacing — are **also** available as bare custom
+properties, for a local class of your own that doesn't match one of the
+preset combinations above:
+
+| Variable                | Values                                                          |
+| ----------------------- | --------------------------------------------------------------- |
+| `--ui-font-size-*`      | `10`, `11`, `12`, `14`, `18`, `20`, `24`, `32` (px)             |
+| `--ui-font-weight-*`    | `regular` (400), `medium` (500), `semibold` (600), `bold` (700) |
+| `--ui-line-height-*`    | `16`, `20`, `24`, `32`, `40`, `48` (px)                         |
+| `--ui-letter-spacing-*` | `0`, `0-3` (0.3px), `1` (px)                                    |
+
+```css
+.my-local-class {
+  font-size: var(--ui-font-size-18);
+  font-weight: var(--ui-font-weight-bold);
+  line-height: var(--ui-line-height-48);
+  letter-spacing: var(--ui-letter-spacing-1);
+}
+```
+
+<Callout type="warn">
+  `font-family` is **not** part of this set — there is no `--ui-font-family-*`
+  variable. The kit ships no `@font-face` for its `Inter` / `IBM Plex Mono`
+  families, so a consumer app must load them itself (or accept the `system-ui`
+  fallback baked into the `.ui-typography-*` classes) — see [Shadow DOM: Known
+  caveats](/shadow-dom#known-caveats).
+</Callout>

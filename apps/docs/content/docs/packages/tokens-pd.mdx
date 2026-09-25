@@ -16,8 +16,10 @@ bundle per brand under `bundles/`, and the DTCG intermediate under `dtcg/`.
 ## Semantic tier
 
 `css/default.css` is the default brand at full strength: every `--ui-*` custom
-property plus the `.ui-typography-*` utility classes. This is the file you load
-first.
+property — including the bare `--ui-font-size-*` / `--ui-font-weight-*` /
+`--ui-line-height-*` / `--ui-letter-spacing-*` scalars, see
+[Typography](/typography#scale-variables) — plus the `.ui-typography-*`
+utility classes. This is the file you load first.
 
 ```css
 @import '@acronis-platform/tokens-pd/css/default.css';

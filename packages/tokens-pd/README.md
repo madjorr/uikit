@@ -92,5 +92,14 @@ is a published home for the tool's token output.
   `context/output.md`): `--ui-gap-*` custom properties, and framework-agnostic
   `.ui-p-*`/`.ui-m-*`/`.ui-gap-*` utility classes (plus `.ui-mx-auto`) — not
   brand-dependent, so it carries no override-file entries.
+- The typography **scalars** ship two ways too, mirroring gap: bundled into
+  the `.ui-typography-*` classes above, and — generated directly from the
+  `font.{font-size,font-weight,line-height,letter-spacing}` primitive scales
+  by the same kind of dedicated build code — as bare `--ui-font-size-*` /
+  `--ui-font-weight-*` / `--ui-line-height-*` / `--ui-letter-spacing-*`
+  custom properties, for a consumer's own local class. Not brand-dependent,
+  so no override-file entries. `font-family` is excluded — no
+  `--ui-font-family-*` var ships, since the kit doesn't bundle `@font-face`
+  for `Inter` / `IBM Plex Mono`.
 - Non-default brands are emitted as **override-only** files: a token appears in a
   brand's file only when its value differs from `default` or is new in that brand.

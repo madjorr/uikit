@@ -182,14 +182,26 @@ tool needs `@acronis-platform/design-assets` as a workspace dependency.
   pass — non-transitive, it never fires at all. It's safe because typography
   composites are terminal (nothing aliases into them), so it can't interfere with
   anyone else's resolution.
-- **Typography → utility classes, not variables.** Composite typography tokens
-  are emitted as `.ui-typography-*` classes (one declaration per field), not per
-  field as `--…` custom properties. They are **not** expanded: the
+- **Typography composites → utility classes, not variables.** A _composite_
+  typography token (`typography.body.default`, …) is emitted as a
+  `.ui-typography-*` class (one declaration per field), not as per-field
+  `--…` custom properties. It is **not** expanded there: the
   `typography/css-class` transform builds the declaration block from the resolved
   composite `$value`, and `serializeCss` wraps it in the `.ui-typography-*`
   selector. Because the composite's sub-fields carry no `$type`, the transform
   formats them by shape (`formatScalar`), handling both already-px strings and
   inline `{ value, unit }` objects.
+- **`font.{font-size,font-weight,line-height,letter-spacing}` primitives ALSO
+  emit as bare vars.** Unlike the composites above, the four scalar scales the
+  composites are built from are additionally exposed directly as
+  `--ui-font-size-*` / `--ui-font-weight-*` / `--ui-line-height-*` /
+  `--ui-letter-spacing-*` custom properties — the same
+  `isEmittableToken`-bypassing read `resolveGapTokens` does for `units.gap.*`
+  (see that gotcha below), via `tokens.ts`'s `resolveFontScalarTokens`.
+  `font-family` is the deliberate exception: it is never exposed as a bare
+  `--ui-font-family-*` var, only inside the typography classes, because no
+  `@font-face` ships anywhere in this pipeline — see
+  [`context/output.md`](context/output.md#font-scalar-vars).
 - **Gradients are supported.** The `gradient/css` transform renders the top-level
   `gradients.*` root (color-stop arrays + a Figma transform matrix) into
   `linear-gradient(...)` strings (angle from `com.figma.gradientTransform`).
